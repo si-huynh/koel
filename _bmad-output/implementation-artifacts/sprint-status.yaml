@@ -1,0 +1,152 @@
+# generated: 2026-05-28
+# last_updated: 2026-05-28
+# project: koel
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: {project-root}/_bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - Developer typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+
+generated: 2026-05-28
+last_updated: 2026-05-28
+project: koel
+project_key: NOKEY
+tracking_system: file-system
+story_location: "{project-root}/_bmad-output/implementation-artifacts"
+
+development_status:
+  # Epic 1: Workspace Foundation & Lint Profile
+  epic-1: backlog
+  1-1-workspace-bootstrap: backlog
+  1-2-scaffold-publishable-packages: backlog
+  1-3-build-koel-lints-profile: backlog
+  1-4-adopt-koel-lints-profile: backlog
+  1-5-ci-workflow-skeleton: backlog
+  1-6-repo-docs-brand-license: backlog
+  epic-1-retrospective: optional
+
+  # Epic 2: Protocol Kernel — koel_core
+  epic-2: backlog
+  2-1-foundation-contracts: backlog
+  2-2-sealed-ag-ui-event-root: backlog
+  2-3-sealed-koel-error-hierarchy: backlog
+  2-4-vendor-inline-rfc6902-json-patch: backlog
+  2-5-run-step-text-message-events: backlog
+  2-6-tool-call-state-messages-snapshot-events: backlog
+  2-7-activity-reasoning-events: backlog
+  2-8-raw-custom-events-integration-sweep: backlog
+  2-9-interceptor-chain-framework: backlog
+  2-10-agent-subscriber-callback-bag: backlog
+  2-11-four-stage-event-pipeline: backlog
+  2-12-chat-state-reducer: backlog
+  2-13-session-storage-in-memory: backlog
+  2-14-koel-client-chat-session-api: backlog
+  2-15-perf-baselines-dartdoc-barrel: backlog
+  epic-2-retrospective: optional
+
+  # Epic 3: Test Harness & Conformance — koel_test
+  epic-3: backlog
+  3-1-mock-agent-foundation: backlog
+  3-2-synthesized-fixture-set: backlog
+  3-3-fixture-loader-from-fixture: backlog
+  3-4-tool-handler-test-harness: backlog
+  3-5-conformance-runner-skeleton: backlog
+  epic-3-retrospective: optional
+
+  # Epic 4: HTTP Transport — koel_http
+  epic-4: backlog
+  4-1-framework-free-sse-parser: backlog
+  4-2-http-agent-native-transport: backlog
+  4-3-cancellation-propagation: backlog
+  4-4-retry-interceptor: backlog
+  4-5-auth-interceptor: backlog
+  4-6-logging-event-trace-interceptors: backlog
+  4-7-sentry-pii-redaction-interceptors: backlog
+  4-8-chunk-synthesis: backlog
+  4-9-connection-lifecycle-hooks: backlog
+  4-10-web-transport-perf-baseline: backlog
+  epic-4-retrospective: optional
+
+  # Epic 5: Backend Bridges — koel_agno + koel_langgraph + koel_runtime
+  epic-5: backlog
+  5-1-agno-agent-message-conversion: backlog
+  5-2-agno-auth-interceptor-error-classifier: backlog
+  5-3-agno-captured-fixtures-conformance: backlog
+  5-4-langgraph-agent-protocol-conversion: backlog
+  5-5-langgraph-surface-interrupt-resume: backlog
+  5-6-langgraph-fixtures-classifier-conformance: backlog
+  5-7-multipart-graphql-stream-parser: backlog
+  5-8-copilot-runtime-agent: backlog
+  5-9-copilot-runtime-fixtures-dojo-conformance: backlog
+  epic-5-retrospective: optional
+
+  # Epic 6: Flutter Glue & Persistence — koel_flutter
+  epic-6: backlog
+  6-1-koel-chat-controller: backlog
+  6-2-koel-client-scope: backlog
+  6-3-hive-session-storage: backlog
+  6-4-secure-session-storage: backlog
+  6-5-message-content-parser-segment: backlog
+  6-6-widget-resolver-tool-replay-context: backlog
+  6-7-six-platform-ci-verification: backlog
+  6-8-memory-streaming-jank-baselines: backlog
+  epic-6-retrospective: optional
+
+  # Epic 7: Widget Primitives & Theming — koel_widgets
+  epic-7: backlog
+  7-1-koel-theme: backlog
+  7-2-message-bubble: backlog
+  7-3-chat-input-follow-up-list: backlog
+  7-4-widget-tests-goldens-barrel-example: backlog
+  epic-7-retrospective: optional
+
+  # Epic 8: DevTools Extension — koel_devtools
+  epic-8: backlog
+  8-1-devtools-observer-ring-buffer: backlog
+  8-2-devtools-extension-registration-skeleton: backlog
+  8-3-stream-panel: backlog
+  8-4-history-panel-time-travel-replay: backlog
+  8-5-inspector-network-panels: backlog
+  8-6-export-panel-jsonl-writer-reader: backlog
+  8-7-replay-safety-build-devtools-ci: backlog
+  epic-8-retrospective: optional
+
+  # Epic 9: Meta-Package, Sample App & v1.0.0 Release Gates
+  epic-9: backlog
+  9-1-koel-meta-package-versioning: backlog
+  9-2-repo-root-sample-app: backlog
+  9-3-dart-apitool-baselines-ci-gate: backlog
+  9-4-perf-baselines-release-artifacts-benchmarks: backlog
+  9-5-conformance-publish-dry-run-green: backlog
+  9-6-docs-site-scaffold-readmes-final: backlog
+  9-7-prd-addendum-reconciliation: backlog
+  9-8-trademark-ag-ui-license-verification: backlog
+  9-9-v100-lock-step-publish: backlog
+  epic-9-retrospective: optional

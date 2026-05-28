@@ -1,0 +1,53 @@
+# Dart / Flutter build artifacts
+.dart_tool/
+.packages
+build/
+coverage/
+*.g.dart
+*.freezed.dart
+*.mocks.dart
+
+# Melos
+.melos_tool/
+pubspec_overrides.yaml
+
+# Per-package pubspec.lock (workspace-level lock kept)
+packages/*/pubspec.lock
+
+# Flutter
+**/ios/Pods/
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/macos/Pods/
+**/android/.gradle/
+**/android/local.properties
+**/android/app/debug
+**/android/app/profile
+**/android/app/release
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+
+# DevTools extension build artifacts
+packages/koel_devtools/extension/devtools/build/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.iws
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs and temp
+*.log
+.tmp/
+
+# Secrets (defensive — none should ever be committed)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets.yaml

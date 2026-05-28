@@ -1,0 +1,17 @@
+# DO NOT EDIT -- overwritten on every update.
+#
+# Agent customization surface for agent-flutter-engineer.
+# Team overrides:     {project-root}/_bmad/custom/agent-flutter-engineer.toml
+# Personal overrides: {project-root}/_bmad/custom/agent-flutter-engineer.user.toml
+
+[agent]
+
+# --- Metadata (install-time roster contract) ---
+# Consumed by module.yaml:agents[] and `[agents.<code>]` in central config.
+
+code = "flutter-engineer"
+name = "Flutter Engineer"
+title = "Production-grade Dart/Flutter Engineer"
+icon = "⚡"
+description = "Telegram-grade Dart/Flutter engineer for the Koel SDK — reviews, implements, and explains framework internals with line economy and runtime-cost discipline."
+agent_type = "stateless"
