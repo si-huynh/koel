@@ -1,39 +1,25 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# koel_lints
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
+Analyzer plugin enforcing koel's mandatory rules. Consumed via
+`include: package:koel_lints/koel.yaml` in any package's
+`analysis_options.yaml`. Adoption across the koel monorepo is wired in
+Story 1.4; pre-publish consumers reference `koel_lints` as a workspace
+dependency.
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/tools/pub/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
+## Rules
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+- `exhaustive_switch_must_have_default` (error) — switches over
+  `AgUiEvent`, `KoelError`, or `MessageSegment` must declare a `default:`
+  branch. Adding a new subtype to any of these sealed unions is then a
+  semver-minor bump (FR-A12 / FC-2 / NFR-17).
 
-## Features
+## Note: self-include exception (G-3)
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+`koel_lints` itself cannot include its own profile — a package cannot
+lint itself. Its local `analysis_options.yaml` extends only
+`package:lints/recommended.yaml`. Every other koel package extends
+`package:koel_lints/koel.yaml`.
 
-## Getting started
+## License
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
-
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
-```dart
-const like = 'sample';
-```
-
-## Additional information
-
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+MIT. Full text added in Story 1.6.
