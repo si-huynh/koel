@@ -1,0 +1,9 @@
+name: koel
+description: Meta-package re-exporting koel_core + koel_http + koel_flutter (the quickstart path).
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ">=3.9.0 <4.0.0"
+
+resolution: workspace

@@ -1,0 +1,10 @@
+name: koel_widgets
+description: Material 3 + Cupertino chat UI primitives (theme, bubble, input, follow-up list).
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ">=3.9.0 <4.0.0"
+  flutter: ">=3.27.0"
+
+resolution: workspace

@@ -1,0 +1,5 @@
+# Melos 7.x reads scripts from pubspec.yaml > melos.scripts (not this file).
+name: koel
+
+packages:
+  - packages/*

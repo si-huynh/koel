@@ -1,0 +1,9 @@
+name: koel_test
+description: Test fixtures, MockAgent, and ConformanceRunner for koel adapters.
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ">=3.9.0 <4.0.0"
+
+resolution: workspace

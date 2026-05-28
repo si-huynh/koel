@@ -1,0 +1,9 @@
+name: koel_agno
+description: AG-UI adapter for Agno backends.
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ">=3.9.0 <4.0.0"
+
+resolution: workspace

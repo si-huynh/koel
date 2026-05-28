@@ -1,0 +1,46 @@
+name: koel_workspace
+description: Dart pub workspace root for the koel monorepo. Not published.
+publish_to: none
+
+environment:
+  sdk: ">=3.9.0 <4.0.0"
+
+workspace:
+  - packages/koel
+  - packages/koel_core
+  - packages/koel_http
+  - packages/koel_lints
+  - packages/koel_agno
+  - packages/koel_langgraph
+  - packages/koel_runtime
+  - packages/koel_flutter
+  - packages/koel_widgets
+  - packages/koel_devtools
+  - packages/koel_test
+
+dev_dependencies:
+  melos: ^7.8.0
+
+melos:
+  scripts:
+    analyze:
+      description: wired in story 1.4
+      run: dart --version
+    test:
+      description: wired in story 2.15
+      run: dart --version
+    test:coverage:
+      description: wired in story 2.15
+      run: dart --version
+    build:
+      description: wired in story 1.5 (codegen-drift gate); exercised by 2.1 (freezed)
+      run: dart --version
+    format:
+      description: wired in story 1.4
+      run: dart --version
+    format:check:
+      description: wired in story 1.5 (CI)
+      run: dart --version
+    analyze:apply:
+      description: wired in story 1.4
+      run: dart --version
