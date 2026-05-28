@@ -1,4 +1,2 @@
-include: package:flutter_lints/flutter.yaml
-
-# Additional information about this file can be found at
-# https://dart.dev/guides/language/analysis-options
+# koel-mandatory profile (extends package:lints/recommended.yaml + custom_lint rules).
+include: package:koel_lints/koel.yaml

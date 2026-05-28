@@ -8,3 +8,7 @@ environment:
   flutter: ">=3.27.0"
 
 resolution: workspace
+
+dev_dependencies:
+  koel_lints:
+  custom_lint: ^0.8.1

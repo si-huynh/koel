@@ -24,8 +24,8 @@ dev_dependencies:
 melos:
   scripts:
     analyze:
-      description: wired in story 1.4
-      run: dart --version
+      description: Run `dart analyze .` per package (NFR-13 gate).
+      exec: dart analyze .
     test:
       description: wired in story 2.15
       run: dart --version
@@ -36,11 +36,11 @@ melos:
       description: wired in story 1.5 (codegen-drift gate); exercised by 2.1 (freezed)
       run: dart --version
     format:
-      description: wired in story 1.4
-      run: dart --version
+      description: Run `dart format .` per package.
+      exec: dart format .
     format:check:
       description: wired in story 1.5 (CI)
       run: dart --version
     analyze:apply:
-      description: wired in story 1.4
-      run: dart --version
+      description: Run `dart fix --apply` per package (auto-apply analyzer fixes).
+      exec: dart fix --apply

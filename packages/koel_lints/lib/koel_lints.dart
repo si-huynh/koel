@@ -13,6 +13,7 @@ PluginBase createPlugin() => _KoelLintsPlugin();
 
 class _KoelLintsPlugin extends PluginBase {
   @override
-  List<LintRule> getLintRules(CustomLintConfigs configs) =>
-      const [ExhaustiveSwitchMustHaveDefault()];
+  List<LintRule> getLintRules(CustomLintConfigs configs) => const [
+    ExhaustiveSwitchMustHaveDefault(),
+  ];
 }
