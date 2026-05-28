@@ -1,5 +1,6 @@
 # generated: 2026-05-28
 # last_updated: 2026-05-28
+# (most-recent change: 1-2-scaffold-publishable-packages → done)
 # project: koel
 # project_key: NOKEY
 # tracking_system: file-system
@@ -45,7 +46,7 @@ development_status:
   # Epic 1: Workspace Foundation & Lint Profile
   epic-1: in-progress
   1-1-workspace-bootstrap: done
-  1-2-scaffold-publishable-packages: backlog
+  1-2-scaffold-publishable-packages: done
   1-3-build-koel-lints-profile: backlog
   1-4-adopt-koel-lints-profile: backlog
   1-5-ci-workflow-skeleton: backlog
