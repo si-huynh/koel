@@ -8,12 +8,18 @@ environment:
 
 resolution: workspace
 
+# analyzer 12 (asp 0.3.14) is a documented stopgap — see architecture D3 +
+# SCP-2026-05-29-B. It lets `freezed` (which caps analyzer below 13) share this
+# single pub-workspace resolution. The rule source is unchanged: the analyzer
+# 12/13 AnalysisRule API is source-compatible and all koel_lints tests pass on 12.
+# Upgrade trigger: when stable `freezed` supports analyzer >=13, bump asp → 0.3.15,
+# analyzer → ^13.0.0, analyzer_testing → 0.2.6 in lockstep with D2.
 dependencies:
-  analysis_server_plugin: ^0.3.15
-  analyzer: ^13.0.0
+  analysis_server_plugin: 0.3.14
+  analyzer: ^12.0.0
 
 dev_dependencies:
-  analyzer_testing: ^0.2.6
+  analyzer_testing: 0.2.5
   lints: ^6.0.0
   test: ^1.20.2
   test_reflective_loader: ^0.4.0

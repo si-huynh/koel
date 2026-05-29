@@ -19,4 +19,29 @@ jobs:
       - run: dart pub global activate melos 7.8.0
       - run: melos bootstrap
       - run: melos run build
-      - run: git diff --exit-code
+      # Generated outputs are gitignored, so a plain `git diff` can NEVER fail
+      # (it only inspects tracked files) — the gate was a silent no-op (retro D1).
+      # Determinism check: stage build #1's output into the index (`git add
+      # --force`, overriding gitignore), force a genuine re-generation, then
+      # `git diff` working-tree-vs-index. Empty iff codegen is deterministic;
+      # non-empty means non-deterministic/unstable codegen → fail. (NOT
+      # `git diff --cached`, which compares index-vs-HEAD — these files are never
+      # in HEAD, so --cached would report every file as added and fail always.)
+      #
+      # build_runner is incremental: without deleting the outputs AND its build
+      # cache, build #2 sees unchanged inputs and writes 0 outputs, leaving the
+      # working tree byte-identical to the index — the diff could never differ
+      # and the determinism check would be vacuous. So wipe both before build #2.
+      - name: Verify codegen is deterministic
+        run: |
+          set -euo pipefail
+          gen() { find packages -path '*/lib/*' \( -name '*.g.dart' -o -name '*.freezed.dart' -o -name '*.mocks.dart' \); }
+          files=$(gen)
+          if [ -z "$files" ]; then echo "No generated files found — expected at least koel_core." >&2; exit 1; fi
+          git add --force $files
+          # shellcheck disable=SC2086
+          rm -f $files
+          rm -rf packages/*/.dart_tool/build
+          melos run build
+          # shellcheck disable=SC2086
+          git diff --exit-code -- $files

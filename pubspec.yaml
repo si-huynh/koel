@@ -34,15 +34,15 @@ melos:
       run: dart --version
     build:
       description: Run `build_runner build` in packages that declare build_runner (codegen-drift gate).
-      exec: dart run build_runner build --delete-conflicting-outputs
+      exec: dart run build_runner build
       packageFilters:
         dependsOn: build_runner
     format:
-      description: Run `dart format .` per package.
-      exec: dart format .
+      description: Format hand-written Dart under packages/ (generated files excluded — see tool/format.sh).
+      run: bash tool/format.sh write
     format:check:
-      description: Run `dart format` in check mode per package (read-only CI gate).
-      exec: dart format --output=none --set-exit-if-changed .
+      description: Check hand-written Dart formatting (read-only CI gate; generated excluded — retro D2; see tool/format.sh).
+      run: bash tool/format.sh check
     analyze:apply:
       description: Run `dart fix --apply` per package (auto-apply analyzer fixes).
       exec: dart fix --apply

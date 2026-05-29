@@ -1,6 +1,6 @@
 # generated: 2026-05-28
 # last_updated: 2026-05-29
-# (most-recent change: SCP-2026-05-29 correct-course — added 1-7 (asp pivot) + epic-1 → in-progress)
+# (most-recent change: 2026-05-29 create-story — epic-2 → in-progress, 2-1 → ready-for-dev)
 # project: koel
 # project_key: NOKEY
 # tracking_system: file-system
@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-05-28
-last_updated: 2026-05-29  # 1-7 → done (code-review); epic-1 → done
+last_updated: 2026-05-29  # 2-1 → done (code-review; 3 patches applied incl. real codegen-drift gate)
 project: koel
 project_key: NOKEY
 tracking_system: file-system
@@ -58,8 +58,8 @@ development_status:
   epic-1-retrospective: done
 
   # Epic 2: Protocol Kernel — koel_core
-  epic-2: backlog
-  2-1-foundation-contracts: backlog
+  epic-2: in-progress
+  2-1-foundation-contracts: done
   2-2-sealed-ag-ui-event-root: backlog
   2-3-sealed-koel-error-hierarchy: backlog
   2-4-vendor-inline-rfc6902-json-patch: backlog

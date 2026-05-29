@@ -267,25 +267,41 @@ floor and pinning lower invites `pub get` failure. This **closes retro
 Discovery-D4** (the `.tool-versions 3.9.0` vs lock `>=3.10.0` contradiction). Melos
 7.x is satisfied (its floor is 3.6.0+). The 2026 Dart consumer base on < 3.10 is
 not materially present per PRD §16 falsifier.
-**Contributor / CI pin:** `.tool-versions` pins **Dart 3.12 / Flutter 3.44** — the
-versions the asp spike actually resolved `analysis_server_plugin 0.3.15` +
-`analyzer 13.0.0` on (resolution-proven; declared floor stays `>=3.10.0`).
+**Contributor / CI pin:** `.tool-versions` pins **Dart 3.12 / Flutter 3.44**
+(unchanged). Per **correct-course SCP-2026-05-29-B** the workspace resolves at
+**`analyzer 12.1.0`** (`analysis_server_plugin 0.3.14` + `freezed 3.2.6-dev.1`) so
+that build-time codegen and the analysis-time plugin coexist in one pub-workspace
+resolution; the analyzer-12 plugin is **verified to load + fire on the Dart-3.12
+(analyzer-13) analysis server**. Re-verify this skew on any Dart SDK bump. Declared
+floor stays `>=3.10.0`. (Was `asp 0.3.15` + `analyzer 13.0.0` under SCP-2026-05-29;
+returns there via the D2/D3 upgrade trigger when stable `freezed` supports analyzer 13.)
 **PRD update required:** §10.3 N-9 changes from "Dart 3.0+" to "Dart 3.10.0+".
 **Affects:** every package's `pubspec.yaml` SDK constraint; `.tool-versions`; CI
 `setup-dart` pin.
 
 ### D2 — `freezed` major version
 
-**Decision:** `freezed: ^3.2.5` (current stable, build_runner-based)
+**Decision:** `freezed: 3.2.6-dev.1` + `freezed_annotation: ^3.1.0` (build_runner-based)
+_(amended from `^3.2.5` via correct-course **SCP-2026-05-29-B**)_.
 **Rationale:** Dart macros stalled; freezed has not adopted them. Codegen path is
-mature; consumer build_runner integration is the established norm.
+mature; consumer build_runner integration is the established norm. The exact
+pre-release pin is a **documented stopgap**: no _stable_ `freezed` supports
+`analyzer 13` (stable caps `<11`), but `freezed 3.2.6-dev.1` supports `analyzer 12`,
+which lets it share one workspace resolution with `koel_lints` once D3's plugin is
+held at analyzer 12 (validated end-to-end: bootstrap + codegen + lint all green).
+**Upgrade trigger (exit):** when a _stable_ `freezed` supports `analyzer >= 13`,
+bump in lockstep with D3 — `freezed → stable`, `analysis_server_plugin → 0.3.15`,
+`analyzer → ^13.0.0`, `analyzer_testing → 0.2.6` — then re-bootstrap + re-test.
 **Affects:** every package with data classes (`koel_core`, `koel_flutter`).
 
 ### D3 — `koel_lints` analyzer plugin technology
 
-**Decision:** Build `koel_lints` on `analysis_server_plugin: ^0.3.15` +
-`analyzer: ^13.0.0` _(reversed from `custom_lint 0.8.1` via correct-course
-SCP-2026-05-29)_.
+**Decision:** Build `koel_lints` on `analysis_server_plugin: 0.3.14` +
+`analyzer: ^12.0.0` (`analyzer_testing: 0.2.5`) _(reversed from `custom_lint 0.8.1`
+via correct-course SCP-2026-05-29; analyzer **13 → 12 stopgap** via SCP-2026-05-29-B
+so the plugin shares one workspace resolution with `freezed` — see D2 upgrade
+trigger. The **rule source is unchanged**: the analyzer 12/13 `AnalysisRule` API is
+source-compatible and all `koel_lints` tests pass on analyzer 12)_.
 **Rationale:** The originally-chosen `custom_lint` is non-viable on two independent
 grounds: (1) `invertase/dart_custom_lint` was **archived 2026-03-24** — dead
 upstream; (2) it **structurally fails on koel's native pub workspace** — its
@@ -1161,7 +1177,7 @@ all 50+ features without gaps.
 ### Implementation Readiness Validation ✅
 
 **Decision Completeness:** All D1-D8 + Bonus decisions documented with pinned
-versions (D1: Dart 3.10.0+; D2: freezed 3.2.5; D3: analysis_server_plugin 0.3.15 + analyzer 13.0.0;
+versions (D1: Dart 3.10.0+; D2: freezed 3.2.6-dev.1 (analyzer-12 stopgap, SCP-2026-05-29-B); D3: analysis_server_plugin 0.3.14 + analyzer 12.0.0 (stopgap → 0.3.15/13 via D2 upgrade trigger);
 D4: package:web fetch+ReadableStream; D5: hand-rolled; D6: devtools_extensions
 0.5.1; D7: dart_apitool 0.23.1; D8: bundled).
 

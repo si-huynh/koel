@@ -1,0 +1,12 @@
+# build_runner configuration for koel_core (Story 2.1).
+# freezed generates *.freezed.dart (structural ==, copyWith); json_serializable
+# generates *.g.dart (fromJson/toJson). Generated output is colocated next to
+# source, gitignored, and CI-verified — never committed (architecture §1).
+targets:
+  $default:
+    builders:
+      json_serializable:
+        options:
+          # camelCase wire keys verbatim — no automatic snake_case mangling
+          # (architecture §3).
+          field_rename: none
