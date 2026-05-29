@@ -1,0 +1,22 @@
+# codegen-drift.yml — fails the PR if committed sources drift from build_runner output.
+# Meaningful from Epic 2 onward (first freezed/json_serializable codegen lands in koel_core, Story 2.1).
+name: Codegen drift
+permissions:
+  contents: read
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+jobs:
+  codegen-drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 3.9.0
+      - run: dart pub global activate melos 7.8.0
+      - run: melos bootstrap
+      - run: melos run build
+      - run: git diff --exit-code

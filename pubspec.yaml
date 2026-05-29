@@ -33,14 +33,16 @@ melos:
       description: wired in story 2.15
       run: dart --version
     build:
-      description: wired in story 1.5 (codegen-drift gate); exercised by 2.1 (freezed)
-      run: dart --version
+      description: Run `build_runner build` in packages that declare build_runner (codegen-drift gate).
+      exec: dart run build_runner build --delete-conflicting-outputs
+      packageFilters:
+        dependsOn: build_runner
     format:
       description: Run `dart format .` per package.
       exec: dart format .
     format:check:
-      description: wired in story 1.5 (CI)
-      run: dart --version
+      description: Run `dart format` in check mode per package (read-only CI gate).
+      exec: dart format --output=none --set-exit-if-changed .
     analyze:apply:
       description: Run `dart fix --apply` per package (auto-apply analyzer fixes).
       exec: dart fix --apply

@@ -1,0 +1,15 @@
+# publish-dry-run.yml — placeholder. Real body wired in Epic 9.
+# `dart pub publish --dry-run` per package.
+name: Publish dry-run
+permissions:
+  contents: read
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+jobs:
+  placeholder:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Wired in Epic 9"

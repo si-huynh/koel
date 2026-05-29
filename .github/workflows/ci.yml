@@ -1,0 +1,27 @@
+# ci.yml — primary per-PR gate: analyze + format-check + test.
+# Epic 1 skeleton: single Linux matrix entry. Expanded to 10 pkgs × 6 platforms in Epic 9 (AR-17 complete).
+name: CI
+permissions:
+  contents: read
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+jobs:
+  analyze-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 3.9.0
+      - run: dart pub global activate melos 7.8.0
+      - run: melos bootstrap
+      - run: melos run analyze
+      - run: melos run format:check
+      - run: melos run test

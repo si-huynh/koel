@@ -1,0 +1,15 @@
+# perf-bench.yml — placeholder. Real body wired in Epic 9.
+# Regression-relative perf SLOs (N-1..N-5) via test/perf/*_bench.dart.
+name: Perf bench
+permissions:
+  contents: read
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+jobs:
+  placeholder:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Wired in Epic 9"

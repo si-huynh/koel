@@ -1,0 +1,15 @@
+# api-diff.yml — placeholder. Real body wired in Epic 9.
+# dart_apitool public-surface diff per package against published baseline (D7 / N-14).
+name: API diff
+permissions:
+  contents: read
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+jobs:
+  placeholder:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Wired in Epic 9"

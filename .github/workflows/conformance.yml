@@ -1,0 +1,15 @@
+# conformance.yml — placeholder. Real body wired in Epic 5.
+# AG-UI conformance suite via koel_test's ConformanceRunner.
+name: Conformance
+permissions:
+  contents: read
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+jobs:
+  placeholder:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Wired in Epic 5"
