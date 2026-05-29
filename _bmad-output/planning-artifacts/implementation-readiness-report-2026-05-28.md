@@ -298,18 +298,20 @@ All 9 epic files read in full (~115 stories across 9 epics, story IDs `1.1`–`9
 | NFR-14 (zero breaking → `dart_apitool`) | Epic 9 | 9.3 | ✓ |
 | NFR-15 (surface minimalism — CI diff symbols vs `/example`) | Epic 9 | — (NOT EXPLICITLY TRACED) | ⚠️ gap |
 | NFR-16 (no comments stating code) | Epic 1 (convention) + every dartdoc story | 1.6, 2.15, 6.8, 9.6 | ✓ |
-| NFR-17 (new event = lock-step minor bump, lints-enforced) | Epic 1 + Epic 9 | 1.3, 1.4 (lints) + 9.6 (migration guide doc) | ✓ |
+| NFR-17 (new event = lock-step minor bump, lints-enforced) | Epic 1 + Epic 9 | 1.7 (asp lints; supersedes 1.3/1.4) + 9.6 (migration guide doc) | ✓ |
 | NFR-18 (AG-UI breaking = major bump) | Epic 9 | 9.7, 9.9 (release discipline) | ✓ |
 
 ### Architectural Requirement (AR) Coverage
 
 26/26 architectural requirements traceable. Highlights:
 
+> _Erratum (SCP-2026-05-29): AR-5 reversed `custom_lint 0.8.1` → `analysis_server_plugin: ^0.3.15`; the lint mechanism of Stories 1.3/1.4 is superseded by re-scoped **Story 1.7**. See `sprint-change-proposal-2026-05-29.md`._
+
 | AR | Story |
 |---|---|
 | AR-1 → AR-3 (workspace+Melos, scaffold, bootstrap order) | 1.1, 1.2 |
 | AR-4 (`freezed: ^3.2.5`) | 2.1 |
-| AR-5 (`custom_lint: 0.8.1`) | 1.3 |
+| AR-5 (`analysis_server_plugin: ^0.3.15` — was `custom_lint: 0.8.1`) | 1.7 (re-scoped; SCP-2026-05-29) |
 | AR-6 (vendor-inline RFC 6902) | 2.4 |
 | AR-7 (`package:http`) | 4.2 |
 | AR-8 (hand-rolled `SseParser`) | 4.1 |

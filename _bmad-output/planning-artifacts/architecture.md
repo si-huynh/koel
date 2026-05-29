@@ -144,7 +144,7 @@ consistent conventions without carrying generated boilerplate that violates the
 --template=package`**
 - Pros: zero tool dependency; intentional structure; matches the craft-over-velocity
   ethos; allows `koel_lints` (analyzer plugin) to use its own non-standard structure
-  via `custom_lint` + `custom_lint_builder`.
+  via `analysis_server_plugin` (entry `lib/main.dart`; see D3).
 - Cons: repetitive across 10 packages; risk of convention drift (mitigated by
   `koel_lints` enforcement and CI checks).
 
@@ -199,10 +199,10 @@ dart create --template=package koel_core
 dart create --template=package koel_http
 # ... etc.
 
-# 4. koel_lints — analyzer plugin; structure is custom (custom_lint +
-#    custom_lint_builder), not standard package template
+# 4. koel_lints — analyzer plugin; structure is custom (analysis_server_plugin:
+#    entry lib/main.dart, not standard package template — see D3)
 dart create --template=package koel_lints
-# Then restructure under lib/src/rules/ following custom_lint conventions
+# Then restructure: lib/main.dart (Plugin entry) + lib/src/rules/ following asp conventions
 
 # 5. Scaffold each Flutter package (koel_flutter, koel_widgets, koel_devtools)
 flutter create --template=package koel_flutter
@@ -225,9 +225,11 @@ melos bootstrap
   dev dependencies (`freezed`, `build_runner`, `json_serializable`, `test`,
   `coverage`); backend bridges declare ranged dependencies on foundations
   (`^X.Y.0`) per PRD §12 R-3.
-- **Per-package `analysis_options.yaml`**: includes `package:koel_lints/koel.yaml`
-  (which itself extends `package:lints/strict.yaml`). Bootstrap order: `koel_lints`
-  is published first or installed via path dependency during initial development.
+- **Lint enablement** lives in the **workspace-root** `analysis_options.yaml` (asp
+  `plugins:` + `diagnostics:`, per D3); the `koel_lints` profile `lib/koel.yaml`
+  itself extends `package:lints/recommended.yaml`. Bootstrap order: `koel_lints` is
+  installed via path dependency during initial development, package dependency at
+  first publish.
 - **No `package:very_good_analysis`** dependency anywhere. Removed if `dart create`
   added it by default.
 - **`koel_devtools` Flutter package** additionally depends on `devtools_extensions`
@@ -257,11 +259,20 @@ This step records only decisions that remained open after the PRD / Addendum.
 
 ### D1 — Dart SDK floor
 
-**Decision:** Dart 3.9.0+
-**Rationale:** Melos 7.x recommends 3.9.0+ (pub-workspace minimum is 3.6.0+). The
-2026 Dart consumer base on < 3.9 is not materially present per PRD §16 falsifier.
-**PRD update required:** §10.3 N-9 changes from "Dart 3.0+" to "Dart 3.9.0+".
-**Affects:** every package's `pubspec.yaml` SDK constraint.
+**Decision:** Dart 3.10.0+ _(raised from 3.9.0+ via correct-course SCP-2026-05-29)_
+**Rationale:** The D3 `analysis_server_plugin` toolchain requires `analyzer >=13`
+(in-SDK asp shipped with Dart 3.10 / Flutter 3.38), and `pubspec.lock` already
+resolves `sdks.dart: ">=3.10.0"` (transitively forced) — so 3.10.0 is the real
+floor and pinning lower invites `pub get` failure. This **closes retro
+Discovery-D4** (the `.tool-versions 3.9.0` vs lock `>=3.10.0` contradiction). Melos
+7.x is satisfied (its floor is 3.6.0+). The 2026 Dart consumer base on < 3.10 is
+not materially present per PRD §16 falsifier.
+**Contributor / CI pin:** `.tool-versions` pins **Dart 3.12 / Flutter 3.44** — the
+versions the asp spike actually resolved `analysis_server_plugin 0.3.15` +
+`analyzer 13.0.0` on (resolution-proven; declared floor stays `>=3.10.0`).
+**PRD update required:** §10.3 N-9 changes from "Dart 3.0+" to "Dart 3.10.0+".
+**Affects:** every package's `pubspec.yaml` SDK constraint; `.tool-versions`; CI
+`setup-dart` pin.
 
 ### D2 — `freezed` major version
 
@@ -272,13 +283,28 @@ mature; consumer build_runner integration is the established norm.
 
 ### D3 — `koel_lints` analyzer plugin technology
 
-**Decision:** Build `koel_lints` on `package:custom_lint` 0.8.1
-**Rationale:** `custom_lint` is the ecosystem wrapper around the analyzer plugin API,
-used by `riverpod_lint`, `hooks_riverpod_lint`. Raw analyzer plugin API is a
-disproportionate yak-shave for one to two custom rules. The 8-month staleness is
-acceptable; Riverpod's maintainer ecosystem keeps it alive.
-**Affects:** `koel_lints` package structure (`lib/src/rules/` under custom_lint
-conventions); analyzer plugin tests use `custom_lint`'s fixture harness.
+**Decision:** Build `koel_lints` on `analysis_server_plugin: ^0.3.15` +
+`analyzer: ^13.0.0` _(reversed from `custom_lint 0.8.1` via correct-course
+SCP-2026-05-29)_.
+**Rationale:** The originally-chosen `custom_lint` is non-viable on two independent
+grounds: (1) `invertase/dart_custom_lint` was **archived 2026-03-24** — dead
+upstream; (2) it **structurally fails on koel's native pub workspace** — its
+plugin path resolves rules via a per-member `.dart_tool/package_config.json` that
+pub workspaces never create, so the principal rule fires only in `koel_lints`'s own
+unit tests, never on consumer source (CLI or IDE — both empirically confirmed
+broken). `analysis_server_plugin` is the **first-party** replacement (Dart team),
+runs inside the analysis server (no separate process, no temp `pub get` hack), is
+**workspace-native by construction**, and integrates directly into `dart analyze`
++ IDEs. The rule ports mechanically (same AST, same type-name keying) and is
+**proven to fire** via the official `analyzer_testing` harness (2/2). It requires
+removing `custom_lint`/`custom_lint_builder` workspace-wide (custom_lint pins
+`analyzer 8.4.0`), which frees `analyzer → 13` + `asp → 0.3.15` (ties into D1).
+**Affects:** `koel_lints` layout — plugin entry **must** be `lib/main.dart` (asp
+discovery convention; see Convention §2 exception note), rules under
+`lib/src/rules/`, tests via `analyzer_testing` (`AnalysisRuleTest`) + a `dart
+analyze` integration check; consumer wiring moves to a **single workspace-root**
+`analysis_options.yaml` (asp `plugins:` + `diagnostics:`), not per-package
+`include:` (see G-3 / Story 1.7).
 
 ### D4 — SSE web transport: browser `EventSource` vs hand-rolled fetch+ReadableStream
 
@@ -359,7 +385,7 @@ updates to reflect the vendor-inline decision.
 
 **Critical (block first implementation story):**
 - D1 (SDK floor) — sets `pubspec.yaml` constraint everywhere
-- D3 (custom_lint) — `koel_lints` is path-dependency for every other package
+- D3 (analysis_server_plugin) — `koel_lints` is path-dependency for every other package
 - D6 (Flutter web for DevTools) — forces CI matrix shape
 
 **Important (shape package internals):**
@@ -460,6 +486,13 @@ test for `dart_apitool` (D7) ignores `src/` symbols.
 **Meta-package `koel`:** re-exports `koel_core` + `koel_http` + `koel_flutter`
 only. Does not re-export `koel_lints` (consumed via analyzer config), backend
 adapters (consumers pick), or `koel_widgets` / `koel_devtools` / `koel_test`.
+
+**Exception — `koel_lints` has no Dart barrel.** `koel_lints` is an analyzer-plugin
+package, not a consumable library: no one `import`s it. Under `analysis_server_plugin`
+(D3) its plugin entry **must** be `lib/main.dart` (asp's discovery convention), and
+its consumer-facing surface is the analyzer profile `lib/koel.yaml` — not a
+`lib/koel_lints.dart` barrel. It is therefore exempt from the single-barrel rule
+(already flagged non-standard via AR-2 / G-3).
 
 ### 3. Type & data conventions
 
@@ -661,8 +694,8 @@ koel/
 ├── CONFORMANCE.md                     # AG-UI spec commit SHA pin (per SC-1)
 ├── BENCHMARKS.md                      # reference device profile (per §10.1)
 ├── melos.yaml                         # Melos workspace + scripts (build, test, perf)
-├── pubspec.yaml                       # Dart pub workspace root (Dart 3.9.0+)
-├── analysis_options.yaml              # include: package:koel_lints/koel.yaml
+├── pubspec.yaml                       # Dart pub workspace root (Dart 3.10.0+)
+├── analysis_options.yaml              # asp plugins: + diagnostics: (enables koel rule for all members)
 ├── .gitignore                         # *.g.dart, *.freezed.dart, *.mocks.dart, build/, .dart_tool/
 ├── .github/
 │   └── workflows/
@@ -688,7 +721,7 @@ koel/
     ├── koel/                          # meta-package (re-exports core + http + flutter)
     ├── koel_core/                     # foundation: events, pipeline, errors, state
     ├── koel_http/                     # transport: HttpAgent, SseParser, interceptors
-    ├── koel_lints/                    # analyzer plugin (custom_lint based)
+    ├── koel_lints/                    # analyzer plugin (analysis_server_plugin based)
     ├── koel_agno/                     # backend bridge: Agno
     ├── koel_langgraph/                # backend bridge: LangGraph
     ├── koel_runtime/                  # backend bridge: CopilotKit Next.js runtime
@@ -707,7 +740,7 @@ packages/koel_core/
 ├── README.md                          # quickstart + docs link (per §13 D-1)
 ├── CONFORMANCE.md                     # AG-UI commit SHA pin (only koel_core)
 ├── pubspec.yaml
-├── analysis_options.yaml              # include: package:koel_lints/koel.yaml
+├── analysis_options.yaml              # (optional) per-pkg base lints; koel rule enabled at workspace root
 ├── build.yaml                         # freezed + json_serializable config
 ├── lib/
 │   ├── koel_core.dart                 # ← barrel = 1.x public contract
@@ -797,25 +830,24 @@ lib/src/
 test/perf/sse_parse_bench.dart         # N-1 baseline
 ```
 
-**`koel_lints`** — non-standard structure (custom_lint plugin):
+**`koel_lints`** — non-standard structure (`analysis_server_plugin`; D3):
 ```
 packages/koel_lints/
 ├── lib/
-│   ├── koel.yaml                      # ← consumer analyzer profile (the public API)
-│   ├── koel_lints.dart                # custom_lint entrypoint
+│   ├── koel.yaml                      # ← consumer analyzer profile (external surface)
+│   ├── main.dart                      # ← asp Plugin entry: register(PluginRegistry)
+│   │                                  #   → registry.registerLintRule(...)
 │   └── src/
 │       └── rules/
 │           ├── exhaustive_switch_must_have_default.dart   # F-A12 principal rule
+│           │                                              #   AnalysisRule + LintCode(ERROR)
 │           └── prefer_named_constructors_on_sealed_subtypes.dart   # optional
 └── test/
-    └── rules/
-        ├── exhaustive_switch_test.dart
-        └── fixtures/                  # custom_lint fixture harness
-            ├── violations/
-            │   └── missing_default.dart
-            └── ok/
-                └── with_default.dart
+    ├── exhaustive_switch_asp_test.dart   # analyzer_testing — AnalysisRuleTest (server-free)
+    └── dart_analyze_integration/         # `dart analyze` server-plugin integration check
 ```
+Lint enablement lives in the **workspace-root** `analysis_options.yaml` (asp
+`plugins:` + `diagnostics:`), not per-package `include:` (see G-3 / Story 1.7).
 
 **`koel_agno` / `koel_langgraph` / `koel_runtime`** — backend bridges:
 ```
@@ -1090,7 +1122,7 @@ items require PRD reconciliation as documented updates (not conflicts):
    with v1 zero-churn commitment.
 
 **Pattern Consistency:** Implementation patterns (Step 5) directly support every
-architectural decision. Examples: D3 (`custom_lint`) is the mechanism that
+architectural decision. Examples: D3 (`analysis_server_plugin`) is the mechanism that
 enforces the convention §3 sealed-switch default-branch rule; D7 (`dart_apitool`)
 enforces the convention §2 barrel-as-public-contract rule; convention §5
 (adapter-never-throws) is the contract D5's hand-rolled GraphQL parser must
@@ -1129,7 +1161,7 @@ all 50+ features without gaps.
 ### Implementation Readiness Validation ✅
 
 **Decision Completeness:** All D1-D8 + Bonus decisions documented with pinned
-versions (D1: Dart 3.9.0+; D2: freezed 3.2.5; D3: custom_lint 0.8.1;
+versions (D1: Dart 3.10.0+; D2: freezed 3.2.5; D3: analysis_server_plugin 0.3.15 + analyzer 13.0.0;
 D4: package:web fetch+ReadableStream; D5: hand-rolled; D6: devtools_extensions
 0.5.1; D7: dart_apitool 0.23.1; D8: bundled).
 
@@ -1157,11 +1189,11 @@ explicit anti-patterns list.
   step not in `melos.yaml` script list. Add `melos run build:devtools` that
   runs `flutter build web` in `tool/extension_ui/` and copies to
   `extension/devtools/build/`. Wire into the `koel_devtools` publish flow.
-- **G-3. `koel_lints` self-include exception.** Every package's
-  `analysis_options.yaml` includes `package:koel_lints/koel.yaml`, but
-  `koel_lints` itself cannot include itself. Use a minimal local
-  `analysis_options.yaml` that extends `package:lints/strict.yaml` only.
-  Document in package README.
+- **G-3. `koel_lints` self-include exception.** The koel rule is enabled at the
+  workspace-root `analysis_options.yaml` (asp `plugins:` + `diagnostics:`, per D3),
+  but `koel_lints` must not lint itself. Use a minimal local
+  `analysis_options.yaml` that extends `package:lints/recommended.yaml` only (and is
+  excluded from the root plugin's diagnostics). Document in package README.
 
 **Minor Gaps (defer to v0.x):**
 - **G-4.** Fixture-capture pipeline internals (per OQ-Fixtures-Source spike).
@@ -1257,10 +1289,11 @@ GraphQL, raise Dart floor) all strengthen rather than weaken those commitments.
 **First Implementation Priority (block order):**
 1. Repo bootstrap: pub workspace + Melos 7.8.0 config + `.gitignore` + `.github/`
    workflows skeleton.
-2. `koel_lints` skeleton: ship `lib/koel.yaml` profile (even with just
-   `include: package:lints/strict.yaml` + the principal rule stub) so every
-   other package's `analysis_options.yaml` can include it from day one. Path
-   dependency during dev; switch to package dependency at first publish.
+2. `koel_lints` skeleton: ship `lib/koel.yaml` profile (extending
+   `package:lints/recommended.yaml`) + the principal rule on `analysis_server_plugin`
+   (entry `lib/main.dart`), enabled via the workspace-root `analysis_options.yaml`
+   from day one. Path dependency during dev; switch to package dependency at first
+   publish.
 3. `koel_core` foundation: events, errors, pipeline, reducer, vendor-inline
    `json_patch`.
 4. `koel_test`: `MockAgent` from a single synthesized fixture; conformance

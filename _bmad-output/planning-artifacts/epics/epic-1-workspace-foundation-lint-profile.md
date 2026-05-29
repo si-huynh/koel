@@ -60,6 +60,11 @@ So that each package is a publishable skeleton ready for FRs to land in subseque
 
 ## Story 1.3: Build `koel_lints` profile and principal rule
 
+> ⚠️ **Lint mechanism SUPERSEDED by Story 1.7 (SCP-2026-05-29).** The `custom_lint`,
+> `package:lints/strict.yaml`, and per-package `include:` acceptance criteria below are
+> retired — `custom_lint` was archived 2026-03-24 and fails on native pub workspaces.
+> Status stays `done` (historical record); the asp re-implementation lives in **Story 1.7**.
+
 As an OSS contributor,
 I want `koel_lints` to ship `lib/koel.yaml` (the canonical analyzer profile) and the principal custom_lint rule `exhaustive_switch_must_have_default` fixture-tested,
 So that every other package can `include: package:koel_lints/koel.yaml` and lock sealed-union exhaustiveness with mandatory `default:` branches — making future sealed-subtype additions a semver-minor bump per FR-A12 / FC-2.
@@ -90,6 +95,11 @@ So that every other package can `include: package:koel_lints/koel.yaml` and lock
 **And** `packages/koel_lints/README.md` documents the self-include exception in a "Note" section.
 
 ## Story 1.4: Adopt `koel_lints` profile across every other package
+
+> ⚠️ **Lint mechanism SUPERSEDED by Story 1.7 (SCP-2026-05-29).** Per-package
+> `include: package:koel_lints/koel.yaml` + per-package `custom_lint` dev-deps are retired;
+> under `analysis_server_plugin` the rule is enabled from a single workspace-root
+> `analysis_options.yaml`. Status stays `done` (historical record); see **Story 1.7**.
 
 As an OSS contributor,
 I want every package except `koel_lints` itself to include `package:koel_lints/koel.yaml` in its `analysis_options.yaml` via a path dependency during pre-publish development,
@@ -168,5 +178,57 @@ So that visitors land on a coherent monorepo intro, contributors understand the 
 **When** I check each of the ten reserved `koel_*` slot names + the `koel` meta-package name,
 **Then** all eleven names are reserved to the owner account ahead of pre-publish (per FR-H4),
 **And** evidence (reservation receipts or pub.dev verification screenshots) is committed to `_bmad-output/planning-artifacts/brand-reservation.md` as a traceability artifact.
+
+## Story 1.7: Migrate `koel_lints` to `analysis_server_plugin`
+
+_Added via correct-course SCP-2026-05-29. Supersedes the lint mechanism of Stories 1.3 + 1.4. Reverses AR-5 + architecture D3. Critical-path gate before Epic 2 (Story 2.1)._
+
+As an OSS contributor,
+I want `koel_lints` rebuilt on the first-party `analysis_server_plugin` API and wired through a single workspace-root `analysis_options.yaml`,
+So that `exhaustive_switch_must_have_default` actually fires on consumer source under `dart analyze` + IDEs in our native pub workspace — delivering the FR-A12 / FC-2 guarantee that `custom_lint` (archived 2026-03-24) could not.
+
+**Acceptance Criteria:**
+
+**Given** the asp plugin wired at the workspace-root `analysis_options.yaml`,
+**When** I run `dart analyze` on a member package containing a `switch` over sealed `AgUiEvent` without a `default:` branch,
+**Then** `exhaustive_switch_must_have_default` is reported as an **ERROR** (and the IDE surfaces the same),
+**And** it stays silent when a `default:` branch is present.
+_(AC1 — the server-plugin integration is the one piece not yet proven by the spike; do this first. `analyzer_testing` is the unit-test backbone.)_
+
+**Given** `packages/koel_lints/`,
+**When** I inspect the source tree,
+**Then** `lib/main.dart` is a `Plugin` subclass whose `register(PluginRegistry)` calls `registry.registerLintRule(...)`,
+**And** the rule extends `AnalysisRule` with `LintCode(name, message, severity: DiagnosticSeverity.ERROR)`, overrides `registerNodeProcessors` → `registry.addSwitchStatement` / `addSwitchExpression`, and reports via `reportAtToken`,
+**And** the old `custom_lint` entrypoint `lib/koel_lints.dart` is removed.
+
+**Given** `packages/koel_lints/pubspec.yaml` and the 10 consumer pubspecs,
+**When** I inspect dependencies,
+**Then** `koel_lints` declares `analysis_server_plugin: ^0.3.15` + `analyzer: ^13.0.0`,
+**And** `custom_lint` + `custom_lint_builder` are removed from `koel_lints` and from all 10 consumer pubspecs.
+
+**Given** the test suite,
+**When** I run `dart test` in `koel_lints`,
+**Then** rule unit tests via `analyzer_testing` (`AnalysisRuleTest`) fire on a no-`default:` switch over sealed `AgUiEvent` (statement + expression form) and stay silent with `default:`,
+**And** a dedicated `dart analyze` integration check covers AC1.
+
+**Given** the toolchain pins,
+**When** I inspect `.tool-versions`, the 11 pubspecs, and CI,
+**Then** `.tool-versions` pins Dart `3.12` / Flutter `3.44`,
+**And** the declared floor is raised to Dart `>=3.10.0` across all 11 pubspecs and Flutter `>=3.38.0` (exact mapping confirmed) on the 3 Flutter packages,
+**And** `pubspec.lock` re-resolves clean and the CI `setup-dart` pin is bumped to match. _(Resolves retro Discovery-D4.)_
+
+**Given** the workspace,
+**When** I inspect `analysis_options.yaml` files,
+**Then** a single repo-root `analysis_options.yaml` declares asp `plugins:` + `diagnostics: { exhaustive_switch_must_have_default: true }` enabling the rule for all members,
+**And** per-member `include: package:koel_lints/koel.yaml` lines are removed/reconciled. _(Closes Story 1.1's deferred "no root analysis_options.yaml".)_
+
+**Given** `koel_lints/README.md` and `lib/koel.yaml`,
+**When** I inspect docs,
+**Then** the README reflects asp (not custom_lint), documents the opt-out via `diagnostics: { exhaustive_switch_must_have_default: false }`, and drops the pub-workspace-bug caveat,
+**And** `lib/koel.yaml` is retained as the external-consumer profile with a note that its `include:`-based distribution is verified at Epic 9 (Story 9-5).
+
+**Given** the workspace bootstrapped,
+**When** I run `melos run analyze`,
+**Then** it exits 0 across all 11 packages with the rule live.
 
 ---

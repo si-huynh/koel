@@ -17,7 +17,7 @@
 - **FR-A9.** Reasoning `encryptedValue` round-trips opaquely as `Uint8List` + base64 string sibling; never inspected. Echoed in subsequent `RunAgentInput.reasoningEcho` for Anthropic/OpenAI replay compliance. *(F-A9)*
 - **FR-A10.** `AgentSubscriber` callback bag (passive observation): `onRunStart`, `onRunFinish`, `onRunError`, `onStepStart`/`Finish`, `onTextChunk`, `onToolCall`, `onToolResult`, `onStateDelta`, `onReasoning`, `onActivity`, `onUnknownEvent`. Multiple subscribers compose. *(F-A10)*
 - **FR-A11.** 4-stage pure-function event pipeline in fixed order: **chunks** (synthesize START/CONTENT/END from CHUNK) → **verify** (cross-event sanity per Addendum F.1) → **apply** (fold into `ChatState` via reducer) → **transform** (consumer transformers). Wire-format sanity stays in `koel_http` SseParser. *(F-A11)*
-- **FR-A12.** `koel_lints` ships `lib/koel.yaml` analyzer profile with principal rule `exhaustive_switch_must_have_default` (fires on `switch` over `AgUiEvent | KoelError | MessageSegment` without `default:`). Built on `custom_lint`. Makes sealed-union evolution semver-minor-safe. *(F-A12)*
+- **FR-A12.** `koel_lints` ships `lib/koel.yaml` analyzer profile with principal rule `exhaustive_switch_must_have_default` (fires on `switch` over `AgUiEvent | KoelError | MessageSegment` without `default:`). Built on `analysis_server_plugin` (per AR-5; reversed from `custom_lint` by SCP-2026-05-29). Makes sealed-union evolution semver-minor-safe. *(F-A12)*
 
 **Group B — HTTP Transport (`koel_http`)**
 
@@ -106,7 +106,7 @@
 **Quality & Discipline**
 
 - **NFR-12.** Coverage tiers — `koel_core`, `koel_http`, `koel_flutter`, `koel_lints` ≥ 90% line + branch. Adapter and tooling packages ≥ 80%. Per-PR patch coverage ≥ 85%. Generated files (`*.g.dart`, `*.freezed.dart`, `*.mocks.dart`) excluded. Aggregated via Melos. *(N-12 + SC-2)*
-- **NFR-13.** `dart analyze` zero warnings across every package — default lint set + `package:lints/strict.yaml` overrides + `package:koel_lints/koel.yaml` mandatory rules. CI gate. *(N-13 + SC-3)*
+- **NFR-13.** `dart analyze` zero warnings across every package — default lint set + `package:lints/recommended.yaml` overrides + `package:koel_lints/koel.yaml` mandatory rules. CI gate. *(N-13 + SC-3)*
 - **NFR-14.** Semver discipline — zero breaking changes to 1.x public surface after v1.0.0. Enforced by `dart_apitool: ^0.23.1` (per D7) per-package CI step diffed against published baseline. *(N-14 + SC-4)*
 - **NFR-15.** Surface minimalism — no public export without a corresponding example in `/example` or documented use case in a guide. CI diffs `package:koel_*` public symbols against `/example` usage + dartdoc cross-reference graph. *(N-15 + SC-5)*
 - **NFR-16.** No comments stating code — doc comments explain *why* + contract, never *what*. Inline comments only for non-obvious workarounds. *(N-16)*
@@ -123,13 +123,13 @@
 **Project scaffolding (no starter template; manual + Melos)**
 
 - **AR-1. Workspace bootstrap.** Repo root is a Dart pub workspace (Dart 3.6.0+ required for workspaces; recommend 3.9.0+) + Melos 7.8.0 orchestration. Workspace `pubspec.yaml` + `melos.yaml` hand-authored (~15 lines + script list). No `very_good_cli` (conflicts with `koel_lints`; bundled `very_good_analysis` cannot coexist).
-- **AR-2. Per-package scaffold.** Dart-only packages via `dart create --template=package`; Flutter packages via `flutter create --template=package`. `koel_lints` uses non-standard structure (`custom_lint` + `custom_lint_builder` conventions under `lib/src/rules/`). No mason brick at v1 (conventions not yet stable; over-engineering for 10-package one-off).
+- **AR-2. Per-package scaffold.** Dart-only packages via `dart create --template=package`; Flutter packages via `flutter create --template=package`. `koel_lints` uses non-standard structure (`analysis_server_plugin` conventions: plugin entry at `lib/main.dart`, rules under `lib/src/rules/`; per SCP-2026-05-29). No mason brick at v1 (conventions not yet stable; over-engineering for 10-package one-off).
 - **AR-3. Bootstrap order.** (1) repo skeleton + workspace + Melos + `.gitignore` + `.github/`; (2) `koel_lints` stub (every other package's `analysis_options.yaml` includes it from day one — path-dep during dev, package-dep at first publish); (3) `koel_core`; (4) `koel_test` (MockAgent + synthesized fixture); (5) `koel_http`; (6) backend bridges (`koel_agno`, `koel_langgraph`, `koel_runtime` in any order); (7) `koel_flutter` → `koel_widgets` → `koel_devtools` → `koel` meta.
 
 **Pinned tech & implementation choices**
 
 - **AR-4. `freezed: ^3.2.5`** (build_runner-based; Dart macros stalled). All immutable data classes across `koel_core` + `koel_flutter` use freezed.
-- **AR-5. `custom_lint: 0.8.1`** as foundation for `koel_lints` analyzer plugin. Riverpod-maintainer ecosystem keeps it alive; raw analyzer API is disproportionate yak-shave.
+- **AR-5. `analysis_server_plugin: ^0.3.15` + `analyzer: ^13.0.0`** as foundation for `koel_lints` analyzer plugin. First-party (Dart team), workspace-native, integrates into `dart analyze` + IDEs. _Reversed from the originally-planned `custom_lint: 0.8.1` via correct-course SCP-2026-05-29 — custom_lint was archived 2026-03-24 and fails to enforce on native pub workspaces. Implemented in re-scoped Story 1.7._
 - **AR-6. Vendor-inline RFC 6902.** No `package:json_patch` dependency. ~300 LOC strict-mode implementation under `koel_core/lib/src/json_patch/` (`JsonPatch.apply`, `JsonPatchOp` types). Internal RFC 6902 test suite. PRD Addendum B.3 reconciliation pending.
 - **AR-7. `package:http`** (official) for HTTP. Injectable `http.Client`. No Dio dependency.
 - **AR-8. Hand-rolled SSE parser** (~150 LOC, framework-free). No `package:sse`, no `package:eventsource` — both unmaintained or wrong-target.

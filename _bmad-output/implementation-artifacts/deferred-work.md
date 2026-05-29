@@ -108,4 +108,31 @@ the Epic-1-level docs/toolchain items prior stories had routed to it.
 
 ## Deferred from: code review of story-1.6 (2026-05-29)
 
-- **`pubspec.lock` `sdks.dart: ">=3.10.0"` contradicts the `.tool-versions` Dart pin `3.9.0`** — the workspace lock's resolved Dart floor (≥3.10.0, raised by a transitive dependency) is higher than the `3.9.0` pinned in `.tool-versions` and declared across all package `environment.sdk` constraints. A fresh contributor installing exactly the pinned `dart 3.9.0` may hit a `pub get` resolution failure. **Pre-existing at baseline `9b36876`** (the `dart: ">=3.10.0"` line was already present before Story 1.6) and **outside Story 1.6's perimeter** (the lock's dart line and dependency constraints were not editable here). Owner: a toolchain / dependency-floor reconciliation pass — either raise the `.tool-versions`/CI Dart pin to match the resolved ≥3.10.0 floor, or identify and relax the transitive dep forcing 3.10.0 so the declared 3.9.0 floor holds.
+- **`pubspec.lock` `sdks.dart: ">=3.10.0"` contradicts the `.tool-versions` Dart pin `3.9.0`** — the workspace lock's resolved Dart floor (≥3.10.0, raised by a transitive dependency) is higher than the `3.9.0` pinned in `.tool-versions` and declared across all package `environment.sdk` constraints. A fresh contributor installing exactly the pinned `dart 3.9.0` may hit a `pub get` resolution failure. **Pre-existing at baseline `9b36876`** (the `dart: ">=3.10.0"` line was already present before Story 1.6) and **outside Story 1.6's perimeter** (the lock's dart line and dependency constraints were not editable here). Owner: a toolchain / dependency-floor reconciliation pass — either raise the `.tool-versions`/CI Dart pin to match the resolved ≥3.10.0 floor, or identify and relax the transitive dep forcing 3.10.0 so the declared 3.9.0 floor holds. — **RESOLVED via SCP-2026-05-29 (Story 1.7):** declared floor raised to Dart `>=3.10.0` across all 11 pubspecs; `.tool-versions` pinned to Dart `3.12` / Flutter `3.44`; CI pin bumped to match. (This is retro Discovery-D4.)
+
+## RESOLVED — `custom_lint` → `analysis_server_plugin` pivot (correct-course SCP-2026-05-29)
+
+The entire `custom_lint` saga is closed by a course-correction. See
+`_bmad-output/planning-artifacts/sprint-change-proposal-2026-05-29.md`.
+
+- **Root cause (final):** `custom_lint` is a **dead tool** (`invertase/dart_custom_lint` archived
+  2026-03-24) **and** structurally incompatible with koel's native pub workspace (it resolves
+  rules via per-member `.dart_tool/package_config.json`, which pub workspaces never create — the
+  principal rule fired only in `koel_lints` unit tests, never on consumer source in CLI **or**
+  IDE). Full trail: Story 1.4 entry above, points 1–7.
+- **Resolution:** pivot to the first-party `analysis_server_plugin` (Dart team) — workspace-native
+  by construction, integrates into `dart analyze` + IDEs. Rule logic proven to fire 2/2 via the
+  `analyzer_testing` harness. Implemented in re-scoped **Story 1.7**.
+- **Superseded entries (no longer actionable — the underlying tool is gone):** every `custom_lint`
+  workaround candidate (A vendor-fork / B IDE / C Melos-6.x downgrade / D file-upstream / E
+  accept-gap / M CI-harness); the `^0.8.1` caret-pin / 10-pubspec version-drift concerns; the
+  `custom_lint.rules:` consumer-plugin-path verification; the workspace `package_config` symlink
+  hack; the Task-6 `_verify_lint.dart` smoke test; the README opt-out caveat (asp opt-out is
+  `diagnostics: { rule: false }`, no workspace caveat). All retired by the pivot.
+- **Still open (moved forward, NOT closed):** (1) **AC1 of Story 1.7** — prove the production
+  server-plugin loading path in our workspace (analyzer_testing covers logic only). (2) **Epic 9 /
+  Story 9-5** — verify `lib/koel.yaml`'s `include:`-based distribution carries asp `plugins:` for
+  external (non-workspace) consumers. (3) **Story 9-7** — reconcile PRD F-A12 mechanism wording.
+- **Reverses planning decisions:** AR-5 (`requirements-inventory.md`), architecture D3, D1 floor;
+  closes retro Discovery-D4. Flutter-rule-loss entry (1.4 review) still rides to Epic 4 — unchanged
+  by this pivot.

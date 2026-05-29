@@ -273,12 +273,13 @@ Pure analyzer-plugin package — no runtime Dart API. Surfaces:
 - `lib/koel.yaml` — canonical analyzer profile. Includes:
   - `exhaustive_switch_must_have_default: error` — fires on any `switch` over `AgUiEvent`, `KoelError`, or `MessageSegment` that lacks a `default:` branch.
   - `prefer_named_constructors_on_sealed_subtypes: warn` — optional code-clarity rule.
-  - Inherits from `package:lints/strict.yaml` so consumers get strict-lint baseline for free.
+  - Inherits from `package:lints/recommended.yaml` so consumers get the lint baseline for free.
 
 Consumer integration is a single line in `analysis_options.yaml`:
 ```yaml
 include: package:koel_lints/koel.yaml
 ```
+> _Erratum (SCP-2026-05-29): built on `analysis_server_plugin`, not `custom_lint`. The single-line `include:` is the custom_lint mechanism; under asp the rule is enabled via `plugins:` + `diagnostics:` at the analysis root. External-consumer distribution wording is reconciled in Story 9-7 after Epic-9 verification (Story 9-5)._
 
 The lint rules themselves are implemented as a custom analyzer plugin in `lib/src/rules/`. CI for `koel_lints` includes a fixture-driven test that asserts the rules fire on intended violations and stay silent on intended-OK code.
 
