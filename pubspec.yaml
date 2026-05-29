@@ -3,7 +3,7 @@ description: Dart pub workspace root for the koel monorepo. Not published.
 publish_to: none
 
 environment:
-  sdk: ">=3.9.0 <4.0.0"
+  sdk: ">=3.11.0 <4.0.0"
 
 workspace:
   - packages/koel

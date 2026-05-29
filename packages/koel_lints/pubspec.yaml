@@ -1,18 +1,19 @@
 name: koel_lints
-description: Analyzer plugin enforcing koel's mandatory rules (custom_lint based).
+description: Analyzer plugin enforcing koel's mandatory rules (analysis_server_plugin).
 version: 0.0.1
 publish_to: none
 
 environment:
-  sdk: ">=3.9.0 <4.0.0"
+  sdk: ">=3.11.0 <4.0.0"
 
 resolution: workspace
 
 dependencies:
-  analyzer: ^8.0.0
-  custom_lint_builder: ^0.8.1
+  analysis_server_plugin: ^0.3.15
+  analyzer: ^13.0.0
 
 dev_dependencies:
-  custom_lint: ^0.8.1
+  analyzer_testing: ^0.2.6
   lints: ^6.0.0
   test: ^1.20.2
+  test_reflective_loader: ^0.4.0

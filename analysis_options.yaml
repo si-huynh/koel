@@ -1,0 +1,17 @@
+# Workspace-root analyzer config (Story 1.7).
+#
+# `plugins:` may only live in the pub-workspace-root options file — the analyzer
+# rejects it in any nested/member file (`plugins_in_inner_options`). One root
+# entry enables koel_lints for every workspace member, so members carry no
+# `analysis_options.yaml` of their own (they inherit this one).
+#
+# `recommended.yaml` is the baseline that the removed per-member
+# `include: package:koel_lints/koel.yaml` lines used to chain in — it MUST stay
+# here or every package silently loses standard lints.
+include: package:lints/recommended.yaml
+
+plugins:
+  koel_lints:
+    path: packages/koel_lints
+    diagnostics:
+      exhaustive_switch_must_have_default: true

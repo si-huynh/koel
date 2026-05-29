@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-05-28
-last_updated: 2026-05-29
+last_updated: 2026-05-29  # 1-7 → done (code-review); epic-1 → done
 project: koel
 project_key: NOKEY
 tracking_system: file-system
@@ -47,14 +47,14 @@ development_status:
   # Re-opened in-progress 2026-05-29 via correct-course SCP-2026-05-29: Story 1.7
   # (custom_lint → analysis_server_plugin pivot) supersedes the lint mechanism of 1.3/1.4.
   # Returns to done when 1.7 completes. Gate Epic 2 (Story 2.1) on 1.7.
-  epic-1: in-progress
+  epic-1: done
   1-1-workspace-bootstrap: done
   1-2-scaffold-publishable-packages: done
   1-3-build-koel-lints-profile: done            # lint mechanism superseded by 1-7
   1-4-adopt-koel-lints-profile: done            # lint mechanism superseded by 1-7
   1-5-ci-workflow-skeleton: done
   1-6-repo-docs-brand-license: done
-  1-7-migrate-koel-lints-to-asp: backlog
+  1-7-migrate-koel-lints-to-asp: done
   epic-1-retrospective: done
 
   # Epic 2: Protocol Kernel — koel_core

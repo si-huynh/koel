@@ -1,2 +1,0 @@
-# koel-mandatory profile (extends package:lints/recommended.yaml + custom_lint rules).
-include: package:koel_lints/koel.yaml

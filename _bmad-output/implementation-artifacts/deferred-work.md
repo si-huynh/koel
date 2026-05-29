@@ -136,3 +136,10 @@ The entire `custom_lint` saga is closed by a course-correction. See
 - **Reverses planning decisions:** AR-5 (`requirements-inventory.md`), architecture D3, D1 floor;
   closes retro Discovery-D4. Flutter-rule-loss entry (1.4 review) still rides to Epic 4 — unchanged
   by this pivot.
+
+## Deferred from: code review of story-1.7 (2026-05-29)
+
+- **Rule keys off static type *name* only (no library/URI scoping)** — `koel_lints/lib/src/rules/exhaustive_switch_must_have_default.dart:44-47`. `_isKoelSealedSwitch` matches `expr.staticType?.element?.name` against `_sealedNames` with no library check → any foreign type named `AgUiEvent`/`KoelError`/`MessageSegment` (incl. typedef aliases) false-positives. Intentional pre-Epic-2 (name-collision fixture trick). Revisit at Epic 2 when the real `koel_core.AgUiEvent` exists and library scoping is meaningful.
+- **Brittle hardcoded test offsets** — `koel_lints/test/rules/exhaustive_switch_must_have_default_test.dart`. `lint(205,6)`/`lint(204,6)` are absolute offsets into the shared `_sealed` literal; any whitespace edit breaks them silently. Test-internal maintainability only.
+- **Member-local `analysis_options.yaml` silently shadows root plugin wiring** — `analysis_options.yaml` (root). If a future member re-adds its own options file the rule goes dark for that package with no error (`plugins:` only legal at workspace root). Consider a CI guard or doc note.
+- **Integration-test environment robustness** — `koel_lints/test/integration/dart_analyze_fires_test.dart`. `dart pub get` needs network (offline CI flaky); `deleteSync(recursive:true)` can throw on Windows with locked analyzer handles. Harden if Windows CI is added.

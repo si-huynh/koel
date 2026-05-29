@@ -1,9 +1,16 @@
+# koel_lints profile for EXTERNAL consumers — those depending on a published
+# `koel_lints` from outside this workspace. They `include:` this file from the
+# root `analysis_options.yaml`, which pulls in the baseline lints and enables
+# the koel rule via the published plugin.
+#
+# External consumers do not exist before v1.0.0, so this include-based
+# distribution path is verified at Epic 9 (Story 9-5), not Story 1.7. Inside
+# this workspace the plugin is wired directly at the repo-root
+# `analysis_options.yaml` with `path:` instead — see that file and the README.
 include: package:lints/recommended.yaml
 
-analyzer:
-  plugins:
-    - custom_lint
-
-custom_lint:
-  rules:
-    - exhaustive_switch_must_have_default
+plugins:
+  koel_lints:
+    version: ^1.0.0
+    diagnostics:
+      exhaustive_switch_must_have_default: true
