@@ -1,6 +1,6 @@
 # generated: 2026-05-28
 # last_updated: 2026-05-29
-# (most-recent change: 1-5-ci-workflow-skeleton → done)
+# (most-recent change: 1-6-repo-docs-brand-license → done)
 # project: koel
 # project_key: NOKEY
 # tracking_system: file-system
@@ -50,7 +50,7 @@ development_status:
   1-3-build-koel-lints-profile: done
   1-4-adopt-koel-lints-profile: done
   1-5-ci-workflow-skeleton: done
-  1-6-repo-docs-brand-license: backlog
+  1-6-repo-docs-brand-license: done
   epic-1-retrospective: optional
 
   # Epic 2: Protocol Kernel — koel_core

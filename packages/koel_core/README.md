@@ -1,39 +1,43 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# koel_core
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
-
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/tools/pub/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
-
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
-
-## Features
-
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+Foundation package for [koel](https://github.com/si-huynh/koel), the premium
+Dart/Flutter SDK for the AG-UI protocol. `koel_core` is pure Dart (no Flutter
+dependency) and defines the protocol kernel: the sealed `AgUiEvent` union, the
+sealed `KoelError` hierarchy, the four-stage event pipeline, the interceptor
+chain, the chat-state reducer, and the `KoelClient` / `ChatSession` API.
 
 ## Getting started
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
-
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
 ```dart
-const like = 'sample';
+// pubspec.yaml:  dart pub add koel_core
+import 'package:koel_core/koel_core.dart';
 ```
 
-## Additional information
+Most apps use the [`koel`](../koel) meta-package rather than depending on
+`koel_core` directly. The event kernel, pipeline, and client API land across
+Epic 2.
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+## Documentation
+
+API reference is published on the pub.dev API tab (`dart doc`). Guides and
+concept docs will live on the koel docs site (framework pending —
+`OQ-Docs-Framework`). See the repo-root [README](../../README.md) for the
+package map.
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md).
+
+## Credits
+
+Credit to the community [`ag_ui`](https://pub.dev/packages/ag_ui) 0.1.0 package
+as the genre's first attempt at an AG-UI client for Dart. koel is a clean-slate
+rewrite with no migration obligation.
+
+> **Tracking:** this credit is pending `OQ-AGUI-License` verification
+> (license-compatibility check of `ag_ui` 0.1.0), which gates the first
+> *published* README crediting it. Cleared in Epic 9 (FR-I3).
+
+## License
+
+MIT © 2026 Si Huynh. See [LICENSE](LICENSE).

@@ -1,39 +1,32 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# koel_flutter
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
-
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
-
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
-
-## Features
-
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+Flutter glue for [koel](https://github.com/si-huynh/koel), the premium
+Dart/Flutter SDK for the AG-UI protocol. `koel_flutter` bridges `koel_core` into
+the widget tree: a `KoelChatController`, a `KoelClientScope`, Hive and secure
+session storage, a message-content parser, and the widget resolver for
+generative (tool-driven) UI.
 
 ## Getting started
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
-
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
 ```dart
-const like = 'sample';
+// pubspec.yaml:  flutter pub add koel_flutter
+import 'package:koel_flutter/koel_flutter.dart';
 ```
 
-## Additional information
+Requires Flutter 3.35.0+ (the release that ships Dart 3.9.0). Most apps use the
+[`koel`](../koel) meta-package. The controller, scope, and storage land across
+Epic 6.
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+## Documentation
+
+API reference is on the pub.dev API tab (`dart doc`). Guides will live on the
+koel docs site (framework pending — `OQ-Docs-Framework`). See the repo-root
+[README](../../README.md) for the package map.
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md).
+
+## License
+
+MIT © 2026 Si Huynh. See [LICENSE](LICENSE).

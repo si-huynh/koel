@@ -1,0 +1,26 @@
+# Surfaces dependency drift as PRs. The `pub` ecosystem watches the workspace
+# so the `custom_lint ^0.8.1` caret pin (0.x minors may break) and other dep
+# updates show up automatically. `directories` covers both the workspace root
+# and every member package under `packages/*` — `custom_lint` is declared in the
+# member pubspecs, not the root manifest, so the root alone would miss it.
+# GitHub Actions majors (setup-dart@v1, checkout@v4) are watched too so the CI
+# skeleton stays current.
+version: 2
+updates:
+  - package-ecosystem: "pub"
+    directories:
+      - "/"
+      - "/packages/*"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(ci)"

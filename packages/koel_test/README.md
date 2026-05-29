@@ -1,39 +1,30 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# koel_test
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
-
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/tools/pub/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
-
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
-
-## Features
-
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+Test harness for [koel](https://github.com/si-huynh/koel), the premium
+Dart/Flutter SDK for the AG-UI protocol. `koel_test` provides the testing
+toolkit: a `MockAgent`, a synthesized fixture set, a fixture loader, a
+tool-handler test harness, and the conformance runner that backend bridges use
+to prove they emit spec-correct AG-UI event sequences.
 
 ## Getting started
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
-
-## Usage
-
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
 ```dart
-const like = 'sample';
+// pubspec.yaml:  dart pub add --dev koel_test
+import 'package:koel_test/koel_test.dart';
 ```
 
-## Additional information
+The mock agent, fixtures, and conformance runner land across Epic 3.
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+## Documentation
+
+API reference is on the pub.dev API tab (`dart doc`). Guides will live on the
+koel docs site (framework pending — `OQ-Docs-Framework`). See the repo-root
+[README](../../README.md) for the package map.
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md).
+
+## License
+
+MIT © 2026 Si Huynh. See [LICENSE](LICENSE).
