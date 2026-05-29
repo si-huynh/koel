@@ -1,15 +1,27 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'unknown_event.dart';
+part 'ag_ui_event.freezed.dart';
+
 /// Root of the AG-UI event union — the canonical stream element every
 /// [AbstractAgent] emits.
 ///
-/// This story (2.1) lands the **sealed root only**, with no concrete subtypes:
-/// [AbstractAgent.run] returns `Stream<AgUiEvent>`, so the type must exist for
-/// `koel_core` to analyze clean. Story 2.2 expands this union — the per-family
-/// subtypes, `UnknownAgUiEvent`, and the JSON deserializer dispatcher — by
-/// extending this file, not recreating it.
+/// `sealed` restricts subtyping to this library, so the set of event types is
+/// closed and known at compile time: a `switch` over an [AgUiEvent] is
+/// exhaustive, and `koel_lints`' `exhaustive_switch_must_have_default` forces
+/// consumers to keep a `default:` arm — the seam that keeps their `switch`es
+/// non-crashing when a minor version adds a member (forward-compat policy FC-2).
 ///
-/// `sealed` restricts subtyping to this library, which is what lets downstream
-/// `switch`es over the union be exhaustive (enforced by the `koel_lints`
-/// `exhaustive_switch_must_have_default` rule once subtypes exist).
+/// The `sealed` rule is also why every concrete subtype is a `part of` this
+/// library (its own file under `lib/src/event/`, e.g. [UnknownAgUiEvent] in
+/// `unknown_event.dart`) rather than an importing library: a sealed type can
+/// only be extended within the library that declares it. Subtypes are
+/// constructed from the wire by `deserializeAgUiEvent` in
+/// `event_deserializer.dart`. The only subtype that always exists is
+/// [UnknownAgUiEvent], the forward-compat fallback any unrecognized wire `type`
+/// resolves to (FR-A6 / FC-1). The typed event families (`RUN_*`,
+/// `TEXT_MESSAGE_*`, `TOOL_CALL_*`, …) join the union as parts in Stories
+/// 2.5–2.8.
 sealed class AgUiEvent {
   const AgUiEvent();
 }

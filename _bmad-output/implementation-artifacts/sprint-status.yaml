@@ -1,6 +1,6 @@
 # generated: 2026-05-28
 # last_updated: 2026-05-29
-# (most-recent change: 2026-05-29 create-story — epic-2 → in-progress, 2-1 → ready-for-dev)
+# (most-recent change: 2026-05-29 code-review — 2-2 → done)
 # project: koel
 # project_key: NOKEY
 # tracking_system: file-system
@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-05-28
-last_updated: 2026-05-29  # 2-1 → done (code-review; 3 patches applied incl. real codegen-drift gate)
+last_updated: 2026-05-29  # 2-2 → done (code-review)
 project: koel
 project_key: NOKEY
 tracking_system: file-system
@@ -60,7 +60,7 @@ development_status:
   # Epic 2: Protocol Kernel — koel_core
   epic-2: in-progress
   2-1-foundation-contracts: done
-  2-2-sealed-ag-ui-event-root: backlog
+  2-2-sealed-ag-ui-event-root: done
   2-3-sealed-koel-error-hierarchy: backlog
   2-4-vendor-inline-rfc6902-json-patch: backlog
   2-5-run-step-text-message-events: backlog
