@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 
 void main() {
   group('deserializeAgUiEvent', () {
-    test('registry maps exactly the seventeen Story-2.5 + 2.6 wire types', () {
+    test('registry maps exactly the twenty-six Story-2.5–2.7 wire types', () {
       expect(
         eventTypeRegistry.keys,
         unorderedEquals(<String>{
@@ -25,6 +25,15 @@ void main() {
           'STATE_SNAPSHOT',
           'STATE_DELTA',
           'MESSAGES_SNAPSHOT',
+          'ACTIVITY_SNAPSHOT',
+          'ACTIVITY_DELTA',
+          'REASONING_START',
+          'REASONING_END',
+          'REASONING_MESSAGE_START',
+          'REASONING_MESSAGE_CONTENT',
+          'REASONING_MESSAGE_END',
+          'REASONING_MESSAGE_CHUNK',
+          'REASONING_ENCRYPTED_VALUE',
         }),
       );
     });
@@ -133,6 +142,78 @@ void main() {
         }),
         isA<MessagesSnapshotEvent>(),
       );
+      expect(
+        deserializeAgUiEvent({
+          'type': 'ACTIVITY_SNAPSHOT',
+          'messageId': 'm',
+          'activityType': 'checklist',
+          'content': <String, dynamic>{},
+        }),
+        isA<ActivitySnapshotEvent>(),
+      );
+      expect(
+        deserializeAgUiEvent({
+          'type': 'ACTIVITY_DELTA',
+          'messageId': 'm',
+          'activityType': 'checklist',
+          'patch': <dynamic>[],
+        }),
+        isA<ActivityDeltaEvent>(),
+      );
+      expect(
+        deserializeAgUiEvent({'type': 'REASONING_START', 'messageId': 'r'}),
+        isA<ReasoningStartEvent>(),
+      );
+      expect(
+        deserializeAgUiEvent({'type': 'REASONING_END', 'messageId': 'r'}),
+        isA<ReasoningEndEvent>(),
+      );
+      expect(
+        deserializeAgUiEvent({
+          'type': 'REASONING_MESSAGE_START',
+          'messageId': 'r',
+          'role': 'reasoning',
+        }),
+        isA<ReasoningMessageStartEvent>(),
+      );
+      expect(
+        deserializeAgUiEvent({
+          'type': 'REASONING_MESSAGE_CONTENT',
+          'messageId': 'r',
+          'delta': 'd',
+        }),
+        isA<ReasoningMessageContentEvent>(),
+      );
+      expect(
+        deserializeAgUiEvent({
+          'type': 'REASONING_MESSAGE_END',
+          'messageId': 'r',
+        }),
+        isA<ReasoningMessageEndEvent>(),
+      );
+      expect(
+        deserializeAgUiEvent({'type': 'REASONING_MESSAGE_CHUNK'}),
+        isA<ReasoningMessageChunkEvent>(),
+      );
+      expect(
+        deserializeAgUiEvent({
+          'type': 'REASONING_ENCRYPTED_VALUE',
+          'entityId': 'e',
+          'subtype': 'message',
+          'encryptedValue': 'AAAA',
+        }),
+        isA<ReasoningEncryptedValueEvent>(),
+      );
+    });
+
+    test('deprecated upstream THINKING_* type falls back to UnknownAgUiEvent '
+        '(koel models REASONING_* only — no THINKING aliases)', () {
+      final event = deserializeAgUiEvent({
+        'type': 'THINKING_TEXT_MESSAGE_START',
+        'messageId': 'm',
+      });
+      expect(event, isA<UnknownAgUiEvent>());
+      expect((event as UnknownAgUiEvent).type, 'THINKING_TEXT_MESSAGE_START');
     });
 
     test(

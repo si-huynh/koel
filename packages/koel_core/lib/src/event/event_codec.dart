@@ -98,6 +98,48 @@ List<T> _decodeObjectList<T>(
   return result;
 }
 
+/// Internal codec glue (not public surface): returns [json]'s [key] as a
+/// `bool?` — `null` when the member is absent or `null`, the `bool` when
+/// present, or throws [ProtocolError]`(protocolMalformed)` when present as a
+/// non-`bool`. The boolean counterpart to [_optionalString]: an optional wire
+/// flag (e.g. `ACTIVITY_SNAPSHOT.replace`) stays absent-preserving so the
+/// round-trip is lossless and any wire-applied default is left to the consumer,
+/// while a mistyped flag surfaces the typed error instead of a raw `TypeError`.
+bool? _optionalBool(Map<String, dynamic> json, String key) {
+  final value = json[key];
+  if (value == null) return null;
+  if (value is bool) return value;
+  throw ProtocolError(
+    message: 'AG-UI event member is not a bool: $key',
+    code: KoelErrorCode.protocolMalformed,
+    cause: json,
+  );
+}
+
+/// Internal codec glue (not public surface): decodes a base64 [wire] string to
+/// its bytes, or throws [ProtocolError]`(protocolMalformed)` when it is not valid
+/// base64 — never leaking the raw `FormatException` past the codec boundary (the
+/// SF-1 lesson applied to the binary path). Used by
+/// [ReasoningEncryptedValueEvent], whose decoded `Uint8List` feeds the typed
+/// `reasoningEcho` surface while the original string is preserved verbatim for a
+/// byte-exact wire round-trip (FR-A9). `base64Decode` is the *normalizing*
+/// decoder: it accepts **both** the standard (`+`/`/`) and url-safe (`-`/`_`)
+/// alphabets, so a base64url payload is decoded, not rejected — the decoded bytes
+/// may carry a url-safe interpretation while the verbatim `encryptedValueBase64`
+/// keeps the round-trip byte-exact regardless of alphabet. (This is *why* the
+/// blob is never re-encoded from the bytes; see [ReasoningEncryptedValueEvent].)
+Uint8List _decodeBase64(String wire) {
+  try {
+    return base64Decode(wire);
+  } on FormatException catch (error) {
+    throw ProtocolError(
+      message: 'AG-UI event encryptedValue is not valid base64',
+      code: KoelErrorCode.protocolMalformed,
+      cause: error,
+    );
+  }
+}
+
 /// Internal codec glue (not public surface): maps a wire `code` string to its
 /// [KoelErrorCode] by `name`, falling back to [KoelErrorCode.unknown] for an
 /// absent, non-`String`, or unrecognized code. Used only by [RunErrorEvent]'s

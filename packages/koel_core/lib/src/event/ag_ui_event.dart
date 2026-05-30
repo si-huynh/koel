@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../error/koel_error.dart';
@@ -12,6 +15,8 @@ part 'step_events.dart';
 part 'text_message_events.dart';
 part 'tool_call_events.dart';
 part 'state_events.dart';
+part 'activity_events.dart';
+part 'reasoning_events.dart';
 part 'ag_ui_event.freezed.dart';
 
 /// Root of the AG-UI event union — the canonical stream element every
