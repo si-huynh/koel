@@ -4,8 +4,76 @@ import 'package:test/test.dart';
 
 void main() {
   group('deserializeAgUiEvent', () {
-    test('the registry is empty in this story', () {
-      expect(eventTypeRegistry, isEmpty);
+    test('registry maps exactly the nine Story-2.5 wire types', () {
+      expect(
+        eventTypeRegistry.keys,
+        unorderedEquals(<String>{
+          'RUN_STARTED',
+          'RUN_FINISHED',
+          'RUN_ERROR',
+          'STEP_STARTED',
+          'STEP_FINISHED',
+          'TEXT_MESSAGE_START',
+          'TEXT_MESSAGE_CONTENT',
+          'TEXT_MESSAGE_END',
+          'TEXT_MESSAGE_CHUNK',
+        }),
+      );
+    });
+
+    test('dispatches each wire type to its concrete subtype', () {
+      expect(
+        deserializeAgUiEvent({
+          'type': 'RUN_STARTED',
+          'threadId': 't',
+          'runId': 'r',
+        }),
+        isA<RunStartedEvent>(),
+      );
+      expect(
+        deserializeAgUiEvent({
+          'type': 'RUN_FINISHED',
+          'threadId': 't',
+          'runId': 'r',
+        }),
+        isA<RunFinishedEvent>(),
+      );
+      expect(
+        deserializeAgUiEvent({'type': 'RUN_ERROR', 'message': 'boom'}),
+        isA<RunErrorEvent>(),
+      );
+      expect(
+        deserializeAgUiEvent({'type': 'STEP_STARTED', 'stepName': 's'}),
+        isA<StepStartedEvent>(),
+      );
+      expect(
+        deserializeAgUiEvent({'type': 'STEP_FINISHED', 'stepName': 's'}),
+        isA<StepFinishedEvent>(),
+      );
+      expect(
+        deserializeAgUiEvent({
+          'type': 'TEXT_MESSAGE_START',
+          'messageId': 'm',
+          'role': 'assistant',
+        }),
+        isA<TextMessageStartEvent>(),
+      );
+      expect(
+        deserializeAgUiEvent({
+          'type': 'TEXT_MESSAGE_CONTENT',
+          'messageId': 'm',
+          'delta': 'd',
+        }),
+        isA<TextMessageContentEvent>(),
+      );
+      expect(
+        deserializeAgUiEvent({'type': 'TEXT_MESSAGE_END', 'messageId': 'm'}),
+        isA<TextMessageEndEvent>(),
+      );
+      expect(
+        deserializeAgUiEvent({'type': 'TEXT_MESSAGE_CHUNK'}),
+        isA<TextMessageChunkEvent>(),
+      );
     });
 
     test(

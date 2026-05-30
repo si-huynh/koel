@@ -6,12 +6,23 @@ import 'ag_ui_event.dart';
 ///
 /// A `const` map, edited at authoring time, is deliberate: there is no runtime
 /// `register(...)` call, no mutable global, no init-order coupling. Stories
-/// 2.5–2.8 grow the union by adding one entry per wire `type` here (e.g.
-/// `'RUN_STARTED': RunStartedEvent.fromJson`); [deserializeAgUiEvent] needs no
-/// other change. In this story the map is empty, so every wire `type` falls
+/// 2.5–2.8 grow the union by adding one entry per wire `type` here; the value
+/// is a `static fromJson` tear-off (a compile-time constant) and
+/// [deserializeAgUiEvent] needs no other change. Story 2.5 registers the nine
+/// lifecycle + text-message types; any wire `type` not listed here still falls
 /// through to [UnknownAgUiEvent].
 const Map<String, AgUiEvent Function(Map<String, dynamic>)> eventTypeRegistry =
-    {};
+    {
+      'RUN_STARTED': RunStartedEvent.fromJson,
+      'RUN_FINISHED': RunFinishedEvent.fromJson,
+      'RUN_ERROR': RunErrorEvent.fromJson,
+      'STEP_STARTED': StepStartedEvent.fromJson,
+      'STEP_FINISHED': StepFinishedEvent.fromJson,
+      'TEXT_MESSAGE_START': TextMessageStartEvent.fromJson,
+      'TEXT_MESSAGE_CONTENT': TextMessageContentEvent.fromJson,
+      'TEXT_MESSAGE_END': TextMessageEndEvent.fromJson,
+      'TEXT_MESSAGE_CHUNK': TextMessageChunkEvent.fromJson,
+    };
 
 /// Decodes one raw AG-UI wire event into the typed [AgUiEvent] union.
 ///

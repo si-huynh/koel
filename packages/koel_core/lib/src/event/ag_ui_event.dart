@@ -1,6 +1,13 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../error/koel_error.dart';
+import '../error/koel_error_code.dart';
+
 part 'unknown_event.dart';
+part 'event_codec.dart';
+part 'run_events.dart';
+part 'step_events.dart';
+part 'text_message_events.dart';
 part 'ag_ui_event.freezed.dart';
 
 /// Root of the AG-UI event union — the canonical stream element every

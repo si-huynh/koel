@@ -1,6 +1,6 @@
 # generated: 2026-05-28
 # last_updated: 2026-05-30
-# (most-recent change: 2026-05-30 code-review — 2-4 → done)
+# (most-recent change: 2026-05-30 dev-story — 2-5 → review)
 # project: koel
 # project_key: NOKEY
 # tracking_system: file-system
@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-05-28
-last_updated: 2026-05-30  # 2-4 → done (code-review)
+last_updated: 2026-05-30  # 2-5 → done (code-review)
 project: koel
 project_key: NOKEY
 tracking_system: file-system
@@ -63,7 +63,7 @@ development_status:
   2-2-sealed-ag-ui-event-root: done
   2-3-sealed-koel-error-hierarchy: done
   2-4-vendor-inline-rfc6902-json-patch: done
-  2-5-run-step-text-message-events: backlog
+  2-5-run-step-text-message-events: done
   2-6-tool-call-state-messages-snapshot-events: backlog
   2-7-activity-reasoning-events: backlog
   2-8-raw-custom-events-integration-sweep: backlog
