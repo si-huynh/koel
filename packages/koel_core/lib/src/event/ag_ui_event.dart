@@ -17,6 +17,8 @@ part 'tool_call_events.dart';
 part 'state_events.dart';
 part 'activity_events.dart';
 part 'reasoning_events.dart';
+part 'raw_event.dart';
+part 'custom_event.dart';
 part 'ag_ui_event.freezed.dart';
 
 /// Root of the AG-UI event union — the canonical stream element every
@@ -36,8 +38,9 @@ part 'ag_ui_event.freezed.dart';
 /// `event_deserializer.dart`. The only subtype that always exists is
 /// [UnknownAgUiEvent], the forward-compat fallback any unrecognized wire `type`
 /// resolves to (FR-A6 / FC-1). The typed event families (`RUN_*`,
-/// `TEXT_MESSAGE_*`, `TOOL_CALL_*`, …) join the union as parts in Stories
-/// 2.5–2.8.
+/// `TEXT_MESSAGE_*`, `TOOL_CALL_*`, … through `RAW`/`CUSTOM`) joined the union
+/// as parts across Stories 2.5–2.8, which closed the AG-UI `release/2026-05-26`
+/// registry at 28 typed families (plus [UnknownAgUiEvent]).
 sealed class AgUiEvent {
   const AgUiEvent();
 }

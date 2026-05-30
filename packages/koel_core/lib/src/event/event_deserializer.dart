@@ -6,15 +6,15 @@ import 'ag_ui_event.dart';
 ///
 /// A `const` map, edited at authoring time, is deliberate: there is no runtime
 /// `register(...)` call, no mutable global, no init-order coupling. Stories
-/// 2.5–2.8 grow the union by adding one entry per wire `type` here; the value
+/// 2.5–2.8 grew the union by adding one entry per wire `type` here; the value
 /// is a `static fromJson` tear-off (a compile-time constant) and
 /// [deserializeAgUiEvent] needs no other change. Story 2.5 registered the nine
 /// lifecycle + text-message types; Story 2.6 added the eight tool-call + state +
-/// messages-snapshot types; Story 2.7 adds the nine activity + reasoning types
-/// (26 of the ~28-type union — `RAW` + `CUSTOM` remain for Story 2.8). Any wire
-/// `type` not listed here — including the deprecated upstream `THINKING_*`
-/// aliases koel deliberately does not model — still falls through to
-/// [UnknownAgUiEvent].
+/// messages-snapshot types; Story 2.7 added the nine activity + reasoning types;
+/// Story 2.8 added the final two (`RAW` + `CUSTOM`), closing the AG-UI
+/// `release/2026-05-26` registry at all 28 typed families. Any wire `type` not
+/// listed here — including the deprecated upstream `THINKING_*` aliases koel
+/// deliberately does not model — still falls through to [UnknownAgUiEvent].
 const Map<String, AgUiEvent Function(Map<String, dynamic>)> eventTypeRegistry =
     {
       'RUN_STARTED': RunStartedEvent.fromJson,
@@ -43,6 +43,8 @@ const Map<String, AgUiEvent Function(Map<String, dynamic>)> eventTypeRegistry =
       'REASONING_MESSAGE_END': ReasoningMessageEndEvent.fromJson,
       'REASONING_MESSAGE_CHUNK': ReasoningMessageChunkEvent.fromJson,
       'REASONING_ENCRYPTED_VALUE': ReasoningEncryptedValueEvent.fromJson,
+      'RAW': RawEvent.fromJson,
+      'CUSTOM': CustomEvent.fromJson,
     };
 
 /// Decodes one raw AG-UI wire event into the typed [AgUiEvent] union.

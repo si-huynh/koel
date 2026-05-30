@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 
 void main() {
   group('deserializeAgUiEvent', () {
-    test('registry maps exactly the twenty-six Story-2.5–2.7 wire types', () {
+    test('registry maps exactly the twenty-eight Story-2.5–2.8 wire types', () {
       expect(
         eventTypeRegistry.keys,
         unorderedEquals(<String>{
@@ -34,6 +34,8 @@ void main() {
           'REASONING_MESSAGE_END',
           'REASONING_MESSAGE_CHUNK',
           'REASONING_ENCRYPTED_VALUE',
+          'RAW',
+          'CUSTOM',
         }),
       );
     });
@@ -203,6 +205,17 @@ void main() {
           'encryptedValue': 'AAAA',
         }),
         isA<ReasoningEncryptedValueEvent>(),
+      );
+      expect(
+        deserializeAgUiEvent({
+          'type': 'RAW',
+          'event': {'k': 1},
+        }),
+        isA<RawEvent>(),
+      );
+      expect(
+        deserializeAgUiEvent({'type': 'CUSTOM', 'name': 'x', 'value': 1}),
+        isA<CustomEvent>(),
       );
     });
 
