@@ -8,9 +8,10 @@ import 'ag_ui_event.dart';
 /// `register(...)` call, no mutable global, no init-order coupling. Stories
 /// 2.5–2.8 grow the union by adding one entry per wire `type` here; the value
 /// is a `static fromJson` tear-off (a compile-time constant) and
-/// [deserializeAgUiEvent] needs no other change. Story 2.5 registers the nine
-/// lifecycle + text-message types; any wire `type` not listed here still falls
-/// through to [UnknownAgUiEvent].
+/// [deserializeAgUiEvent] needs no other change. Story 2.5 registered the nine
+/// lifecycle + text-message types; Story 2.6 adds the eight tool-call + state +
+/// messages-snapshot types; any wire `type` not listed here still falls through
+/// to [UnknownAgUiEvent].
 const Map<String, AgUiEvent Function(Map<String, dynamic>)> eventTypeRegistry =
     {
       'RUN_STARTED': RunStartedEvent.fromJson,
@@ -22,6 +23,14 @@ const Map<String, AgUiEvent Function(Map<String, dynamic>)> eventTypeRegistry =
       'TEXT_MESSAGE_CONTENT': TextMessageContentEvent.fromJson,
       'TEXT_MESSAGE_END': TextMessageEndEvent.fromJson,
       'TEXT_MESSAGE_CHUNK': TextMessageChunkEvent.fromJson,
+      'TOOL_CALL_START': ToolCallStartEvent.fromJson,
+      'TOOL_CALL_ARGS': ToolCallArgsEvent.fromJson,
+      'TOOL_CALL_END': ToolCallEndEvent.fromJson,
+      'TOOL_CALL_RESULT': ToolCallResultEvent.fromJson,
+      'TOOL_CALL_CHUNK': ToolCallChunkEvent.fromJson,
+      'STATE_SNAPSHOT': StateSnapshotEvent.fromJson,
+      'STATE_DELTA': StateDeltaEvent.fromJson,
+      'MESSAGES_SNAPSHOT': MessagesSnapshotEvent.fromJson,
     };
 
 /// Decodes one raw AG-UI wire event into the typed [AgUiEvent] union.

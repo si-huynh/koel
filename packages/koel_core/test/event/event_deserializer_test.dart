@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 
 void main() {
   group('deserializeAgUiEvent', () {
-    test('registry maps exactly the nine Story-2.5 wire types', () {
+    test('registry maps exactly the seventeen Story-2.5 + 2.6 wire types', () {
       expect(
         eventTypeRegistry.keys,
         unorderedEquals(<String>{
@@ -17,6 +17,14 @@ void main() {
           'TEXT_MESSAGE_CONTENT',
           'TEXT_MESSAGE_END',
           'TEXT_MESSAGE_CHUNK',
+          'TOOL_CALL_START',
+          'TOOL_CALL_ARGS',
+          'TOOL_CALL_END',
+          'TOOL_CALL_RESULT',
+          'TOOL_CALL_CHUNK',
+          'STATE_SNAPSHOT',
+          'STATE_DELTA',
+          'MESSAGES_SNAPSHOT',
         }),
       );
     });
@@ -73,6 +81,57 @@ void main() {
       expect(
         deserializeAgUiEvent({'type': 'TEXT_MESSAGE_CHUNK'}),
         isA<TextMessageChunkEvent>(),
+      );
+      expect(
+        deserializeAgUiEvent({
+          'type': 'TOOL_CALL_START',
+          'toolCallId': 'tc1',
+          'toolCallName': 'search',
+        }),
+        isA<ToolCallStartEvent>(),
+      );
+      expect(
+        deserializeAgUiEvent({
+          'type': 'TOOL_CALL_ARGS',
+          'toolCallId': 'tc1',
+          'delta': '{"q":',
+        }),
+        isA<ToolCallArgsEvent>(),
+      );
+      expect(
+        deserializeAgUiEvent({'type': 'TOOL_CALL_END', 'toolCallId': 'tc1'}),
+        isA<ToolCallEndEvent>(),
+      );
+      expect(
+        deserializeAgUiEvent({
+          'type': 'TOOL_CALL_RESULT',
+          'messageId': 'm1',
+          'toolCallId': 'tc1',
+          'content': 'ok',
+        }),
+        isA<ToolCallResultEvent>(),
+      );
+      expect(
+        deserializeAgUiEvent({'type': 'TOOL_CALL_CHUNK'}),
+        isA<ToolCallChunkEvent>(),
+      );
+      expect(
+        deserializeAgUiEvent({
+          'type': 'STATE_SNAPSHOT',
+          'snapshot': {'count': 1},
+        }),
+        isA<StateSnapshotEvent>(),
+      );
+      expect(
+        deserializeAgUiEvent({'type': 'STATE_DELTA', 'delta': <dynamic>[]}),
+        isA<StateDeltaEvent>(),
+      );
+      expect(
+        deserializeAgUiEvent({
+          'type': 'MESSAGES_SNAPSHOT',
+          'messages': <dynamic>[],
+        }),
+        isA<MessagesSnapshotEvent>(),
       );
     });
 
