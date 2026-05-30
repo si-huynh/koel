@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../event/ag_ui_event.dart';
 import 'apply_stage.dart';
 import 'chunks_stage.dart';
@@ -15,10 +17,20 @@ import 'verify_stage.dart';
 /// site that composition lives, so the order is defined and tested in one place.
 ///
 /// A pure `Stream<AgUiEvent>` → `Stream<AgUiEvent>` function: it knows nothing of
-/// transport, persistence, or UI. `KoelClient` (Story 2.14) invokes it on the
-/// post-interceptor stream; here it stands alone, exercised in isolation.
-Stream<AgUiEvent> runPipeline(Stream<AgUiEvent> events) => events
+/// transport, persistence, or UI. `KoelClient` invokes it on the
+/// post-interceptor stream.
+///
+/// [apply] swaps the apply stage (stage 3) so the two top-level consumers can
+/// share this one backbone: `KoelClient.runRaw` passes nothing → the identity
+/// [applyStage] (no reducer); `ChatSession` passes `reducingApplyStage(...)` →
+/// the reducer fold. The chunks → verify → apply → transform order stays locked
+/// in this single site regardless, so the order-assertion test guards it for
+/// both paths.
+Stream<AgUiEvent> runPipeline(
+  Stream<AgUiEvent> events, {
+  StreamTransformer<AgUiEvent, AgUiEvent>? apply,
+}) => events
     .transform(chunksStage)
     .transform(verifyStage)
-    .transform(applyStage)
+    .transform(apply ?? applyStage)
     .transform(transformStage);

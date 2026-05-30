@@ -29,6 +29,16 @@ abstract class PipelineStage {
 /// straight through ([EventSink.addError]) — protocol *violations* surface as
 /// `RunErrorEvent` values inside a stage, but a stream-borne *error* is the
 /// interceptor chain's concern, not the pipeline's.
+///
+/// **Throw-guard (deferred-work #3).** A synchronous throw from [PipelineStage.onEvent]
+/// or [PipelineStage.onDone] is converted to `controller.addError` and the
+/// controller is closed — rather than escaping to the zone and leaving the
+/// controller open, which would hang the downstream consumer forever. On an
+/// `onEvent` throw the upstream subscription is also cancelled, so no further
+/// event lands on the now-closed controller. The SDK's own stages
+/// (`chunks`/`verify`/`transform`, identity `apply`) provably never throw, so
+/// this is behavior-preserving for them; it backstops the consumer-supplied
+/// reducer the `reducingApplyStage` runs.
 StreamTransformer<AgUiEvent, AgUiEvent> buildStage(
   PipelineStage Function() create,
 ) {
@@ -39,10 +49,23 @@ StreamTransformer<AgUiEvent, AgUiEvent> buildStage(
     controller = StreamController<AgUiEvent>(
       onListen: () {
         subscription = source.listen(
-          (event) => stage.onEvent(event, controller),
+          (event) {
+            try {
+              stage.onEvent(event, controller);
+            } catch (error, stack) {
+              controller
+                ..addError(error, stack)
+                ..close();
+              subscription.cancel();
+            }
+          },
           onError: controller.addError,
           onDone: () {
-            stage.onDone(controller);
+            try {
+              stage.onDone(controller);
+            } catch (error, stack) {
+              controller.addError(error, stack);
+            }
             controller.close();
           },
         );
