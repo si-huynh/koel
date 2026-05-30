@@ -1,6 +1,6 @@
 # generated: 2026-05-28
 # last_updated: 2026-05-30
-# (most-recent change: 2026-05-30 code-review — 2-12 → done)
+# (most-recent change: 2026-05-30 code-review — 2-13 → done)
 # project: koel
 # project_key: NOKEY
 # tracking_system: file-system
@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-05-28
-last_updated: 2026-05-30  # 2-12 → done (code-review)
+last_updated: 2026-05-30  # 2-13 → done (code-review)
 project: koel
 project_key: NOKEY
 tracking_system: file-system
@@ -71,7 +71,7 @@ development_status:
   2-10-agent-subscriber-callback-bag: done
   2-11-four-stage-event-pipeline: done
   2-12-chat-state-reducer: done
-  2-13-session-storage-in-memory: backlog
+  2-13-session-storage-in-memory: done
   2-14-koel-client-chat-session-api: backlog
   2-15-perf-baselines-dartdoc-barrel: backlog
   epic-2-retrospective: optional
