@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-05-28
-last_updated: 2026-05-31  # 2-15 → done (code-review)
+last_updated: 2026-05-31  # epic-2 → done + retro complete
 project: koel
 project_key: NOKEY
 tracking_system: file-system
@@ -58,7 +58,7 @@ development_status:
   epic-1-retrospective: done
 
   # Epic 2: Protocol Kernel — koel_core
-  epic-2: in-progress
+  epic-2: done
   2-1-foundation-contracts: done
   2-2-sealed-ag-ui-event-root: done
   2-3-sealed-koel-error-hierarchy: done
@@ -74,7 +74,7 @@ development_status:
   2-13-session-storage-in-memory: done
   2-14-koel-client-chat-session-api: done
   2-15-perf-baselines-dartdoc-barrel: done
-  epic-2-retrospective: optional
+  epic-2-retrospective: done
 
   # Epic 3: Test Harness & Conformance — koel_test
   epic-3: backlog
