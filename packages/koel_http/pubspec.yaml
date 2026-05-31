@@ -8,5 +8,13 @@ environment:
 
 resolution: workspace
 
+dependencies:
+  # First runtime cross-package edge for koel_http (mirrors koel_test's pattern).
+  # The SSE parser's implementation references koel_core types — AgUiEvent /
+  # AgUiEvent.fromWire (dispatch target), ProtocolError + KoelErrorCode
+  # (wire-sanity boundary). Bare key — resolved from the pub workspace.
+  koel_core:
+
 dev_dependencies:
   koel_lints:
+  test: ^1.25.0
