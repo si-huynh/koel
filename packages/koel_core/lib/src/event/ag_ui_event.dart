@@ -7,6 +7,10 @@ import '../error/koel_error.dart';
 import '../error/koel_error_code.dart';
 import '../json_patch/json_patch_op.dart';
 import '../message/message.dart';
+// Mutual library import: event_deserializer.dart imports this file (it
+// references the subtypes); this back-import lets [AgUiEvent.fromWire] delegate
+// to deserializeAgUiEvent. Legal — a library cycle, not a `part` cycle.
+import 'event_deserializer.dart';
 
 part 'unknown_event.dart';
 part 'event_codec.dart';
@@ -43,4 +47,19 @@ part 'ag_ui_event.freezed.dart';
 /// registry at 28 typed families (plus [UnknownAgUiEvent]).
 sealed class AgUiEvent {
   const AgUiEvent();
+
+  /// Reconstructs a typed event from its stored wire form — the public dual of
+  /// each subtype's `toJson()`, and the sanctioned decode seam for stored-trace
+  /// tooling (`koel_test`'s `FixtureLoader`, `koel_devtools` replay). It is the
+  /// only public door to deserialization: the [eventTypeRegistry] and the
+  /// top-level [deserializeAgUiEvent] it delegates to stay internal.
+  ///
+  /// **Total** — it never throws: an unrecognized, missing, or non-`String`
+  /// wire `type` resolves to [UnknownAgUiEvent] (FR-A6 / FC-1), not an error.
+  /// Corrupt *JSON* never reaches here; that surfaces as a `FormatException` at
+  /// the `jsonDecode` boundary, the right loud failure for a corrupt trace.
+  /// [json] is consumed, not copied — the returned event may alias it; see
+  /// [deserializeAgUiEvent] for the ownership contract.
+  static AgUiEvent fromWire(Map<String, dynamic> json) =>
+      deserializeAgUiEvent(json);
 }

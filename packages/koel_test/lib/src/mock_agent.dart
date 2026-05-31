@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:koel_core/koel_core.dart';
 
+import 'fixture_loader.dart';
+
 /// One timeline entry: the [event] to emit, and the [delay] to wait *before*
 /// emitting it. Named fields so the replay loop can destructure by name.
 typedef _TimedEvent = ({AgUiEvent event, Duration delay});
@@ -36,6 +38,21 @@ final class MockAgent implements AbstractAgent {
 
   /// A fresh fluent builder for declarative inline construction.
   static MockAgentBuilder programmatic() => MockAgentBuilder._();
+
+  /// Loads the synthesized fixture [name] and wraps its decoded events into a
+  /// replaying [MockAgent] — the one-line, zero-setup test double
+  /// (`await MockAgent.fromFixture('text_only_run')`, FR-G2).
+  ///
+  /// `static` returning a `Future`, **not** a `factory` (Dart factories cannot
+  /// be async). Delegates to [MockAgent.fromEvents], so verbatim replay,
+  /// defensive copy, and cancellation semantics are unchanged — this adds only
+  /// the load+decode. An unknown [name] propagates
+  /// [FixtureLoader.loadSynthesized]'s enumerated [ArgumentError] as the
+  /// future's error (a test-authoring mistake, not a runtime failure).
+  static Future<MockAgent> fromFixture(String name) async {
+    final events = await FixtureLoader.loadSynthesized(name);
+    return MockAgent.fromEvents(events);
+  }
 
   final List<_TimedEvent> _timeline;
 

@@ -5,3 +5,7 @@ library;
 // programmatic()). koel_core is NOT re-exported — consumers depend on it
 // directly; the meta-package is the only re-exporter.
 export 'src/mock_agent.dart';
+
+// Surfaces FixtureLoader (the four static loaders) and FixtureSession.
+// MockAgent.fromFixture is already reachable through the mock_agent export.
+export 'src/fixture_loader.dart';

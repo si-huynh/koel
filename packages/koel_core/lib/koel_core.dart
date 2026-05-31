@@ -29,8 +29,11 @@ export 'src/agent/interceptor.dart';
 // ---- Event: the sealed AG-UI union --------------------------------------
 // ag_ui_event.dart `part`s in every concrete subtype (the ~28 typed families +
 // UnknownAgUiEvent) and the private wire codec, so this single export surfaces
-// the whole closed union. The wire-side deserializer (event_deserializer.dart)
-// stays internal — consumers receive typed events from the stream.
+// the whole closed union. The event registry and top-level deserializer
+// (event_deserializer.dart) stay internal — consumers receive typed events from
+// the stream — but `AgUiEvent.fromWire` is the public decode seam for
+// stored-trace tooling (koel_test's FixtureLoader, koel_devtools replay). It
+// surfaces automatically with the already-exported AgUiEvent; no extra export.
 export 'src/event/ag_ui_event.dart';
 
 // ---- Error: the sealed failure hierarchy + classification seam ------------

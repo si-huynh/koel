@@ -269,4 +269,37 @@ void main() {
       expect(unknown.rawJson, equals(json));
     });
   });
+
+  // The public decode seam (Story 3.3): the only sanctioned door to
+  // deserialization, delegating to the internal deserializeAgUiEvent. It is the
+  // entry koel_test's FixtureLoader and koel_devtools replay decode wire traces
+  // through.
+  group('AgUiEvent.fromWire', () {
+    test('decodes a registered wire map to its concrete typed subtype', () {
+      expect(
+        AgUiEvent.fromWire({
+          'type': 'TEXT_MESSAGE_CONTENT',
+          'messageId': 'm',
+          'delta': 'Hello, world!',
+        }),
+        isA<TextMessageContentEvent>(),
+      );
+    });
+
+    test(
+      'an unknown type yields UnknownAgUiEvent and never throws (total)',
+      () {
+        final json = {'type': 'SOME_FUTURE_EVENT', 'payload': 42};
+        final event = AgUiEvent.fromWire(json);
+        expect(event, isA<UnknownAgUiEvent>());
+        expect((event as UnknownAgUiEvent).type, 'SOME_FUTURE_EVENT');
+      },
+    );
+
+    test('delegates verbatim to deserializeAgUiEvent (the dual of toJson)', () {
+      final json = {'type': 'RUN_STARTED', 'threadId': 't', 'runId': 'r'};
+      // Same input → structurally same decode through both doors.
+      expect(AgUiEvent.fromWire(json), equals(deserializeAgUiEvent(json)));
+    });
+  });
 }
