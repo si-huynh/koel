@@ -1,14 +1,21 @@
-/// Declarative retry/backoff configuration for an [HttpAgent] reconnection.
+/// Declarative retry/backoff configuration for an [HttpAgent] reconnection — the
+/// convenience entry point to the `RetryInterceptor` engine (Story 4.4).
 ///
-/// In Story 4.2 this is a **pure immutable data holder** — it exists so the
-/// `HttpAgent({RetryPolicy? retry, …})` constructor parameter (a public,
-/// one-way-door type) compiles and is exported from the barrel. The
-/// backoff/jitter/reconnect **engine** that consumes these fields — and the
-/// `onReconnectAttempt`/`ConnectionResumed` wiring — lands in **Story 4.4**
-/// (Retry interceptor); the field set here mirrors what that story needs.
+/// A pure immutable data holder: `HttpAgent(retry: RetryPolicy(…))` maps it to a
+/// `RetryInterceptor` and prepends that interceptor to the run, bridging
+/// `HttpAgent(onReconnectAttempt:)` into the engine. The bool [jitter] maps to
+/// the engine's symmetric *fraction* — `true` ⇒ ±20% (`0.2`), `false` ⇒ none
+/// (`0.0`).
+///
+/// **Two entry points, two default sets — by design.** This holder keeps its
+/// own shipped 4.2 defaults (3 / 500ms / 30s / jitter-on); the standalone
+/// `RetryInterceptor()` carries the canonical Addendum A.2 defaults
+/// (5 / 1s / 30s / `0.2`) and also exposes `shouldRetry`, which this convenience
+/// shape does not. Reach for the explicit `RetryInterceptor` in
+/// `HttpAgent(interceptors:)` when you need per-error retry control.
 final class RetryPolicy {
   /// Constructs a retry policy. Defaults describe a conservative
-  /// exponential-backoff schedule that Story 4.4 will implement against.
+  /// exponential-backoff schedule the `RetryInterceptor` engine implements.
   const RetryPolicy({
     this.maxAttempts = 3,
     this.baseDelay = const Duration(milliseconds: 500),

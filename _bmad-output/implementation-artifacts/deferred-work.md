@@ -220,3 +220,7 @@ The maintainer deferred this entire cluster on 2026-05-30: `ChatSession` has **n
 
 - **`connectTimeout` orphans an in-flight `send()` on an injected client** — `Future.timeout` does not cancel the underlying `send()`; an owned client is closed by the catch, but an injected client's request is left in flight with no active abort. The connection abort handle is explicitly Story 4.3's concern (`transport.dart:48-49`). [io_transport.dart:38-57]
 - **Trap #5 subclass-reachability: `_client`/`_interceptors` are library-private** — Epic-5 cross-package subclasses (`AgnoAgent`/`LangGraphAgent`) cannot reach the transport seam (`_`-privacy is library-scoped; Dart has no `protected`). No 4.2 AC requires it; revisit the extension surface when those backends land. [http_agent.dart]
+
+## Deferred from: code review of 4-4-retry-interceptor (2026-05-31)
+
+- Multi-recovery (multiple `ConnectionResumed` markers) is untested in `retry_interceptor_test.dart`. The engine emits one resume marker per *recovered* reconnect, so a flapping connection (recover → fail → recover) correctly emits several — but only the single-recovery case (`hasLength(1)`) is covered. Add a recover-fail-recover test to pin the multi-marker contract. Correct-by-design, not blocking.

@@ -7,6 +7,7 @@ import 'package:koel_core/koel_core.dart';
 import 'connection/cancellation.dart';
 import 'connection/reconnect_policy.dart';
 import 'error/error_classifier.dart';
+import 'interceptors/retry_interceptor.dart';
 import 'sse_parser.dart';
 import 'transport/transport.dart';
 import 'wire/run_agent_input_codec.dart';
@@ -50,10 +51,17 @@ class HttpAgent implements AbstractAgent {
   /// [readTimeout] bounds idle time between response bytes — both exceed →
   /// `transportTimeout`.
   ///
+  /// [retry] enables automatic reconnection: when non-null, [run] prepends a
+  /// `RetryInterceptor` (outermost, so it re-runs every other interceptor on
+  /// each reconnect) built from the policy, and [onReconnectAttempt] — when
+  /// supplied — fires once per scheduled retry with the 1-based attempt index
+  /// and the actual jittered delay. For per-failure control over *which* errors
+  /// retry, pass an explicit `RetryInterceptor(shouldRetry: …)` in
+  /// [interceptors] instead (both compose; passing both nests retry by choice).
+  ///
   /// The remaining parameters are part of the canonical (Addendum A.2)
   /// signature but are owned by later stories; they are accepted now so the
   /// constructor is a single one-way door, and consumed when their story lands:
-  /// [retry]/[onReconnectAttempt] → Story 4.4 (retry/backoff),
   /// [synthesizeChunks] → Story 4.8 (CHUNK → START/CONTENT/END synthesis),
   /// [onConnect]/[onDisconnect] → Story 4.9 (connection lifecycle hooks).
   HttpAgent({
@@ -68,6 +76,8 @@ class HttpAgent implements AbstractAgent {
     void Function(Object)? onDisconnect,
     void Function(int attempt, Duration delay)? onReconnectAttempt,
   }) : _client = client,
+       _retry = retry,
+       _onReconnectAttempt = onReconnectAttempt,
        _interceptors = interceptors ?? const <Interceptor>[];
 
   /// The AG-UI SSE endpoint each run POSTs to.
@@ -81,6 +91,8 @@ class HttpAgent implements AbstractAgent {
 
   final http.Client? _client;
   final List<Interceptor> _interceptors;
+  final RetryPolicy? _retry;
+  final void Function(int attempt, Duration delay)? _onReconnectAttempt;
 
   /// Runs [input] against [url]: POSTs it as JSON and yields the typed events
   /// the endpoint streams back, in wire order.
@@ -90,11 +102,30 @@ class HttpAgent implements AbstractAgent {
   /// (the AC4 contract) — see the class dartdoc. Single-subscription, per the
   /// `AbstractAgent` contract.
   @override
-  Stream<AgUiEvent> run(RunAgentInput input) => InterceptorChain(
-    interceptors: _interceptors,
-    agent: _TransportTerminal(this),
-    errorClassifier: transportErrorClassifier(),
-  ).proceed(input);
+  Stream<AgUiEvent> run(RunAgentInput input) {
+    final retry = _retry;
+    // Prepend the auto-built retry interceptor (outermost) so its reconnect
+    // re-runs every user interceptor — including the Story 4.5 `AuthInterceptor`
+    // — on each attempt. The bool `RetryPolicy.jitter` maps to the engine's
+    // fraction (±20% on, 0 off).
+    final interceptors = retry == null
+        ? _interceptors
+        : <Interceptor>[
+            RetryInterceptor.forAgent(
+              maxAttempts: retry.maxAttempts,
+              baseDelay: retry.baseDelay,
+              maxDelay: retry.maxDelay,
+              jitter: retry.jitter ? 0.2 : 0.0,
+              onReconnectAttempt: _onReconnectAttempt,
+            ),
+            ..._interceptors,
+          ];
+    return InterceptorChain(
+      interceptors: interceptors,
+      agent: _TransportTerminal(this),
+      errorClassifier: transportErrorClassifier(),
+    ).proceed(input);
+  }
 }
 
 /// The transport-level terminal `AbstractAgent` wrapped by [HttpAgent.run]'s
