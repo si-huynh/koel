@@ -9,3 +9,6 @@ export 'src/mock_agent.dart';
 // Surfaces FixtureLoader (the four static loaders) and FixtureSession.
 // MockAgent.fromFixture is already reachable through the mock_agent export.
 export 'src/fixture_loader.dart';
+
+// Surfaces ToolHandlerTestHarness and the ToolHandler typedef (FR-G3).
+export 'src/tool_handler_test_harness.dart';
