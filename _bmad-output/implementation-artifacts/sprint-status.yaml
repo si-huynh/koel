@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-05-28
-last_updated: 2026-05-31  # 3-5 → done (code-review)
+last_updated: 2026-05-31  # epic-3 → done + retrospective done
 project: koel
 project_key: NOKEY
 tracking_system: file-system
@@ -77,13 +77,13 @@ development_status:
   epic-2-retrospective: done
 
   # Epic 3: Test Harness & Conformance — koel_test
-  epic-3: in-progress  # first story (3-1) created 2026-05-31 via create-story
+  epic-3: done  # all 5 stories done + retrospective 2026-05-31
   3-1-mock-agent-foundation: done
   3-2-synthesized-fixture-set: done
   3-3-fixture-loader-from-fixture: done
   3-4-tool-handler-test-harness: done
   3-5-conformance-runner-skeleton: done
-  epic-3-retrospective: optional
+  epic-3-retrospective: done
 
   # Epic 4: HTTP Transport — koel_http
   epic-4: backlog
