@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:koel_core/koel_core.dart';
 
+import 'connection/cancellation.dart';
 import 'connection/reconnect_policy.dart';
 import 'error/error_classifier.dart';
 import 'sse_parser.dart';
@@ -141,6 +142,13 @@ class _TransportTerminal implements AbstractAgent {
       );
     }
 
-    yield* const SseParser().parse(response.body);
+    // Wrap the parsed stream so a consumer cancel fires `response.abort()`
+    // immediately (prompt TCP teardown, NFR-8) and no event escapes after
+    // cancel — see [abortOnCancel]. The parser's `async*` strands cancel, so the
+    // abort cannot rely on cancel threading through it.
+    yield* abortOnCancel(
+      const SseParser().parse(response.body),
+      response.abort,
+    );
   }
 }

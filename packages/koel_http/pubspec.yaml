@@ -20,6 +20,16 @@ dependencies:
   # also the injectable seam the `HttpAgent` constructor exposes for tests
   # (`MockClient`) and Epic-5 backends.
   http: ^1.6.0
+  # Cancellation fallback (Story 4.3): when a client ignores abort, koel drops
+  # the connection silently and emits one `Level.WARNING` (runtime-once) — the
+  # SDK's sole logging facade per architecture §4 (no `print`). First use in the
+  # monorepo.
+  logging: ^1.3.0
+  # `@visibleForTesting` on the test-only reset of the abort-not-honored
+  # process-once gate (Story 4.3): production never resets it, so the annotation
+  # makes the analyzer reject any non-test caller — the once-per-process contract
+  # is enforced, not just documented.
+  meta: ^1.16.0
 
 dev_dependencies:
   koel_lints:

@@ -2,6 +2,11 @@
 
 Items deferred during BMAD workflows. Each entry records why the work was postponed.
 
+## Deferred from: code review of 4-3-cancellation-propagation (2026-05-31)
+
+- **Non-honoring teardown future + upstream subscription retained per cancellation** — When a client never settles its response-subscription `cancel()` future, the `Future.wait([...])` + `.then(timer.cancel)` continuation and the live upstream subscription are retained for each cancellation ([cancellation.dart:62-67,90](../../packages/koel_http/lib/src/connection/cancellation.dart#L62-L90)). Inherent to a client that refuses to release its socket — koel cannot force it; the watchdog already abandons the wait via the fired one-shot warning. Minor unbounded retention only under a pathological non-honoring client. Revisit if a real backend exhibits it.
+- **Non-2xx drain can hang on an active (non-idle) error body** — The non-2xx path `await response.body.drain()` ([http_agent.dart:134](../../packages/koel_http/lib/src/http_agent.dart#L134)) is bounded by `readTimeout` only for the inter-byte *idle* case; an error endpoint that keeps flooding bytes evades the idle bound and drain never completes. Pre-existing from Story 4.2 (drain added in its review), not introduced by 4.3.
+
 ## Deferred from: code review of 1-1-workspace-bootstrap (2026-05-28)
 
 - **koel_lints not wired to consumers** — Story 1.3 owns lint package population.

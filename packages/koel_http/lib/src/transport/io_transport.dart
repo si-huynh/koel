@@ -44,11 +44,13 @@ final class IoTransport implements Transport {
       // (→ transportTimeout) on the stream, after which cancel propagation tears
       // the connection (and any owned client) down.
       final bounded = response.stream.timeout(readTimeout);
-      final stream = owned
-          ? _closingOnTeardown(bounded, effectiveClient)
-          : bounded;
+      final connection = _Connection(bounded, effectiveClient, owned: owned);
 
-      return TransportResponse(statusCode: response.statusCode, body: stream);
+      return TransportResponse(
+        statusCode: response.statusCode,
+        body: connection.body,
+        abort: connection.abort,
+      );
     } catch (_) {
       // The connection never opened (refused / TLS / connect-timeout): release a
       // client we created before the failure escapes to the classifier.
@@ -56,49 +58,80 @@ final class IoTransport implements Transport {
       rethrow;
     }
   }
+}
 
-  /// Wraps [source] so the self-created [client] is closed exactly once the byte
-  /// stream terminates — drained, errored, or cancelled — and never while it is
-  /// still delivering bytes. Single-subscription, preserving pause/resume so
-  /// backpressure reaches the socket.
-  Stream<List<int>> _closingOnTeardown(
-    Stream<List<int>> source,
-    http.Client client,
-  ) {
+/// Owns the live response byte stream of one [IoTransport] connection.
+///
+/// Wraps the raw response stream so the connection tears down **exactly once** —
+/// on normal completion, error, consumer cancel, or an explicit [abort] —
+/// closing a self-created client and never leaking a socket. Single-subscription;
+/// `pause`/`resume` pass straight through so backpressure reaches the socket.
+///
+/// Story 4.2 wrapped only the *owned*-client path (to close the client on
+/// teardown); Story 4.3 wraps **every** path because [abort] and the
+/// silent-drop guarantee need a koel-owned subscription to cancel regardless of
+/// who owns the `http.Client`.
+final class _Connection {
+  _Connection(this._source, this._client, {required this.owned});
+
+  final Stream<List<int>> _source;
+  final http.Client _client;
+
+  /// Whether the `http.Client` was created by the transport (and so must be
+  /// closed here) rather than injected (consumer-owned — never closed here).
+  final bool owned;
+
+  // Nullable, not `late`: if `source.listen` throws synchronously inside
+  // `onListen`, the field stays unassigned and the `?.` guards close the client
+  // without a `LateInitializationError` masking the real failure.
+  StreamSubscription<List<int>>? _subscription;
+  var _clientClosed = false;
+
+  /// The consumer-facing byte stream — fed straight into `SseParser`.
+  late final Stream<List<int>> body = _wrap();
+
+  Stream<List<int>> _wrap() {
     final controller = StreamController<List<int>>(sync: true);
-    // Nullable, not `late`: if `source.listen` throws synchronously inside
-    // `onListen`, the field stays unassigned and the `?.` guards below close the
-    // client without a `LateInitializationError` masking the real failure.
-    StreamSubscription<List<int>>? subscription;
-    var closed = false;
-    void closeClient() {
-      if (closed) return;
-      closed = true;
-      client.close();
-    }
-
     controller
       ..onListen = () {
-        subscription = source.listen(
+        _subscription = _source.listen(
           controller.add,
           onError: controller.addError,
           onDone: () {
-            closeClient();
+            _closeClient();
             controller.close();
           },
         );
       }
       ..onPause = () {
-        subscription?.pause();
+        _subscription?.pause();
       }
       ..onResume = () {
-        subscription?.resume();
+        _subscription?.resume();
       }
       ..onCancel = () {
-        closeClient();
-        return subscription?.cancel();
+        _closeClient();
+        return _subscription?.cancel();
       };
     return controller.stream;
+  }
+
+  /// Prompt, explicit teardown for sub-50ms cancellation (Story 4.3, NFR-8):
+  /// cancels the live response subscription — which on `IOClient` destroys the
+  /// socket (TCP close) — and closes a self-created client. Idempotent; the
+  /// returned future settles when the cancel does, so the caller can detect a
+  /// client that ignores it.
+  Future<void> abort() async {
+    _closeClient();
+    await _subscription?.cancel();
+  }
+
+  /// Closes a self-created client exactly once; an injected client is
+  /// consumer-owned and never closed here.
+  void _closeClient() {
+    if (_clientClosed) return;
+    _clientClosed = true;
+    if (owned) _client.close();
   }
 }
 

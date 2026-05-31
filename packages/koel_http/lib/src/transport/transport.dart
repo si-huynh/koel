@@ -42,18 +42,32 @@ abstract interface class Transport {
   });
 }
 
-/// The headers + live byte stream of an opened SSE connection.
-///
-/// Deliberately minimal: a connection abort/close handle (for sub-50ms
-/// cancellation) is Story 4.3's concern and is added when that story actually
-/// uses it — 4.2 tears connections down via subscription-cancel propagation.
+/// The headers + live byte stream + abort handle of an opened SSE connection.
 final class TransportResponse {
-  /// Wraps the [statusCode] and live [body] byte stream of a response.
-  const TransportResponse({required this.statusCode, required this.body});
+  /// Wraps the [statusCode], live [body] byte stream, and [abort] handle of a
+  /// response.
+  const TransportResponse({
+    required this.statusCode,
+    required this.body,
+    required this.abort,
+  });
 
   /// The HTTP status of the response (checked for non-2xx by `HttpAgent`).
   final int statusCode;
 
   /// The live, unbuffered response byte stream — fed straight into `SseParser`.
   final Stream<List<int>> body;
+
+  /// Tears the connection down **promptly** for sub-50ms consumer cancellation
+  /// (NFR-8, Story 4.3): on native it cancels the live response subscription —
+  /// which on `IOClient` destroys the socket (TCP close) — and closes a
+  /// self-created client; on web (Story 4.10) it fires `AbortController.abort()`.
+  ///
+  /// `HttpAgent` invokes this the instant the consumer cancels the run, rather
+  /// than waiting for cancel to thread down through `SseParser`'s `async*`
+  /// stream. **Idempotent** and safe to call after the stream is already done.
+  /// The returned future settles when the underlying teardown does, so the
+  /// caller can detect a client that ignores abort (→ silent-drop + one-shot
+  /// warning).
+  final Future<void> Function() abort;
 }
