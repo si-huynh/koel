@@ -13,6 +13,8 @@ import 'package:koel_core/koel_core.dart';
 /// [FixtureLoader] while reading a fixture; it is parsed for validation and
 /// excluded from the returned event list (the loaders return events only).
 final class FixtureSession {
+  /// Constructs a fixture header from its six provenance fields. Built only by
+  /// [FixtureSession.fromJson] while [FixtureLoader] reads a fixture.
   const FixtureSession({
     required this.koelVersion,
     required this.adapter,
@@ -72,7 +74,7 @@ final class FixtureSession {
 
 /// Reads koel's bundled JSONL fixtures and decodes each into typed
 /// [AgUiEvent]s — the zero-setup load half of `koel_test` (the replay half is
-/// [MockAgent]).
+/// `MockAgent`).
 ///
 /// A namespace of statics (`abstract final` forbids both construction and
 /// subclassing). Each loader resolves its fixture through the **`package:`

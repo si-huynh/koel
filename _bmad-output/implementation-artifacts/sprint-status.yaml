@@ -1,6 +1,6 @@
 # generated: 2026-05-28
 # last_updated: 2026-05-31
-# (most-recent change: 2026-05-31 create-story — 3-4 → ready-for-dev)
+# (most-recent change: 2026-05-31 create-story — 3-5 → ready-for-dev)
 # project: koel
 # project_key: NOKEY
 # tracking_system: file-system
@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-05-28
-last_updated: 2026-05-31  # 3-4 → done (code-review)
+last_updated: 2026-05-31  # 3-5 → done (code-review)
 project: koel
 project_key: NOKEY
 tracking_system: file-system
@@ -82,7 +82,7 @@ development_status:
   3-2-synthesized-fixture-set: done
   3-3-fixture-loader-from-fixture: done
   3-4-tool-handler-test-harness: done
-  3-5-conformance-runner-skeleton: backlog
+  3-5-conformance-runner-skeleton: done
   epic-3-retrospective: optional
 
   # Epic 4: HTTP Transport — koel_http

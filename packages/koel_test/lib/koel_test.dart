@@ -12,3 +12,9 @@ export 'src/fixture_loader.dart';
 
 // Surfaces ToolHandlerTestHarness and the ToolHandler typedef (FR-G3).
 export 'src/tool_handler_test_harness.dart';
+
+// Surfaces ConformanceReport and ConformanceFailure (the runner's result types).
+export 'src/conformance_report.dart';
+
+// Surfaces ConformanceRunner (FR-G4 — the backend-agnostic conformance check).
+export 'src/conformance_runner.dart';

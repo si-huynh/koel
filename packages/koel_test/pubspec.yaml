@@ -14,7 +14,16 @@ dependencies:
   # signature, so this is a regular dependency, not a dev_dependency. Bare key —
   # resolved from the pub workspace.
   koel_core:
+  # ConformanceReport/ConformanceFailure are freezed (structural ==/hashCode for
+  # AR-16's AgUiEvent_equal). Runtime annotation only — freezed-ONLY, no
+  # json_serializable: the report needs value equality, not a JSON codec.
+  freezed_annotation: ^3.1.0
 
 dev_dependencies:
   koel_lints:
   test: ^1.25.0
+  # Exact koel_core pins (D2 / SCP-2026-05-29-B): freezed 3.2.6-dev.1 is the
+  # analyzer-12 stopgap — a stable freezed would break the workspace analyzer
+  # pin. Only generated artifact is *.freezed.dart (no *.g.dart, no build.yaml).
+  build_runner: ^2.4.0
+  freezed: 3.2.6-dev.1

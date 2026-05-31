@@ -1,0 +1,8 @@
+# Generated code carries no hand-written logic, so it is excluded from the
+# koel_test coverage number (NFR-12 / SC-2 "generated files excluded"). Honored
+# by package:coverage's `format_coverage` (the architecture-blessed mechanism,
+# §6) when run with this package as CWD — see the root `test:coverage` script.
+ignore_files:
+  - "**/*.freezed.dart"
+  - "**/*.g.dart"
+  - "**/*.mocks.dart"

@@ -4,7 +4,7 @@ import 'package:koel_core/koel_core.dart';
 
 import 'fixture_loader.dart';
 
-/// One timeline entry: the [event] to emit, and the [delay] to wait *before*
+/// One timeline entry: the `event` to emit, and the `delay` to wait *before*
 /// emitting it. Named fields so the replay loop can destructure by name.
 typedef _TimedEvent = ({AgUiEvent event, Duration delay});
 
