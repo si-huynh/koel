@@ -6,11 +6,11 @@ import '../state/chat_state.dart';
 /// consumer needs to resume a conversation across app launches, and no more.
 /// The surface is `async` because the real adapters do I/O — `HiveSessionStorage`
 /// (disk box) and `SecureSessionStorage` (`flutter_secure_storage`), both Epic 6;
-/// [InMemorySessionStorage] is the dependency-free reference impl that completes
+/// `InMemorySessionStorage` is the dependency-free reference impl that completes
 /// each future synchronously.
 ///
 /// **Error channel.** An adapter surfaces an I/O failure by completing its future
-/// with an error — the consumer's `ErrorClassifier` maps it to a [KoelError] at
+/// with an error — the consumer's `ErrorClassifier` maps it to a `KoelError` at
 /// the call site. `SessionStorage` itself does **not** wrap failures: persistence
 /// is below the classifier seam, not part of it. Absence is **not** an error —
 /// [load] of an unknown thread completes with `null`, and [delete] of an absent

@@ -11,12 +11,15 @@ part 'tool_definition.g.dart';
 /// [parameters] map; mutate via [copyWith] only.
 @freezed
 abstract class ToolDefinition with _$ToolDefinition {
+  /// Constructs a tool the agent may call, named [name] with [description] and a
+  /// JSON Schema [parameters] object.
   const factory ToolDefinition({
     required String name,
     required String description,
     @Default(<String, dynamic>{}) Map<String, dynamic> parameters,
   }) = _ToolDefinition;
 
+  /// Decodes a [ToolDefinition] from its JSON map.
   factory ToolDefinition.fromJson(Map<String, dynamic> json) =>
       _$ToolDefinitionFromJson(json);
 }

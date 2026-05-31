@@ -14,6 +14,7 @@ import 'tool_call.dart';
 /// [ChatState] argument and is deterministic (no wall-clock, no RNG), which is
 /// what keeps [ChatState] const-comparable and time-travel replay correct.
 abstract class ChatStateReducer {
+  /// Folds one [event] onto [state], returning the next [ChatState].
   ChatState reduce(ChatState state, AgUiEvent event);
 }
 
@@ -60,6 +61,7 @@ MessageRole _roleFrom(String role) => switch (role) {
 /// upstream, so the `*ChunkEvent` arms live in the no-op `default:` (defensive
 /// homing) rather than re-implementing chunk accumulation here.
 class DefaultChatStateReducer implements ChatStateReducer {
+  /// Const default constructor.
   const DefaultChatStateReducer();
 
   @override

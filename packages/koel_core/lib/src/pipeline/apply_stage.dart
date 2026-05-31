@@ -13,7 +13,7 @@ import 'stage_support.dart';
 /// mutates `state.messages` / `state.state` / `state.reasoningEcho`, which is
 /// what keeps `ChatState` const-comparable and Riverpod-friendly. The fold is a
 /// **side accumulation** surfaced to `ChatSession.stream` as `ChatState` — it
-/// does **not** rewrite the event stream, so [transformStage] (and the
+/// does **not** rewrite the event stream, so `transformStage` (and the
 /// subscribers after it) see the same `AgUiEvent`s flow through unchanged.
 ///
 /// This value is the apply stage with **no reducer registered**: a pure

@@ -14,6 +14,8 @@ abstract class ActivitySnapshotEvent extends AgUiEvent
     with _$ActivitySnapshotEvent {
   const ActivitySnapshotEvent._() : super();
 
+  /// Constructs an `ACTIVITY_SNAPSHOT` event keyed by [messageId] and
+  /// [activityType], carrying the full [content] and optional [replace] flag.
   const factory ActivitySnapshotEvent({
     required String messageId,
     required String activityType,
@@ -33,6 +35,7 @@ abstract class ActivitySnapshotEvent extends AgUiEvent
         replace: _optionalBool(json, 'replace'),
       );
 
+  /// Serializes to the `ACTIVITY_SNAPSHOT` wire shape.
   Map<String, dynamic> toJson() => {
     'type': 'ACTIVITY_SNAPSHOT',
     'messageId': messageId,
@@ -55,6 +58,8 @@ abstract class ActivitySnapshotEvent extends AgUiEvent
 abstract class ActivityDeltaEvent extends AgUiEvent with _$ActivityDeltaEvent {
   const ActivityDeltaEvent._() : super();
 
+  /// Constructs an `ACTIVITY_DELTA` event keyed by [messageId] and
+  /// [activityType], carrying the RFC 6902 [patches].
   const factory ActivityDeltaEvent({
     required String messageId,
     required String activityType,
@@ -72,6 +77,7 @@ abstract class ActivityDeltaEvent extends AgUiEvent with _$ActivityDeltaEvent {
         patches: _decodeObjectList(json, 'patch', JsonPatchOp.fromJson),
       );
 
+  /// Serializes to the `ACTIVITY_DELTA` wire shape.
   Map<String, dynamic> toJson() => {
     'type': 'ACTIVITY_DELTA',
     'messageId': messageId,

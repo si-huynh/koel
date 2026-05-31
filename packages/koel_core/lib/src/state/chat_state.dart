@@ -15,7 +15,22 @@ part 'chat_state.freezed.dart';
 /// inapplicable `STATE_DELTA`; `cancelled` when a run is cancelled by the client
 /// (Epic 4 transport). The reducer never invents `cancelled` itself — there is
 /// no cancel *event*; the cancellation seam sets it.
-enum RunPhase { idle, running, stepRunning, error, cancelled }
+enum RunPhase {
+  /// No run is active (before a run and after `RUN_FINISHED`).
+  idle,
+
+  /// A run is in progress.
+  running,
+
+  /// Execution is inside a `STEP_*` span.
+  stepRunning,
+
+  /// The last run failed (`RUN_ERROR` or an inapplicable `STATE_DELTA`).
+  error,
+
+  /// The run was cancelled by the client.
+  cancelled,
+}
 
 /// An immutable snapshot of a conversation — the value the reducer folds events
 /// into (FR-D2). The `apply` pipeline stage surfaces it as a side accumulation;
@@ -39,6 +54,9 @@ enum RunPhase { idle, running, stepRunning, error, cancelled }
 /// [phase] is the run lifecycle position.
 @freezed
 abstract class ChatState with _$ChatState {
+  /// Constructs a conversation snapshot from [messages], [pendingMessage],
+  /// [pendingToolCalls], [state], [reasoningEcho], [error], and [phase] — each
+  /// defaulting to its empty/idle value.
   const factory ChatState({
     @Default(<Message>[]) List<Message> messages,
     Message? pendingMessage,

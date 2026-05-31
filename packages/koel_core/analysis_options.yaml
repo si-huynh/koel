@@ -1,0 +1,26 @@
+# koel_core package-finalization analyzer config (Story 2.15).
+#
+# The FIRST member `analysis_options.yaml` in the workspace. Story 1.7's design
+# is "no member options" *so that `plugins:` lives only at the workspace root*
+# (the analyzer rejects `plugins:` in any inner file, `plugins_in_inner_options`).
+# This file declares NO `plugins:` — it only `include:`s the root (inheriting
+# `recommended.yaml` + the koel_lints plugin) and layers the package-contract
+# doc lints on top. Plugin-free → not a 1.7 reversal; scoped to koel_core so the
+# in-flight scaffold packages stay free of a premature doc gate until their own
+# finalize story.
+include: ../../analysis_options.yaml
+
+analyzer:
+  # Generated code is not part of the documented public contract; excluding it
+  # keeps `public_member_api_docs` from firing on freezed/json_serializable output.
+  exclude:
+    - "**/*.freezed.dart"
+    - "**/*.g.dart"
+
+linter:
+  rules:
+    # The machine enforcer of AC3: every exported public symbol carries a doc.
+    public_member_api_docs: true
+    # Keeps `[Type]` references in dartdoc resolvable so `dart doc` stays at
+    # exit 0 with no broken-reference warnings.
+    comment_references: true

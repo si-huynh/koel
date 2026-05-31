@@ -26,6 +26,8 @@ part of 'ag_ui_event.dart';
 abstract class RawEvent extends AgUiEvent with _$RawEvent {
   const RawEvent._() : super();
 
+  /// Constructs a `RAW` passthrough event carrying the opaque [payload] and
+  /// optional [source] tag.
   const factory RawEvent({
     required Map<String, dynamic> payload,
     String? source,
@@ -40,6 +42,7 @@ abstract class RawEvent extends AgUiEvent with _$RawEvent {
     source: _optionalString(json, 'source'),
   );
 
+  /// Serializes to the `RAW` wire shape.
   Map<String, dynamic> toJson() => {
     'type': 'RAW',
     'event': payload,

@@ -23,6 +23,8 @@ part 'state_conflict.freezed.dart';
 /// it).
 @freezed
 abstract class StateConflict with _$StateConflict {
+  /// Constructs a conflict descriptor from the [incomingPatches], the
+  /// [localState] carrying local mutations, and the last-snapshot [snapshotState].
   const factory StateConflict({
     required List<JsonPatchOp> incomingPatches,
     required Map<String, dynamic> localState,
@@ -37,6 +39,8 @@ abstract class StateConflict with _$StateConflict {
 /// consumers swap to inject a custom strategy (e.g. a three-way merge that reads
 /// [StateConflict.snapshotState]); the SDK default is [LastWriterWinsResolver].
 abstract class StateConflictResolver {
+  /// Resolves [conflict], returning the state map the next `ChatState.state`
+  /// should carry.
   Map<String, dynamic> resolve(StateConflict conflict);
 }
 
@@ -55,6 +59,7 @@ abstract class StateConflictResolver {
 /// (Story 2.14) catches it and folds it into `ChatState.error`, exactly as the
 /// reducer's `STATE_DELTA` branch already does.
 class LastWriterWinsResolver implements StateConflictResolver {
+  /// Const default constructor.
   const LastWriterWinsResolver();
 
   @override

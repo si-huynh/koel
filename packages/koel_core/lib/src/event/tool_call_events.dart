@@ -10,6 +10,8 @@ part of 'ag_ui_event.dart';
 abstract class ToolCallStartEvent extends AgUiEvent with _$ToolCallStartEvent {
   const ToolCallStartEvent._() : super();
 
+  /// Constructs a `TOOL_CALL_START` event opening the call keyed by [toolCallId],
+  /// naming [toolCallName] and the optional [parentMessageId].
   const factory ToolCallStartEvent({
     required String toolCallId,
     required String toolCallName,
@@ -26,6 +28,7 @@ abstract class ToolCallStartEvent extends AgUiEvent with _$ToolCallStartEvent {
         parentMessageId: _optionalString(json, 'parentMessageId'),
       );
 
+  /// Serializes to the `TOOL_CALL_START` wire shape.
   Map<String, dynamic> toJson() => {
     'type': 'TOOL_CALL_START',
     'toolCallId': toolCallId,
@@ -42,6 +45,8 @@ abstract class ToolCallStartEvent extends AgUiEvent with _$ToolCallStartEvent {
 abstract class ToolCallArgsEvent extends AgUiEvent with _$ToolCallArgsEvent {
   const ToolCallArgsEvent._() : super();
 
+  /// Constructs a `TOOL_CALL_ARGS` event carrying one [delta] of the arguments
+  /// for [toolCallId].
   const factory ToolCallArgsEvent({
     required String toolCallId,
     required String delta,
@@ -55,6 +60,7 @@ abstract class ToolCallArgsEvent extends AgUiEvent with _$ToolCallArgsEvent {
         delta: _requireString(json, 'delta'),
       );
 
+  /// Serializes to the `TOOL_CALL_ARGS` wire shape.
   Map<String, dynamic> toJson() => {
     'type': 'TOOL_CALL_ARGS',
     'toolCallId': toolCallId,
@@ -67,6 +73,7 @@ abstract class ToolCallArgsEvent extends AgUiEvent with _$ToolCallArgsEvent {
 abstract class ToolCallEndEvent extends AgUiEvent with _$ToolCallEndEvent {
   const ToolCallEndEvent._() : super();
 
+  /// Constructs a `TOOL_CALL_END` event closing the call keyed by [toolCallId].
   const factory ToolCallEndEvent({required String toolCallId}) =
       _ToolCallEndEvent;
 
@@ -75,6 +82,7 @@ abstract class ToolCallEndEvent extends AgUiEvent with _$ToolCallEndEvent {
   static ToolCallEndEvent fromJson(Map<String, dynamic> json) =>
       ToolCallEndEvent(toolCallId: _requireString(json, 'toolCallId'));
 
+  /// Serializes to the `TOOL_CALL_END` wire shape.
   Map<String, dynamic> toJson() => {
     'type': 'TOOL_CALL_END',
     'toolCallId': toolCallId,
@@ -96,6 +104,8 @@ abstract class ToolCallResultEvent extends AgUiEvent
     with _$ToolCallResultEvent {
   const ToolCallResultEvent._() : super();
 
+  /// Constructs a `TOOL_CALL_RESULT` event carrying [content] for the call keyed
+  /// by [toolCallId] and result [messageId], with optional [role].
   const factory ToolCallResultEvent({
     required String messageId,
     required String toolCallId,
@@ -114,6 +124,7 @@ abstract class ToolCallResultEvent extends AgUiEvent
         role: _optionalString(json, 'role'),
       );
 
+  /// Serializes to the `TOOL_CALL_RESULT` wire shape.
   Map<String, dynamic> toJson() => {
     'type': 'TOOL_CALL_RESULT',
     'messageId': messageId,
@@ -136,6 +147,8 @@ abstract class ToolCallResultEvent extends AgUiEvent
 abstract class ToolCallChunkEvent extends AgUiEvent with _$ToolCallChunkEvent {
   const ToolCallChunkEvent._() : super();
 
+  /// Constructs a `TOOL_CALL_CHUNK` convenience event from the optional
+  /// [toolCallId], [toolCallName], [parentMessageId], and [delta].
   const factory ToolCallChunkEvent({
     String? toolCallId,
     String? toolCallName,
@@ -153,6 +166,7 @@ abstract class ToolCallChunkEvent extends AgUiEvent with _$ToolCallChunkEvent {
         delta: _optionalString(json, 'delta'),
       );
 
+  /// Serializes to the `TOOL_CALL_CHUNK` wire shape.
   Map<String, dynamic> toJson() => {
     'type': 'TOOL_CALL_CHUNK',
     if (toolCallId != null) 'toolCallId': toolCallId,

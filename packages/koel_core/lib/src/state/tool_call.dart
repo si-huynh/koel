@@ -17,6 +17,8 @@ part 'tool_call.freezed.dart';
 /// every field). Mutate via [copyWith] only.
 @freezed
 abstract class ToolCall with _$ToolCall {
+  /// Constructs an in-flight tool call identified by [id], invoking [name] with
+  /// accumulated [arguments] and optional [parentMessageId].
   const factory ToolCall({
     required String id,
     required String name,

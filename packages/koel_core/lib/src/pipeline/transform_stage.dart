@@ -4,7 +4,7 @@ import '../event/ag_ui_event.dart';
 
 /// Pipeline stage 4 — applies consumer-registered
 /// `StreamTransformer<AgUiEvent, AgUiEvent>` instances in registration order,
-/// **after** [applyStage] so transforms see the post-reduce stream (Addendum
+/// **after** `applyStage` so transforms see the post-reduce stream (Addendum
 /// F.4). This is the extension seam for PII redaction, language translation,
 /// custom telemetry, and A/B event tagging.
 ///

@@ -8,6 +8,7 @@ abstract class ReasoningStartEvent extends AgUiEvent
     with _$ReasoningStartEvent {
   const ReasoningStartEvent._() : super();
 
+  /// Constructs a `REASONING_START` event opening the span keyed by [messageId].
   const factory ReasoningStartEvent({required String messageId}) =
       _ReasoningStartEvent;
 
@@ -16,6 +17,7 @@ abstract class ReasoningStartEvent extends AgUiEvent
   static ReasoningStartEvent fromJson(Map<String, dynamic> json) =>
       ReasoningStartEvent(messageId: _requireString(json, 'messageId'));
 
+  /// Serializes to the `REASONING_START` wire shape.
   Map<String, dynamic> toJson() => {
     'type': 'REASONING_START',
     'messageId': messageId,
@@ -27,6 +29,7 @@ abstract class ReasoningStartEvent extends AgUiEvent
 abstract class ReasoningEndEvent extends AgUiEvent with _$ReasoningEndEvent {
   const ReasoningEndEvent._() : super();
 
+  /// Constructs a `REASONING_END` event closing the span keyed by [messageId].
   const factory ReasoningEndEvent({required String messageId}) =
       _ReasoningEndEvent;
 
@@ -35,6 +38,7 @@ abstract class ReasoningEndEvent extends AgUiEvent with _$ReasoningEndEvent {
   static ReasoningEndEvent fromJson(Map<String, dynamic> json) =>
       ReasoningEndEvent(messageId: _requireString(json, 'messageId'));
 
+  /// Serializes to the `REASONING_END` wire shape.
   Map<String, dynamic> toJson() => {
     'type': 'REASONING_END',
     'messageId': messageId,
@@ -53,6 +57,8 @@ abstract class ReasoningMessageStartEvent extends AgUiEvent
     with _$ReasoningMessageStartEvent {
   const ReasoningMessageStartEvent._() : super();
 
+  /// Constructs a `REASONING_MESSAGE_START` event opening the streamed message
+  /// keyed by [messageId] with [role].
   const factory ReasoningMessageStartEvent({
     required String messageId,
     required String role,
@@ -66,6 +72,7 @@ abstract class ReasoningMessageStartEvent extends AgUiEvent
         role: _requireString(json, 'role'),
       );
 
+  /// Serializes to the `REASONING_MESSAGE_START` wire shape.
   Map<String, dynamic> toJson() => {
     'type': 'REASONING_MESSAGE_START',
     'messageId': messageId,
@@ -80,6 +87,8 @@ abstract class ReasoningMessageContentEvent extends AgUiEvent
     with _$ReasoningMessageContentEvent {
   const ReasoningMessageContentEvent._() : super();
 
+  /// Constructs a `REASONING_MESSAGE_CONTENT` event carrying one [delta] of the
+  /// message keyed by [messageId].
   const factory ReasoningMessageContentEvent({
     required String messageId,
     required String delta,
@@ -93,6 +102,7 @@ abstract class ReasoningMessageContentEvent extends AgUiEvent
         delta: _requireString(json, 'delta'),
       );
 
+  /// Serializes to the `REASONING_MESSAGE_CONTENT` wire shape.
   Map<String, dynamic> toJson() => {
     'type': 'REASONING_MESSAGE_CONTENT',
     'messageId': messageId,
@@ -107,6 +117,8 @@ abstract class ReasoningMessageEndEvent extends AgUiEvent
     with _$ReasoningMessageEndEvent {
   const ReasoningMessageEndEvent._() : super();
 
+  /// Constructs a `REASONING_MESSAGE_END` event closing the streamed message
+  /// keyed by [messageId].
   const factory ReasoningMessageEndEvent({required String messageId}) =
       _ReasoningMessageEndEvent;
 
@@ -115,6 +127,7 @@ abstract class ReasoningMessageEndEvent extends AgUiEvent
   static ReasoningMessageEndEvent fromJson(Map<String, dynamic> json) =>
       ReasoningMessageEndEvent(messageId: _requireString(json, 'messageId'));
 
+  /// Serializes to the `REASONING_MESSAGE_END` wire shape.
   Map<String, dynamic> toJson() => {
     'type': 'REASONING_MESSAGE_END',
     'messageId': messageId,
@@ -135,6 +148,8 @@ abstract class ReasoningMessageChunkEvent extends AgUiEvent
     with _$ReasoningMessageChunkEvent {
   const ReasoningMessageChunkEvent._() : super();
 
+  /// Constructs a `REASONING_MESSAGE_CHUNK` convenience event from the optional
+  /// [messageId] and [delta].
   const factory ReasoningMessageChunkEvent({String? messageId, String? delta}) =
       _ReasoningMessageChunkEvent;
 
@@ -146,6 +161,7 @@ abstract class ReasoningMessageChunkEvent extends AgUiEvent
         delta: _optionalString(json, 'delta'),
       );
 
+  /// Serializes to the `REASONING_MESSAGE_CHUNK` wire shape.
   Map<String, dynamic> toJson() => {
     'type': 'REASONING_MESSAGE_CHUNK',
     if (messageId != null) 'messageId': messageId,
@@ -174,6 +190,9 @@ abstract class ReasoningEncryptedValueEvent extends AgUiEvent
     with _$ReasoningEncryptedValueEvent {
   const ReasoningEncryptedValueEvent._() : super();
 
+  /// Constructs a `REASONING_ENCRYPTED_VALUE` event keyed by [entityId] and
+  /// [subtype], carrying the [encryptedValue] bytes and verbatim
+  /// [encryptedValueBase64] wire string.
   const factory ReasoningEncryptedValueEvent({
     required String entityId,
     required String subtype,
@@ -196,6 +215,7 @@ abstract class ReasoningEncryptedValueEvent extends AgUiEvent
     );
   }
 
+  /// Serializes to the `REASONING_ENCRYPTED_VALUE` wire shape.
   Map<String, dynamic> toJson() => {
     'type': 'REASONING_ENCRYPTED_VALUE',
     'subtype': subtype,

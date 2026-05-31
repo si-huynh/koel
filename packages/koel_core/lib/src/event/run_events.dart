@@ -11,6 +11,8 @@ part of 'ag_ui_event.dart';
 abstract class RunStartedEvent extends AgUiEvent with _$RunStartedEvent {
   const RunStartedEvent._() : super();
 
+  /// Constructs a `RUN_STARTED` for [runId] on [threadId], optionally nested
+  /// under [parentRunId].
   const factory RunStartedEvent({
     required String threadId,
     required String runId,
@@ -25,6 +27,8 @@ abstract class RunStartedEvent extends AgUiEvent with _$RunStartedEvent {
     parentRunId: _optionalString(json, 'parentRunId'),
   );
 
+  /// Serializes to the `RUN_STARTED` wire shape, omitting an absent
+  /// [parentRunId].
   Map<String, dynamic> toJson() => {
     'type': 'RUN_STARTED',
     'threadId': threadId,
@@ -43,6 +47,8 @@ abstract class RunStartedEvent extends AgUiEvent with _$RunStartedEvent {
 abstract class RunFinishedEvent extends AgUiEvent with _$RunFinishedEvent {
   const RunFinishedEvent._() : super();
 
+  /// Constructs a `RUN_FINISHED` for [runId] on [threadId], carrying the
+  /// optional backend [result].
   const factory RunFinishedEvent({
     required String threadId,
     required String runId,
@@ -58,6 +64,7 @@ abstract class RunFinishedEvent extends AgUiEvent with _$RunFinishedEvent {
         result: json['result'],
       );
 
+  /// Serializes to the `RUN_FINISHED` wire shape, omitting an absent [result].
   Map<String, dynamic> toJson() => {
     'type': 'RUN_FINISHED',
     'threadId': threadId,
@@ -81,6 +88,7 @@ abstract class RunFinishedEvent extends AgUiEvent with _$RunFinishedEvent {
 abstract class RunErrorEvent extends AgUiEvent with _$RunErrorEvent {
   const RunErrorEvent._() : super();
 
+  /// Constructs a `RUN_ERROR` carrying the typed [error].
   const factory RunErrorEvent({required KoelError error}) = _RunErrorEvent;
 
   /// Decodes a `RUN_ERROR` wire payload into an [AgentError]. Throws
@@ -93,6 +101,8 @@ abstract class RunErrorEvent extends AgUiEvent with _$RunErrorEvent {
     ),
   );
 
+  /// Serializes to the `RUN_ERROR` wire shape, preferring the verbatim wire
+  /// code and omitting a bare `unknown` so it round-trips to an absent `code`.
   Map<String, dynamic> toJson() {
     final error = this.error;
     // Prefer the verbatim wire code (`agentCode`); fall back to the classified

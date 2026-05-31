@@ -12,6 +12,8 @@ abstract class TextMessageStartEvent extends AgUiEvent
     with _$TextMessageStartEvent {
   const TextMessageStartEvent._() : super();
 
+  /// Constructs a `TEXT_MESSAGE_START` event opening the streamed message keyed
+  /// by [messageId] with [role].
   const factory TextMessageStartEvent({
     required String messageId,
     required String role,
@@ -25,6 +27,7 @@ abstract class TextMessageStartEvent extends AgUiEvent
         role: _requireString(json, 'role'),
       );
 
+  /// Serializes to the `TEXT_MESSAGE_START` wire shape.
   Map<String, dynamic> toJson() => {
     'type': 'TEXT_MESSAGE_START',
     'messageId': messageId,
@@ -39,6 +42,8 @@ abstract class TextMessageContentEvent extends AgUiEvent
     with _$TextMessageContentEvent {
   const TextMessageContentEvent._() : super();
 
+  /// Constructs a `TEXT_MESSAGE_CONTENT` event carrying one [delta] of the
+  /// message keyed by [messageId].
   const factory TextMessageContentEvent({
     required String messageId,
     required String delta,
@@ -52,6 +57,7 @@ abstract class TextMessageContentEvent extends AgUiEvent
         delta: _requireString(json, 'delta'),
       );
 
+  /// Serializes to the `TEXT_MESSAGE_CONTENT` wire shape.
   Map<String, dynamic> toJson() => {
     'type': 'TEXT_MESSAGE_CONTENT',
     'messageId': messageId,
@@ -65,6 +71,8 @@ abstract class TextMessageEndEvent extends AgUiEvent
     with _$TextMessageEndEvent {
   const TextMessageEndEvent._() : super();
 
+  /// Constructs a `TEXT_MESSAGE_END` event closing the streamed message keyed by
+  /// [messageId].
   const factory TextMessageEndEvent({required String messageId}) =
       _TextMessageEndEvent;
 
@@ -73,6 +81,7 @@ abstract class TextMessageEndEvent extends AgUiEvent
   static TextMessageEndEvent fromJson(Map<String, dynamic> json) =>
       TextMessageEndEvent(messageId: _requireString(json, 'messageId'));
 
+  /// Serializes to the `TEXT_MESSAGE_END` wire shape.
   Map<String, dynamic> toJson() => {
     'type': 'TEXT_MESSAGE_END',
     'messageId': messageId,
@@ -93,6 +102,8 @@ abstract class TextMessageChunkEvent extends AgUiEvent
     with _$TextMessageChunkEvent {
   const TextMessageChunkEvent._() : super();
 
+  /// Constructs a `TEXT_MESSAGE_CHUNK` convenience event from the optional
+  /// [messageId], [role], and [delta].
   const factory TextMessageChunkEvent({
     String? messageId,
     String? role,
@@ -108,6 +119,7 @@ abstract class TextMessageChunkEvent extends AgUiEvent
         delta: _optionalString(json, 'delta'),
       );
 
+  /// Serializes to the `TEXT_MESSAGE_CHUNK` wire shape.
   Map<String, dynamic> toJson() => {
     'type': 'TEXT_MESSAGE_CHUNK',
     if (messageId != null) 'messageId': messageId,

@@ -4,7 +4,19 @@ part 'message.freezed.dart';
 part 'message.g.dart';
 
 /// Author of a [Message] in the AG-UI conversation.
-enum MessageRole { user, assistant, system, tool }
+enum MessageRole {
+  /// A message authored by the end user.
+  user,
+
+  /// A message authored by the assistant.
+  assistant,
+
+  /// A system/instruction message.
+  system,
+
+  /// A tool-result message.
+  tool,
+}
 
 /// A single conversation message — the element type of
 /// `RunAgentInput.messages` (and, from Story 2.12, `ChatState.messages`).
@@ -18,6 +30,8 @@ enum MessageRole { user, assistant, system, tool }
 /// `Message` shape; they are `null` for plain user/assistant/system turns.
 @freezed
 abstract class Message with _$Message {
+  /// Constructs a message identified by [id], authored by [role], carrying
+  /// [content] at [timestamp], with optional [toolCallId] and [name].
   const factory Message({
     required String id,
     required MessageRole role,
@@ -27,6 +41,7 @@ abstract class Message with _$Message {
     String? name,
   }) = _Message;
 
+  /// Decodes a [Message] from its JSON map.
   factory Message.fromJson(Map<String, dynamic> json) =>
       _$MessageFromJson(json);
 }

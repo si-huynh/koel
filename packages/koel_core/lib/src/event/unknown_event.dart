@@ -29,6 +29,8 @@ part of 'ag_ui_event.dart';
 abstract class UnknownAgUiEvent extends AgUiEvent with _$UnknownAgUiEvent {
   const UnknownAgUiEvent._() : super();
 
+  /// Constructs the forward-compat fallback carrying the unrecognized wire
+  /// [type] and the verbatim [rawJson] payload.
   const factory UnknownAgUiEvent({
     required String type,
     required Map<String, dynamic> rawJson,

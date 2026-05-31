@@ -7,7 +7,7 @@ import '../event/ag_ui_event.dart';
 /// is **after** the interceptor chain and the four-stage pipeline have run, so a
 /// subscriber sees canonical events (e.g. a synthesized [ToolCallStartEvent],
 /// never a raw [ToolCallChunkEvent]). Subscribers are **observation-only**: a
-/// callback must never mutate the client, the session, or the [ChatState] it is
+/// callback must never mutate the client, the session, or the `ChatState` it is
 /// watching — it reads and reacts (log, count, forward), nothing more.
 ///
 /// **Extend, do not implement.** Every callback ships an empty default body, so
@@ -40,6 +40,7 @@ import '../event/ag_ui_event.dart';
 /// to the current `Zone` (not silently swallowed) and does **not** stop the
 /// others. Do not rely on a throw to abort the run — it won't.
 abstract class AgentSubscriber {
+  /// Const base constructor for subclasses.
   const AgentSubscriber();
 
   /// The agent began a run (`RUN_STARTED`).

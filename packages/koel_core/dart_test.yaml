@@ -1,0 +1,7 @@
+# Declares the test tags koel_core uses so `dart test` stays warning-free.
+#
+# `perf` marks the regression-baseline benches (`test/perf/*_bench.dart`). They
+# are baseline tooling, not unit tests, and are excluded from `melos run test`
+# via `--exclude-tags=perf`; run them on demand or in the Epic 9 perf job.
+tags:
+  perf: {} # no special config — the declaration alone suppresses the "undeclared tag" warning

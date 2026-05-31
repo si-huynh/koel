@@ -6,7 +6,7 @@ import 'stage_support.dart';
 /// Pipeline stage 1 — synthesizes the streaming `*_CHUNK` convenience shapes
 /// into the canonical `START` → `CONTENT`/`ARGS` → `END` triplets every
 /// downstream stage and consumer expects (Addendum F.2). Runs **before**
-/// [verifyStage] because verify checks the `START`/`END` pairing this stage
+/// `verifyStage` because verify checks the `START`/`END` pairing this stage
 /// creates.
 ///
 /// **What it synthesizes.** For a run of [ToolCallChunkEvent]s sharing a
@@ -38,7 +38,7 @@ import 'stage_support.dart';
 /// not disturb any open envelope. This stage emits **no** [RunErrorEvent] —
 /// shape *transformation* is its only job; shape *validation* (orphan `END`,
 /// `ARGS` outside an envelope, an empty `messageId` on a text/reasoning event)
-/// belongs to [verifyStage], which runs next precisely so it sees the pairs this
+/// belongs to `verifyStage`, which runs next precisely so it sees the pairs this
 /// stage synthesizes.
 ///
 /// **Lifecycle.** Stateful per subscription, single-subscription, and

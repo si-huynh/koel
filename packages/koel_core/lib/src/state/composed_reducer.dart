@@ -12,8 +12,10 @@ import 'chat_state_reducer.dart';
 /// one's field). An empty list is the identity reducer (returns `state`
 /// unchanged). Purity composes: if every member is pure, so is the composition.
 class ComposedReducer implements ChatStateReducer {
+  /// Composes [reducers] left-to-right over the same event.
   const ComposedReducer(this.reducers);
 
+  /// The reducers folded in order; a later one can override an earlier one.
   final List<ChatStateReducer> reducers;
 
   @override

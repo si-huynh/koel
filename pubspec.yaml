@@ -27,11 +27,24 @@ melos:
       description: Run `dart analyze .` per package (NFR-13 gate).
       exec: dart analyze .
     test:
-      description: wired in story 2.15
-      run: dart --version
+      description: Run `dart test` per package (CWD = package root for fixture reads, deferred-work.md :158), excluding the perf benches. Scaffold packages with no test files yet (exit 79) are tolerated; real failures propagate. See tool/test_package.sh.
+      exec: bash "$MELOS_ROOT_PATH/tool/test_package.sh"
     test:coverage:
-      description: wired in story 2.15
-      run: dart --version
+      description: koel_core line + branch coverage ≥ 90% (NFR-12). Generated files excluded via packages/koel_core/coverage_options.yaml; perf benches excluded by tag.
+      run: |
+        set -e
+        cd packages/koel_core
+        dart test --exclude-tags=perf --coverage=coverage --branch-coverage
+        format_coverage --lcov --in=coverage --out=coverage/lcov.info --report-on=lib --check-ignore
+        awk -F: '
+          /^LF:/{lf+=$2} /^LH:/{lh+=$2}
+          /^BRDA:/{split($2,a,","); brf++; if(a[4]!="-" && a[4]+0>0) brh++}
+          END{
+            line=(lf>0)?100*lh/lf:0; branch=(brf>0)?100*brh/brf:100;
+            printf("koel_core coverage — line=%.2f%% (%d/%d) branch=%.2f%% (%d/%d)\n",line,lh,lf,branch,brh,brf);
+            if(line<90){printf("FAIL: line coverage %.2f%% < 90%% (NFR-12)\n",line); exit 1}
+            if(branch<90){printf("FAIL: branch coverage %.2f%% < 90%% (NFR-12)\n",branch); exit 1}
+          }' coverage/lcov.info
     build:
       description: Run `build_runner build` in packages that declare build_runner (codegen-drift gate).
       exec: dart run build_runner build

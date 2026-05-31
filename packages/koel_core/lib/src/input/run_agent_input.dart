@@ -25,6 +25,9 @@ part 'run_agent_input.freezed.dart';
 /// this payload (Epic 4, `koel_http`).
 @freezed
 abstract class RunAgentInput with _$RunAgentInput {
+  /// Constructs a run payload under [threadId]/[runId], carrying the [state],
+  /// [messages], [tools], [context], [forwardedProps], and optional
+  /// [reasoningEcho].
   const factory RunAgentInput({
     required String threadId,
     required String runId,

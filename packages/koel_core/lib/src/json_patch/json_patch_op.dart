@@ -7,7 +7,7 @@ part 'json_patch_op.freezed.dart';
 
 /// One RFC 6902 JSON Patch operation — the typed, value-comparable unit a
 /// `STATE_DELTA` carries (`StateDeltaEvent.patches: List<JsonPatchOp>`, Story
-/// 2.6) and [JsonPatch.apply] folds into a state document.
+/// 2.6) and `JsonPatch.apply` folds into a state document.
 ///
 /// The union is sealed and closed at compile time:
 /// `{ AddOp, RemoveOp, ReplaceOp, MoveOp, CopyOp, TestOp }` — one subtype per
@@ -75,6 +75,7 @@ sealed class JsonPatchOp {
 abstract class AddOp extends JsonPatchOp with _$AddOp {
   const AddOp._() : super();
 
+  /// Constructs an `add` op inserting [value] at [path].
   const factory AddOp({required String path, Object? value}) = _AddOp;
 
   @override
@@ -86,6 +87,7 @@ abstract class AddOp extends JsonPatchOp with _$AddOp {
 abstract class RemoveOp extends JsonPatchOp with _$RemoveOp {
   const RemoveOp._() : super();
 
+  /// Constructs a `remove` op deleting the value at [path].
   const factory RemoveOp({required String path}) = _RemoveOp;
 
   @override
@@ -98,6 +100,7 @@ abstract class RemoveOp extends JsonPatchOp with _$RemoveOp {
 abstract class ReplaceOp extends JsonPatchOp with _$ReplaceOp {
   const ReplaceOp._() : super();
 
+  /// Constructs a `replace` op setting [path] to [value].
   const factory ReplaceOp({required String path, Object? value}) = _ReplaceOp;
 
   @override
@@ -115,6 +118,7 @@ abstract class ReplaceOp extends JsonPatchOp with _$ReplaceOp {
 abstract class MoveOp extends JsonPatchOp with _$MoveOp {
   const MoveOp._() : super();
 
+  /// Constructs a `move` op relocating the value from [from] to [path].
   const factory MoveOp({required String from, required String path}) = _MoveOp;
 
   @override
@@ -127,6 +131,7 @@ abstract class MoveOp extends JsonPatchOp with _$MoveOp {
 abstract class CopyOp extends JsonPatchOp with _$CopyOp {
   const CopyOp._() : super();
 
+  /// Constructs a `copy` op deep-copying the value from [from] to [path].
   const factory CopyOp({required String from, required String path}) = _CopyOp;
 
   @override
@@ -139,6 +144,7 @@ abstract class CopyOp extends JsonPatchOp with _$CopyOp {
 abstract class TestOp extends JsonPatchOp with _$TestOp {
   const TestOp._() : super();
 
+  /// Constructs a `test` op asserting the value at [path] deeply equals [value].
   const factory TestOp({required String path, Object? value}) = _TestOp;
 
   @override

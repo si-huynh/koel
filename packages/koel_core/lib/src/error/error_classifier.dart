@@ -36,6 +36,7 @@ abstract class ErrorClassifier {
 /// subclasses (Epic 4/5), which may import `dart:io` and inspect status codes.
 /// The base maps raw exception shapes only.
 class DefaultErrorClassifier implements ErrorClassifier {
+  /// Const default constructor.
   const DefaultErrorClassifier();
 
   @override

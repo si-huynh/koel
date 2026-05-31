@@ -7,12 +7,13 @@ part of 'ag_ui_event.dart';
 /// **Wire-key divergence:** the Dart field is [state] (per Addendum §A.1) but
 /// the wire key is `snapshot`. Typed `Map<String, dynamic>` because AG-UI state
 /// is a JSON object — the same shape `RunAgentInput.state` carries and
-/// [JsonPatch.apply] folds [StateDeltaEvent] patches onto. The nested object is
+/// `JsonPatch.apply` folds [StateDeltaEvent] patches onto. The nested object is
 /// compared deeply via freezed's `DeepCollectionEquality`.
 @freezed
 abstract class StateSnapshotEvent extends AgUiEvent with _$StateSnapshotEvent {
   const StateSnapshotEvent._() : super();
 
+  /// Constructs a `STATE_SNAPSHOT` event carrying the full replacement [state].
   const factory StateSnapshotEvent({required Map<String, dynamic> state}) =
       _StateSnapshotEvent;
 
@@ -22,6 +23,7 @@ abstract class StateSnapshotEvent extends AgUiEvent with _$StateSnapshotEvent {
   static StateSnapshotEvent fromJson(Map<String, dynamic> json) =>
       StateSnapshotEvent(state: _requireMap(json, 'snapshot'));
 
+  /// Serializes to the `STATE_SNAPSHOT` wire shape.
   Map<String, dynamic> toJson() => {
     'type': 'STATE_SNAPSHOT',
     'snapshot': state,
@@ -30,7 +32,7 @@ abstract class StateSnapshotEvent extends AgUiEvent with _$StateSnapshotEvent {
 
 /// `STATE_DELTA` — an incremental mutation of the shared agent state as RFC 6902
 /// JSON Patch ops the reducer (Story 2.12) folds onto the current state via
-/// [JsonPatch.apply]. This event only **transports** the [patches]; the
+/// `JsonPatch.apply`. This event only **transports** the [patches]; the
 /// empty-patches and invalid-op rejection is the verify stage's job (Story 2.11
 /// / Addendum F.1), so an empty `delta` decodes to an empty [patches] list here.
 ///
@@ -40,6 +42,7 @@ abstract class StateSnapshotEvent extends AgUiEvent with _$StateSnapshotEvent {
 abstract class StateDeltaEvent extends AgUiEvent with _$StateDeltaEvent {
   const StateDeltaEvent._() : super();
 
+  /// Constructs a `STATE_DELTA` event carrying the RFC 6902 [patches].
   const factory StateDeltaEvent({required List<JsonPatchOp> patches}) =
       _StateDeltaEvent;
 
@@ -51,6 +54,7 @@ abstract class StateDeltaEvent extends AgUiEvent with _$StateDeltaEvent {
     patches: _decodeObjectList(json, 'delta', JsonPatchOp.fromJson),
   );
 
+  /// Serializes to the `STATE_DELTA` wire shape.
   Map<String, dynamic> toJson() => {
     'type': 'STATE_DELTA',
     'delta': [for (final patch in patches) patch.toJson()],
@@ -67,6 +71,7 @@ abstract class MessagesSnapshotEvent extends AgUiEvent
     with _$MessagesSnapshotEvent {
   const MessagesSnapshotEvent._() : super();
 
+  /// Constructs a `MESSAGES_SNAPSHOT` event carrying the full [messages] replay.
   const factory MessagesSnapshotEvent({required List<Message> messages}) =
       _MessagesSnapshotEvent;
 
@@ -79,6 +84,7 @@ abstract class MessagesSnapshotEvent extends AgUiEvent
         messages: _decodeObjectList(json, 'messages', Message.fromJson),
       );
 
+  /// Serializes to the `MESSAGES_SNAPSHOT` wire shape.
   Map<String, dynamic> toJson() => {
     'type': 'MESSAGES_SNAPSHOT',
     'messages': [for (final message in messages) message.toJson()],

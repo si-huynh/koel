@@ -52,6 +52,8 @@ sealed class KoelError implements Exception {
 abstract class TransportError extends KoelError with _$TransportError {
   const TransportError._() : super();
 
+  /// Constructs a transport-boundary failure with [message], [code], optional
+  /// [cause], and an optional HTTP [statusCode].
   const factory TransportError({
     required String message,
     required KoelErrorCode code,
@@ -69,6 +71,8 @@ abstract class TransportError extends KoelError with _$TransportError {
 abstract class ProtocolError extends KoelError with _$ProtocolError {
   const ProtocolError._() : super();
 
+  /// Constructs an AG-UI protocol failure with [message], [code], optional
+  /// [cause], and the optional offending [eventType].
   const factory ProtocolError({
     required String message,
     required KoelErrorCode code,
@@ -88,6 +92,8 @@ abstract class ProtocolError extends KoelError with _$ProtocolError {
 abstract class AgentError extends KoelError with _$AgentError {
   const AgentError._() : super();
 
+  /// Constructs an agent-execution failure with [message], [code], optional
+  /// [cause], and the optional backend-specific [agentCode].
   const factory AgentError({
     required String message,
     required KoelErrorCode code,
@@ -105,6 +111,8 @@ abstract class AgentError extends KoelError with _$AgentError {
 abstract class BusinessError extends KoelError with _$BusinessError {
   const BusinessError._() : super();
 
+  /// Constructs a business/policy failure with [message], [code], optional
+  /// [cause], and structured [details].
   const factory BusinessError({
     required String message,
     required KoelErrorCode code,

@@ -20,6 +20,7 @@ part of 'ag_ui_event.dart';
 abstract class CustomEvent extends AgUiEvent with _$CustomEvent {
   const CustomEvent._() : super();
 
+  /// Constructs a `CUSTOM` extension event keyed by [name] carrying [value].
   const factory CustomEvent({required String name, required Object? value}) =
       _CustomEvent;
 
@@ -30,6 +31,7 @@ abstract class CustomEvent extends AgUiEvent with _$CustomEvent {
   static CustomEvent fromJson(Map<String, dynamic> json) =>
       CustomEvent(name: _requireString(json, 'name'), value: json['value']);
 
+  /// Serializes to the `CUSTOM` wire shape.
   Map<String, dynamic> toJson() => {
     'type': 'CUSTOM',
     'name': name,

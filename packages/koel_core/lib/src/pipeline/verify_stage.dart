@@ -7,14 +7,14 @@ import '../event/ag_ui_event.dart';
 import 'stage_support.dart';
 
 /// Pipeline stage 2 — cross-event protocol sanity over the already-synthesized,
-/// already-typed stream (Addendum F.1). Runs **after** [chunksStage] so it sees
+/// already-typed stream (Addendum F.1). Runs **after** `chunksStage` so it sees
 /// the `START`/`END` pairs chunk synthesis creates.
 ///
 /// **On a violation** the offending event is **dropped** and a
 /// `RunErrorEvent(ProtocolError(code: protocolMalformed, eventType: …))` is
 /// emitted in its place. The stage never throws — a protocol violation is in-band
 /// run data the consumer must see, not a programmer error (architecture §5; the
-/// same no-throw invariant [InterceptorChain] upholds for thrown failures). Every
+/// same no-throw invariant `InterceptorChain` upholds for thrown failures). Every
 /// valid event passes through untouched.
 ///
 /// **Rules enforced** (each drops + emits a `ProtocolError`):

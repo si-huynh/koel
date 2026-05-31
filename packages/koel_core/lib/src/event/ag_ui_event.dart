@@ -22,7 +22,7 @@ part 'custom_event.dart';
 part 'ag_ui_event.freezed.dart';
 
 /// Root of the AG-UI event union — the canonical stream element every
-/// [AbstractAgent] emits.
+/// `AbstractAgent` emits.
 ///
 /// `sealed` restricts subtyping to this library, so the set of event types is
 /// closed and known at compile time: a `switch` over an [AgUiEvent] is

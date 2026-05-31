@@ -27,7 +27,16 @@ part 'chat_session.dart';
 /// C.5). [pauseUpstream] (the default) closes the TCP window upstream;
 /// [dropOldest]/[dropNewest] are loss-tolerant and log at warning level with a
 /// dropped-event counter — all in `koel_http`.
-enum BackpressurePolicy { dropOldest, dropNewest, pauseUpstream }
+enum BackpressurePolicy {
+  /// Drops the oldest buffered event when the buffer is full (loss-tolerant).
+  dropOldest,
+
+  /// Drops the newest incoming event when the buffer is full (loss-tolerant).
+  dropNewest,
+
+  /// Closes the upstream TCP window to slow the producer (the default, lossless).
+  pauseUpstream,
+}
 
 /// The top of the three-layer API (F-A2): a non-singleton client that wires
 /// every Epic 2 kernel piece — the terminal [AbstractAgent], the
@@ -85,7 +94,12 @@ class KoelClient {
   /// `koel_http` bounded buffer (Epic 4). Exposed read-only so devtools/tests can
   /// inspect the resolved wiring.
   final StateConflictResolver stateConflictResolver;
+
+  /// Sizes the `koel_devtools` ring buffer (Epic 8); see [stateConflictResolver].
   final int devtoolsBufferSize;
+
+  /// The load-shedding policy fed to the `koel_http` bounded buffer (Epic 4); see
+  /// [stateConflictResolver].
   final BackpressurePolicy backpressure;
 
   /// The post-pipeline observer bag, fired in registration order on every event
