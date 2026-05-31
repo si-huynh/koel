@@ -8,5 +8,13 @@ environment:
 
 resolution: workspace
 
+dependencies:
+  # First runtime cross-package edge in the workspace. koel_core types
+  # (AbstractAgent, AgUiEvent, RunAgentInput) appear in MockAgent's public
+  # signature, so this is a regular dependency, not a dev_dependency. Bare key —
+  # resolved from the pub workspace.
+  koel_core:
+
 dev_dependencies:
   koel_lints:
+  test: ^1.25.0
