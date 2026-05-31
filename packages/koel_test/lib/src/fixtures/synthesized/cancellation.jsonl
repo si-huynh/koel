@@ -1,0 +1,4 @@
+{"_session":{"koelVersion":"0.0.1","adapter":"synthesized","captured":"2026-05-26T00:00:00.000Z","threadId":"synth-cancellation","runId":"synth-cancellation-1","synthesized":true}}
+{"type":"RUN_STARTED","timestamp":"2026-05-26T00:00:00.000Z","payload":{"type":"RUN_STARTED","threadId":"synth-cancellation","runId":"synth-cancellation-1"}}
+{"type":"TEXT_MESSAGE_START","timestamp":"2026-05-26T00:00:00.100Z","payload":{"type":"TEXT_MESSAGE_START","messageId":"msg-1","role":"assistant"}}
+{"type":"TEXT_MESSAGE_CONTENT","timestamp":"2026-05-26T00:00:00.200Z","payload":{"type":"TEXT_MESSAGE_CONTENT","messageId":"msg-1","delta":"Streaming a partial respon"}}

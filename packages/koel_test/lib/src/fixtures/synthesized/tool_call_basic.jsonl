@@ -1,0 +1,7 @@
+{"_session":{"koelVersion":"0.0.1","adapter":"synthesized","captured":"2026-05-26T00:00:00.000Z","threadId":"synth-tool-call-basic","runId":"synth-tool-call-basic-1","synthesized":true}}
+{"type":"RUN_STARTED","timestamp":"2026-05-26T00:00:00.000Z","payload":{"type":"RUN_STARTED","threadId":"synth-tool-call-basic","runId":"synth-tool-call-basic-1"}}
+{"type":"TOOL_CALL_START","timestamp":"2026-05-26T00:00:00.100Z","payload":{"type":"TOOL_CALL_START","toolCallId":"tc-1","toolCallName":"search"}}
+{"type":"TOOL_CALL_ARGS","timestamp":"2026-05-26T00:00:00.200Z","payload":{"type":"TOOL_CALL_ARGS","toolCallId":"tc-1","delta":"{\"q\":\"koel\"}"}}
+{"type":"TOOL_CALL_END","timestamp":"2026-05-26T00:00:00.300Z","payload":{"type":"TOOL_CALL_END","toolCallId":"tc-1"}}
+{"type":"TOOL_CALL_RESULT","timestamp":"2026-05-26T00:00:00.400Z","payload":{"type":"TOOL_CALL_RESULT","messageId":"msg-1","toolCallId":"tc-1","content":"ok"}}
+{"type":"RUN_FINISHED","timestamp":"2026-05-26T00:00:00.500Z","payload":{"type":"RUN_FINISHED","threadId":"synth-tool-call-basic","runId":"synth-tool-call-basic-1"}}

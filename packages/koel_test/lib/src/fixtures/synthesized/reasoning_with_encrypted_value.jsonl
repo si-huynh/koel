@@ -1,0 +1,9 @@
+{"_session":{"koelVersion":"0.0.1","adapter":"synthesized","captured":"2026-05-26T00:00:00.000Z","threadId":"synth-reasoning","runId":"synth-reasoning-1","synthesized":true}}
+{"type":"RUN_STARTED","timestamp":"2026-05-26T00:00:00.000Z","payload":{"type":"RUN_STARTED","threadId":"synth-reasoning","runId":"synth-reasoning-1"}}
+{"type":"REASONING_START","timestamp":"2026-05-26T00:00:00.100Z","payload":{"type":"REASONING_START","messageId":"r-1"}}
+{"type":"REASONING_MESSAGE_START","timestamp":"2026-05-26T00:00:00.200Z","payload":{"type":"REASONING_MESSAGE_START","messageId":"r-1","role":"reasoning"}}
+{"type":"REASONING_MESSAGE_CONTENT","timestamp":"2026-05-26T00:00:00.300Z","payload":{"type":"REASONING_MESSAGE_CONTENT","messageId":"r-1","delta":"Considering the options."}}
+{"type":"REASONING_MESSAGE_END","timestamp":"2026-05-26T00:00:00.400Z","payload":{"type":"REASONING_MESSAGE_END","messageId":"r-1"}}
+{"type":"REASONING_ENCRYPTED_VALUE","timestamp":"2026-05-26T00:00:00.500Z","payload":{"type":"REASONING_ENCRYPTED_VALUE","entityId":"e-1","subtype":"message","encryptedValue":"AAAA"}}
+{"type":"REASONING_END","timestamp":"2026-05-26T00:00:00.600Z","payload":{"type":"REASONING_END","messageId":"r-1"}}
+{"type":"RUN_FINISHED","timestamp":"2026-05-26T00:00:00.700Z","payload":{"type":"RUN_FINISHED","threadId":"synth-reasoning","runId":"synth-reasoning-1"}}

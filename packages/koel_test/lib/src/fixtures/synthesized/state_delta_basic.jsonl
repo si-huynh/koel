@@ -1,0 +1,5 @@
+{"_session":{"koelVersion":"0.0.1","adapter":"synthesized","captured":"2026-05-26T00:00:00.000Z","threadId":"synth-state-delta-basic","runId":"synth-state-delta-basic-1","synthesized":true}}
+{"type":"RUN_STARTED","timestamp":"2026-05-26T00:00:00.000Z","payload":{"type":"RUN_STARTED","threadId":"synth-state-delta-basic","runId":"synth-state-delta-basic-1"}}
+{"type":"STATE_SNAPSHOT","timestamp":"2026-05-26T00:00:00.100Z","payload":{"type":"STATE_SNAPSHOT","snapshot":{"count":1}}}
+{"type":"STATE_DELTA","timestamp":"2026-05-26T00:00:00.200Z","payload":{"type":"STATE_DELTA","delta":[{"op":"replace","path":"/count","value":2}]}}
+{"type":"RUN_FINISHED","timestamp":"2026-05-26T00:00:00.300Z","payload":{"type":"RUN_FINISHED","threadId":"synth-state-delta-basic","runId":"synth-state-delta-basic-1"}}
