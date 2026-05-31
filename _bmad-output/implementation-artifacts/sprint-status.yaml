@@ -1,6 +1,6 @@
 # generated: 2026-05-28
 # last_updated: 2026-05-31
-# (most-recent change: 2026-05-31 create-story — 4-1 → ready-for-dev, epic-4 → in-progress)
+# (most-recent change: 2026-05-31 create-story — 4-2 → ready-for-dev)
 # project: koel
 # project_key: NOKEY
 # tracking_system: file-system
@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-05-28
-last_updated: 2026-05-31  # 4-1 done (code-review)
+last_updated: 2026-05-31  # 4-2 → done (bmad-code-review)
 project: koel
 project_key: NOKEY
 tracking_system: file-system
@@ -88,7 +88,7 @@ development_status:
   # Epic 4: HTTP Transport — koel_http
   epic-4: in-progress
   4-1-framework-free-sse-parser: done
-  4-2-http-agent-native-transport: backlog
+  4-2-http-agent-native-transport: done
   4-3-cancellation-propagation: backlog
   4-4-retry-interceptor: backlog
   4-5-auth-interceptor: backlog

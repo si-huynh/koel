@@ -14,7 +14,16 @@ dependencies:
   # AgUiEvent.fromWire (dispatch target), ProtocolError + KoelErrorCode
   # (wire-sanity boundary). Bare key — resolved from the pub workspace.
   koel_core:
+  # The native byte-streaming transport (Story 4.2): the default `http.Client()`
+  # is an `IOClient` wrapping `dart:io HttpClient`, whose `send().stream` is the
+  # live, unbuffered `Stream<List<int>>` `SseParser` consumes. `http.Client` is
+  # also the injectable seam the `HttpAgent` constructor exposes for tests
+  # (`MockClient`) and Epic-5 backends.
+  http: ^1.6.0
 
 dev_dependencies:
   koel_lints:
   test: ^1.25.0
+  # Reused in the agent suite: FixtureLoader replays the Epic 3 synthesized wire
+  # fixtures through a local SSE server for the happy-path assertion (AC3).
+  koel_test:
