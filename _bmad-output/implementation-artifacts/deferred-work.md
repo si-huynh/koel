@@ -2,6 +2,10 @@
 
 Items deferred during BMAD workflows. Each entry records why the work was postponed.
 
+## Deferred from: code review of 4-5-auth-interceptor (2026-06-01)
+
+- **Protocol-header clobber-protection lives in the http client's case-insensitive map, not koel's own merge** — `_TransportTerminal.run` builds `{...authHeaders, 'Content-Type': …, 'Accept': …}` ([http_agent.dart:165](../../packages/koel_http/lib/src/http_agent.dart#L165)) in a case-SENSITIVE Dart map, so a lowercase `accept`/`content-type` from a callback survives as a distinct key. Protocol headers win on the wire only because `http`'s `BaseRequest.headers` is case-insensitive and the protocol keys are inserted last (verified against http 1.6.0). Safe with the default transport; a hypothetical case-sensitive custom `http.Client` could put both `accept` and `Accept` on the wire and break SSE content negotiation. Not reachable with current code — revisit if a pluggable transport/client lands (4.10 web transport).
+
 ## Deferred from: code review of 4-3-cancellation-propagation (2026-05-31)
 
 - **Non-honoring teardown future + upstream subscription retained per cancellation** — When a client never settles its response-subscription `cancel()` future, the `Future.wait([...])` + `.then(timer.cancel)` continuation and the live upstream subscription are retained for each cancellation ([cancellation.dart:62-67,90](../../packages/koel_http/lib/src/connection/cancellation.dart#L62-L90)). Inherent to a client that refuses to release its socket — koel cannot force it; the watchdog already abandons the wait via the fired one-shot warning. Minor unbounded retention only under a pathological non-honoring client. Revisit if a real backend exhibits it.

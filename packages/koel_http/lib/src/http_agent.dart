@@ -7,6 +7,7 @@ import 'package:koel_core/koel_core.dart';
 import 'connection/cancellation.dart';
 import 'connection/reconnect_policy.dart';
 import 'error/error_classifier.dart';
+import 'interceptors/auth_interceptor.dart';
 import 'interceptors/retry_interceptor.dart';
 import 'sse_parser.dart';
 import 'transport/transport.dart';
@@ -140,11 +141,42 @@ class _TransportTerminal implements AbstractAgent {
 
   @override
   Stream<AgUiEvent> run(RunAgentInput input) async* {
-    final body = utf8.encode(jsonEncode(encodeRunAgentInput(input)));
+    // An `AuthInterceptor` upstream parks its resolved headers on a reserved
+    // `forwardedProps` key. Extract them, then encode a copy with that key
+    // removed so the token never reaches the wire body (it rides the header
+    // only). Protocol headers are merged LAST so auth can add `Authorization`
+    // but can never clobber `Content-Type`/`Accept` (a clobbered `Accept`
+    // breaks SSE).
+    final injected = input.forwardedProps[AuthInterceptor.transportHeadersKey];
+    // The reserved key is a transport-internal contract: only `AuthInterceptor`
+    // writes it, always as a `Map<String, String>`. A foreign value here is a
+    // misuse of the documented-internal key — surface it as a typed, precise
+    // failure (the classifier passes a typed `KoelError` through) instead of
+    // letting a raw `TypeError` from the cast fall through to the classifier's
+    // `AgentError(unknown)` 'Unclassified failure' bucket. No `cause`: the value
+    // could carry a token, and the message stays secret-free (architecture §5).
+    if (injected != null && injected is! Map<String, String>) {
+      throw const AgentError(
+        message:
+            'Reserved transport-headers key carried a non-Map<String, String> '
+            'value',
+        code: KoelErrorCode.unknown,
+      );
+    }
+    final authHeaders = (injected as Map<String, String>?) ?? const {};
+    final wireInput = injected == null
+        ? input
+        : input.copyWith(
+            forwardedProps: {...input.forwardedProps}
+              ..remove(AuthInterceptor.transportHeadersKey),
+          );
+
+    final body = utf8.encode(jsonEncode(encodeRunAgentInput(wireInput)));
     final response = await Transport().connect(
       _agent.url,
       body: body,
-      headers: const {
+      headers: {
+        ...authHeaders,
         'Content-Type': 'application/json',
         'Accept': 'text/event-stream',
       },

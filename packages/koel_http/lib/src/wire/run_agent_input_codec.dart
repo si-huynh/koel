@@ -25,6 +25,10 @@ Map<String, dynamic> encodeRunAgentInput(RunAgentInput input) {
     'messages': [for (final message in input.messages) message.toJson()],
     'tools': [for (final tool in input.tools) tool.toJson()],
     'context': input.context,
+    // koel-reserved transport keys (e.g. `AuthInterceptor.transportHeadersKey`,
+    // carrying resolved auth headers) are stripped by `HttpAgent`'s transport
+    // *before* this codec runs, so they never reach the wire. The codec itself
+    // is auth-agnostic and special-cases none of them.
     'forwardedProps': input.forwardedProps,
   };
 

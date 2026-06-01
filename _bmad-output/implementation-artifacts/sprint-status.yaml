@@ -1,6 +1,6 @@
 # generated: 2026-05-28
 # last_updated: 2026-05-31
-# (most-recent change: 2026-05-31 create-story — 4-4 → ready-for-dev)
+# (most-recent change: 2026-05-31 dev-story — 4-5 → review)
 # project: koel
 # project_key: NOKEY
 # tracking_system: file-system
@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-05-28
-last_updated: 2026-05-31  # 4-4 → done (code-review)
+last_updated: 2026-06-01  # 4-5 → done (code-review)
 project: koel
 project_key: NOKEY
 tracking_system: file-system
@@ -91,7 +91,7 @@ development_status:
   4-2-http-agent-native-transport: done
   4-3-cancellation-propagation: done
   4-4-retry-interceptor: done
-  4-5-auth-interceptor: backlog
+  4-5-auth-interceptor: done
   4-6-logging-event-trace-interceptors: backlog
   4-7-sentry-pii-redaction-interceptors: backlog
   4-8-chunk-synthesis: backlog
