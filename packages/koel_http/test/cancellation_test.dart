@@ -253,6 +253,50 @@ void main() {
       expect(events, hasLength(countAtCancel));
     });
 
+    test('onDisconnect(null) fires once on cancel without extending the <50 ms '
+        'abort budget (Story 4.9)', () async {
+      final server = await _longRunningServer();
+      final clock = Stopwatch();
+      final client = _InstrumentedClient(IOClient(), clock);
+      var connects = 0;
+      final disconnects = <Object?>[];
+      // The lifecycle `track` wrapper sits *inside* `abortOnCancel`. Firing the
+      // (fire-and-forget) onDisconnect on cancel must not push the abort past
+      // NFR-8 — the abort fires first and independently.
+      final agent = HttpAgent(
+        url: server.uri,
+        client: client,
+        onConnect: () => connects++,
+        onDisconnect: disconnects.add,
+      );
+
+      final firstSeen = Completer<void>();
+      final sub = agent.run(_input()).listen((_) {
+        if (!firstSeen.isCompleted) firstSeen.complete();
+      });
+      addTearDown(sub.cancel);
+
+      await firstSeen.future.timeout(const Duration(seconds: 2));
+      expect(connects, 1, reason: 'onConnect fired once on headers-received');
+
+      clock.start();
+      await sub.cancel();
+
+      expect(client.abortedAt, isNotNull, reason: 'cancel reached the socket');
+      expect(
+        client.abortedAt!.inMilliseconds,
+        lessThan(50),
+        reason: 'the onDisconnect wrapper does not extend the abort budget',
+      );
+
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      expect(
+        disconnects,
+        [null],
+        reason: 'cancel fires onDisconnect exactly once with a null cause',
+      );
+    });
+
     test('owned default client really tears the socket down on cancel '
         '(AC1)', () async {
       final server = await _longRunningServer();

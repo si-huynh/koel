@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:koel_core/koel_core.dart';
 
 import 'connection/cancellation.dart';
+import 'connection/lifecycle.dart';
 import 'connection/reconnect_policy.dart';
 import 'error/error_classifier.dart';
 import 'interceptors/auth_interceptor.dart';
@@ -72,9 +73,17 @@ class HttpAgent implements AbstractAgent {
   /// (long-form events pass straight through). Set `false` to emit raw chunks
   /// unchanged from [run].
   ///
-  /// [onConnect]/[onDisconnect] are part of the canonical (Addendum A.2)
-  /// signature but owned by Story 4.9 (connection lifecycle hooks); accepted now
-  /// so the constructor is a single one-way door, consumed when that story lands.
+  /// [onConnect]/[onDisconnect]/[onReconnectAttempt] are transport-level
+  /// lifecycle hooks (FR-B6) for DevTools (Epic 8) and custom observers. They
+  /// fire **per physical connection**, so a run that reconnects fires them once
+  /// per attempt: [onConnect] when the SSE response headers arrive (once,
+  /// status-agnostic — a non-2xx response did connect; a pre-headers failure
+  /// fires neither hook); [onDisconnect] exactly once when that connection's
+  /// stream ends, with the cause if it ended on an error (`null` on a graceful
+  /// close or a consumer cancel); [onReconnectAttempt] once per scheduled retry
+  /// with the 1-based attempt index and the jittered delay (only when [retry] is
+  /// set). All three are **fire-and-forget** — a throwing observer is swallowed
+  /// and never aborts a recoverable run.
   HttpAgent({
     required this.url,
     http.Client? client,
@@ -84,11 +93,15 @@ class HttpAgent implements AbstractAgent {
     RetryPolicy? retry,
     this.synthesizeChunks = true,
     void Function()? onConnect,
-    void Function(Object)? onDisconnect,
+    void Function(Object? cause)? onDisconnect,
     void Function(int attempt, Duration delay)? onReconnectAttempt,
   }) : _client = client,
        _retry = retry,
-       _onReconnectAttempt = onReconnectAttempt,
+       _lifecycle = ConnectionLifecycle(
+         onConnect: onConnect,
+         onDisconnect: onDisconnect,
+         onReconnectAttempt: onReconnectAttempt,
+       ),
        _interceptors = interceptors ?? const <Interceptor>[];
 
   /// The AG-UI SSE endpoint each run POSTs to.
@@ -109,7 +122,7 @@ class HttpAgent implements AbstractAgent {
   final http.Client? _client;
   final List<Interceptor> _interceptors;
   final RetryPolicy? _retry;
-  final void Function(int attempt, Duration delay)? _onReconnectAttempt;
+  final ConnectionLifecycle _lifecycle;
 
   /// Runs [input] against [url]: POSTs it as JSON and yields the typed events
   /// the endpoint streams back, in wire order.
@@ -133,7 +146,7 @@ class HttpAgent implements AbstractAgent {
               baseDelay: retry.baseDelay,
               maxDelay: retry.maxDelay,
               jitter: retry.jitter ? 0.2 : 0.0,
-              onReconnectAttempt: _onReconnectAttempt,
+              onReconnectAttempt: _lifecycle.onReconnectAttempt,
             ),
             ..._interceptors,
           ];
@@ -201,6 +214,16 @@ class _TransportTerminal implements AbstractAgent {
       client: _agent._client,
     );
 
+    // Headers are in hand — the connection is established (FR-B6). Fire
+    // `onConnect` and open the per-connection scope that fires `onDisconnect`
+    // exactly once when this stream ends. This lives in the terminal (innermost,
+    // beneath `RetryInterceptor`), so a reconnect re-runs it and the hooks fire
+    // once per physical connection. Status-agnostic: a non-2xx still connected,
+    // so `onConnect` fires before the status check (paired with the
+    // `onDisconnect` on the throw path below); a pre-headers failure throws from
+    // `connect()` above and fires neither hook.
+    final connection = _agent._lifecycle.connected();
+
     // A non-2xx response is not a thrown exception — detect it and throw the
     // typed error the classifier passes through (idempotently) to `RunErrorEvent`.
     if (response.statusCode < 200 || response.statusCode >= 300) {
@@ -214,11 +237,15 @@ class _TransportTerminal implements AbstractAgent {
       } on Object {
         // Discarded deliberately: the throw below is the reported error path.
       }
-      throw TransportError(
+      final error = TransportError(
         message: 'AG-UI endpoint returned HTTP ${response.statusCode}',
         code: KoelErrorCode.transportClosed,
         statusCode: response.statusCode,
       );
+      // This connection ended on an error before any stream was built — fire
+      // `onDisconnect(cause)` directly (the scope's once-guard keeps it single).
+      connection.disconnect(error);
+      throw error;
     }
 
     // Synthesize `*_CHUNK` → START/CONTENT/END here, the innermost transform
@@ -230,6 +257,13 @@ class _TransportTerminal implements AbstractAgent {
     // synthesized stream: `chunksStage` is `buildStage`-backed and cancels
     // upstream without running its `onDone` flush, so no trailing `END` is
     // emitted after a cancel and no synthesized event escapes the gate.
+    // `onConnect` has already fired; `track` below is what pairs it with
+    // `onDisconnect`. The one-to-one pairing the lifecycle contract promises
+    // rests on this band staying throw-free: `parse` (`async*`), `transform`,
+    // and `track` all build lazily and subscribe only under `yield*`, so a
+    // synchronous throw cannot land here and orphan the `onConnect`. Any *stream*
+    // error surfaced during `yield*` routes through `track`'s `onError`, which
+    // fires `onDisconnect(cause)`. Keep this band lazy if it ever grows.
     final parsed = const SseParser().parse(response.body);
     final events = _agent.synthesizeChunks
         ? parsed.transform(chunksStage)
@@ -237,7 +271,10 @@ class _TransportTerminal implements AbstractAgent {
     // Wrap so a consumer cancel fires `response.abort()` immediately (prompt TCP
     // teardown, NFR-8) and no event escapes after cancel — see [abortOnCancel].
     // The parser's `async*` strands cancel, so the abort cannot rely on cancel
-    // threading through it.
-    yield* abortOnCancel(events, response.abort);
+    // threading through it. `track` sits *inside* the abort gate so it fires
+    // `onDisconnect` once on this stream's end (done → `null`, error → the cause,
+    // consumer cancel → `null`) without extending the sub-50ms abort budget —
+    // the abort still fires first and the disconnect callback is fire-and-forget.
+    yield* abortOnCancel(connection.track(events), response.abort);
   }
 }
