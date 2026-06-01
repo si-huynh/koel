@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-05-28
-last_updated: 2026-06-01  # 4-10 → done (code-review)
+last_updated: 2026-06-01  # epic-4 → done + epic-4-retrospective → done (retro)
 project: koel
 project_key: NOKEY
 tracking_system: file-system
@@ -86,7 +86,7 @@ development_status:
   epic-3-retrospective: done
 
   # Epic 4: HTTP Transport — koel_http
-  epic-4: in-progress
+  epic-4: done  # all 10 stories done + retrospective 2026-06-01
   4-1-framework-free-sse-parser: done
   4-2-http-agent-native-transport: done
   4-3-cancellation-propagation: done
@@ -97,7 +97,7 @@ development_status:
   4-8-chunk-synthesis: done
   4-9-connection-lifecycle-hooks: done
   4-10-web-transport-perf-baseline: done
-  epic-4-retrospective: optional
+  epic-4-retrospective: done
 
   # Epic 5: Backend Bridges — koel_agno + koel_langgraph + koel_runtime
   epic-5: backlog
