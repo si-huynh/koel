@@ -14,6 +14,12 @@ dependencies:
   # AgUiEvent.fromWire (dispatch target), ProtocolError + KoelErrorCode
   # (wire-sanity boundary). Bare key — resolved from the pub workspace.
   koel_core:
+  # koel_http's FIRST codegen (Story 4.6): the `TraceEntry` value type written
+  # to an `EventTraceInterceptor`'s `Sink` is freezed per AC2 — matching every
+  # other koel value type (RunAgentInput, the event/error unions). freezed
+  # *without* json: TraceEntry is an in-process Dart record, never serialized to
+  # the wire, so no json_serializable. Pin mirrors koel_core (SCP-2026-05-29-B).
+  freezed_annotation: ^3.1.0
   # The native byte-streaming transport (Story 4.2): the default `http.Client()`
   # is an `IOClient` wrapping `dart:io HttpClient`, whose `send().stream` is the
   # live, unbuffered `Stream<List<int>>` `SseParser` consumes. `http.Client` is
@@ -33,6 +39,13 @@ dependencies:
 
 dev_dependencies:
   koel_lints:
+  # The codegen toolchain for `TraceEntry` (Story 4.6) — koel_http's first. Pins
+  # mirror koel_core exactly (SCP-2026-05-29-B): freezed `3.2.6-dev.1` is the
+  # documented analyzer-12 stopgap so freezed and koel_lints' analysis_server_
+  # plugin coexist in one workspace resolution. The workspace `melos run build`
+  # codegen-drift gate now covers this package.
+  build_runner: ^2.4.0
+  freezed: 3.2.6-dev.1
   test: ^1.25.0
   # Reused in the agent suite: FixtureLoader replays the Epic 3 synthesized wire
   # fixtures through a local SSE server for the happy-path assertion (AC3).
