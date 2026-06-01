@@ -36,6 +36,15 @@ dependencies:
   # makes the analyzer reject any non-test caller — the once-per-process contract
   # is enforced, not just documented.
   meta: ^1.16.0
+  # koel_http's FIRST third-party runtime dep (Story 4.7). The pure-Dart Sentry
+  # SDK (NOT sentry_flutter — koel_http is framework-free) backs the default-OFF
+  # `SentryBreadcrumbInterceptor`: it adds AG-UI run breadcrumbs to the ambient
+  # Sentry hub so a consumer's captured errors carry run context. "default-OFF"
+  # is structural — the interceptor is never in HttpAgent's default chain and
+  # emits nothing unless the consumer registers it AND has called `Sentry.init`.
+  # Pure Dart (VM + web), no Flutter/native, no `analyzer` edge — leaves the
+  # SCP-2026-05-29-B analyzer-12 pin untouched.
+  sentry: ^9.21.0
 
 dev_dependencies:
   koel_lints:

@@ -457,6 +457,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.5.0"
+  sentry:
+    dependency: transitive
+    description:
+      name: sentry
+      sha256: "3284d220618d9344ce8a0765519129744a4cc658309496f052680909d74f7c51"
+      url: "https://pub.dev"
+    source: hosted
+    version: "9.21.0"
   shelf:
     dependency: transitive
     description:
@@ -609,6 +617,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.0"
+  uuid:
+    dependency: transitive
+    description:
+      name: uuid
+      sha256: "1fef9e8e11e2991bb773070d4656b7bd5d850967a2456cfc83cf47925ba79489"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.5.3"
   vm_service:
     dependency: transitive
     description:

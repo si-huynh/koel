@@ -228,3 +228,7 @@ The maintainer deferred this entire cluster on 2026-05-30: `ChatSession` has **n
 ## Deferred from: code review of 4-4-retry-interceptor (2026-05-31)
 
 - Multi-recovery (multiple `ConnectionResumed` markers) is untested in `retry_interceptor_test.dart`. The engine emits one resume marker per *recovered* reconnect, so a flapping connection (recover → fail → recover) correctly emits several — but only the single-recovery case (`hasLength(1)`) is covered. Add a recover-fail-recover test to pin the multi-marker contract. Correct-by-design, not blocking.
+
+## Deferred from: code review of 4-7-sentry-pii-redaction-interceptors (2026-06-01)
+
+- **Breadcrumb message uses `runtimeType.toString()`** [`packages/koel_http/lib/src/interceptors/sentry_breadcrumb_interceptor.dart:206`] — under `dart2js`/AOT obfuscation (`--obfuscate`) Dart type names mangle, so the breadcrumb's only identifying field degrades to opaque symbols in obfuscated release builds. Deferred: spec-conformant (AC1 explicitly allows "event wire/runtime type"); observability-only, no correctness impact. Revisit if/when a stable AG-UI wire-type string becomes available on `AgUiEvent` (would also help the LoggingInterceptor) — then a `sealed` switch yielding a stable name is the obfuscation-proof fix. (Blind Hunter)
