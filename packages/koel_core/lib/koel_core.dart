@@ -6,10 +6,15 @@
 /// three-layer client API, the sealed `AgUiEvent` union, the sealed `KoelError`
 /// hierarchy, the `ChatState` reduction seam, session persistence, and the
 /// value-level protocol types (events, messages, tools, JSON Patch operations) —
-/// and deliberately **nothing else**. The pipeline stages, the wire
-/// deserializer, and the JSON Patch *applier* are kernel machinery: consumers
-/// reach them through `KoelClient`/`ChatSession`, never directly, so they stay
-/// in `lib/src/` off the contract.
+/// and deliberately **nothing else**. The wire deserializer and the JSON Patch
+/// *applier* are kernel machinery: consumers reach them through
+/// `KoelClient`/`ChatSession`, never directly, so they stay in `lib/src/` off
+/// the contract. The pipeline stays internal too, with **one** carve-out:
+/// `chunksStage`, the `*_CHUNK` → `START`/`CONTENT`/`END` synthesizer, is public
+/// because a sibling *transport* package (`koel_http`, `HttpAgent.synthesizeChunks`,
+/// Addendum F.2) must reuse the single F.2 source of truth rather than fork it.
+/// `verifyStage`/`applyStage`/`transformStage` remain internal — nothing outside
+/// the pipeline composes them.
 ///
 /// Import this file — never a `package:koel_core/src/...` path (the internals
 /// are unstable across minor versions). Exports are grouped by subsystem in
@@ -62,3 +67,11 @@ export 'src/tool/tool_definition.dart';
 // appear in StateDeltaEvent.patches and StateConflict.incomingPatches. The
 // applier (JsonPatch) and pointer (JsonPointer) stay internal.
 export 'src/json_patch/json_patch_op.dart';
+
+// ---- Pipeline: the transport-reusable chunk synthesizer -------------------
+// `chunksStage` is the ONE pipeline stage on the public contract: a sibling
+// transport (koel_http's `HttpAgent.synthesizeChunks`) reuses this single
+// Addendum F.2 source of truth instead of forking the envelope logic. verify/
+// apply/transform stay internal (lib/src/) — they are reached through the
+// client, never composed directly.
+export 'src/pipeline/chunks_stage.dart';

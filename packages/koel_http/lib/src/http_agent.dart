@@ -60,11 +60,21 @@ class HttpAgent implements AbstractAgent {
   /// retry, pass an explicit `RetryInterceptor(shouldRetry: …)` in
   /// [interceptors] instead (both compose; passing both nests retry by choice).
   ///
-  /// The remaining parameters are part of the canonical (Addendum A.2)
-  /// signature but are owned by later stories; they are accepted now so the
-  /// constructor is a single one-way door, and consumed when their story lands:
-  /// [synthesizeChunks] → Story 4.8 (CHUNK → START/CONTENT/END synthesis),
-  /// [onConnect]/[onDisconnect] → Story 4.9 (connection lifecycle hooks).
+  /// [synthesizeChunks] (default `true`) normalizes the streaming `*_CHUNK`
+  /// convenience shapes (`TOOL_CALL_CHUNK`/`TEXT_MESSAGE_CHUNK`/
+  /// `REASONING_MESSAGE_CHUNK`) into the canonical `START`/`CONTENT`/`END`
+  /// triplets **at the transport**, by reusing `koel_core`'s `chunksStage`
+  /// (Addendum F.2) — so a consumer reading this raw `AbstractAgent` stream and
+  /// the Epic-5 backends see long form without a `KoelClient` pipeline. It
+  /// governs **this agent's own output stream only**: a `KoelClient`/`ChatSession`
+  /// consumer is normalized by the pipeline's own (unconditional) `chunksStage`
+  /// regardless of this flag, and the double-application is idempotent
+  /// (long-form events pass straight through). Set `false` to emit raw chunks
+  /// unchanged from [run].
+  ///
+  /// [onConnect]/[onDisconnect] are part of the canonical (Addendum A.2)
+  /// signature but owned by Story 4.9 (connection lifecycle hooks); accepted now
+  /// so the constructor is a single one-way door, consumed when that story lands.
   HttpAgent({
     required this.url,
     http.Client? client,
@@ -72,7 +82,7 @@ class HttpAgent implements AbstractAgent {
     this.connectTimeout = const Duration(seconds: 30),
     this.readTimeout = const Duration(minutes: 5),
     RetryPolicy? retry,
-    bool synthesizeChunks = true,
+    this.synthesizeChunks = true,
     void Function()? onConnect,
     void Function(Object)? onDisconnect,
     void Function(int attempt, Duration delay)? onReconnectAttempt,
@@ -89,6 +99,12 @@ class HttpAgent implements AbstractAgent {
 
   /// Maximum idle time between response bytes; exceeding it → `transportTimeout`.
   final Duration readTimeout;
+
+  /// When `true` (default), [run] normalizes the streaming `*_CHUNK` shapes into
+  /// canonical `START`/`CONTENT`/`END` triplets at the transport (reusing
+  /// `koel_core`'s `chunksStage`); when `false`, raw chunk events pass through
+  /// unchanged. Governs this agent's output stream only — see the ctor dartdoc.
+  final bool synthesizeChunks;
 
   final http.Client? _client;
   final List<Interceptor> _interceptors;
@@ -205,13 +221,23 @@ class _TransportTerminal implements AbstractAgent {
       );
     }
 
-    // Wrap the parsed stream so a consumer cancel fires `response.abort()`
-    // immediately (prompt TCP teardown, NFR-8) and no event escapes after
-    // cancel — see [abortOnCancel]. The parser's `async*` strands cancel, so the
-    // abort cannot rely on cancel threading through it.
-    yield* abortOnCancel(
-      const SseParser().parse(response.body),
-      response.abort,
-    );
+    // Synthesize `*_CHUNK` → START/CONTENT/END here, the innermost transform
+    // (per-connection, beneath `RetryInterceptor`): each reconnect re-runs this
+    // terminal and gets a fresh `chunksStage` with empty envelope state, so a
+    // half-open envelope never leaks across a reconnect. Gated by the agent's
+    // flag (default on); reuses koel_core's single F.2 synthesizer rather than
+    // forking it. Placed *inside* `abortOnCancel` so the abort gate wraps the
+    // synthesized stream: `chunksStage` is `buildStage`-backed and cancels
+    // upstream without running its `onDone` flush, so no trailing `END` is
+    // emitted after a cancel and no synthesized event escapes the gate.
+    final parsed = const SseParser().parse(response.body);
+    final events = _agent.synthesizeChunks
+        ? parsed.transform(chunksStage)
+        : parsed;
+    // Wrap so a consumer cancel fires `response.abort()` immediately (prompt TCP
+    // teardown, NFR-8) and no event escapes after cancel — see [abortOnCancel].
+    // The parser's `async*` strands cancel, so the abort cannot rely on cancel
+    // threading through it.
+    yield* abortOnCancel(events, response.abort);
   }
 }

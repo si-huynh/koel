@@ -80,6 +80,55 @@ Future<_Server> _longRunningServer() async {
   );
 }
 
+/// Like [_longRunningServer] but emits `TOOL_CALL_CHUNK` frames that hold a
+/// single tool-call envelope open forever — the long-running run a consumer
+/// cancels mid-envelope while transport synthesis (`synthesizeChunks: true`) is
+/// live (Story 4.8 trap #6). The opening chunk synthesizes a `ToolCallStartEvent`
+/// and the envelope never closes on the wire, so a correct abort must NOT flush
+/// a trailing `ToolCallEndEvent`.
+Future<_Server> _longRunningChunkServer() async {
+  final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+  addTearDown(() => server.close(force: true));
+  final firstEvent = Completer<void>();
+  final writeFailed = Completer<void>();
+
+  server.listen((request) async {
+    await request.drain<void>();
+    final res = request.response
+      ..bufferOutput = false
+      ..headers.contentType = ContentType('text', 'event-stream');
+
+    res.write(
+      'data: {"type":"TOOL_CALL_CHUNK","toolCallId":"c","toolCallName":"fn"}'
+      '\n\n',
+    );
+    await res.flush();
+    if (!firstEvent.isCompleted) firstEvent.complete();
+
+    Timer.periodic(const Duration(milliseconds: 50), (timer) async {
+      if (writeFailed.isCompleted) {
+        timer.cancel();
+        return;
+      }
+      try {
+        res.write(
+          'data: {"type":"TOOL_CALL_CHUNK","toolCallId":"c","delta":"x"}\n\n',
+        );
+        await res.flush();
+      } on Object {
+        timer.cancel();
+        if (!writeFailed.isCompleted) writeFailed.complete();
+      }
+    });
+  });
+
+  return (
+    uri: Uri.parse('http://${server.address.host}:${server.port}'),
+    firstEvent: firstEvent.future,
+    writeFailed: writeFailed.future,
+  );
+}
+
 /// Wraps [_inner] and records the instant koel aborts the connection — either by
 /// closing the client or by cancelling the live response subscription. The
 /// `<50 ms` budget (NFR-8, AC1's "`Client.close()` invokes within 50 ms") is
@@ -223,6 +272,46 @@ void main() {
       // fail once the socket is gone — proving a real TCP teardown, not just a
       // koel-side drop.
       await server.writeFailed.timeout(const Duration(seconds: 2));
+    });
+
+    test('synthesis on — cancel mid-chunk-envelope aborts <50 ms and flushes '
+        'no trailing END (trap #6)', () async {
+      final server = await _longRunningChunkServer();
+      final clock = Stopwatch();
+      final client = _InstrumentedClient(IOClient(), clock);
+      // Default `synthesizeChunks: true` → `chunksStage` is live in the terminal,
+      // beneath the abort gate. A correct abort cancels upstream WITHOUT running
+      // the stage's onDone flush, so the open envelope yields no `END`.
+      final agent = HttpAgent(url: server.uri, client: client);
+
+      final events = <AgUiEvent>[];
+      final firstSeen = Completer<void>();
+      final sub = agent.run(_input()).listen((e) {
+        events.add(e);
+        if (!firstSeen.isCompleted) firstSeen.complete();
+      });
+      addTearDown(sub.cancel);
+
+      await firstSeen.future.timeout(const Duration(seconds: 2));
+      final countAtCancel = events.length;
+      // The first synthesized event is the START — proving synthesis was live.
+      expect(events.first, isA<ToolCallStartEvent>());
+
+      clock.start();
+      await sub.cancel();
+
+      expect(client.abortedAt, isNotNull, reason: 'cancel reached the socket');
+      expect(
+        client.abortedAt!.inMilliseconds,
+        lessThan(50),
+        reason: 'abort invoked within the NFR-8 budget with synthesis on',
+      );
+
+      // Nothing emits after cancel — and crucially the open tool-call envelope
+      // is never flushed to a `ToolCallEndEvent` after the abort gate closes.
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+      expect(events, hasLength(countAtCancel));
+      expect(events.whereType<ToolCallEndEvent>(), isEmpty);
     });
 
     group('verified-client matrix (AC2)', () {

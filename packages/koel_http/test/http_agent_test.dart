@@ -80,7 +80,17 @@ void main() {
           () async {
             final payloads = await _fixturePayloads(name);
             final server = await _sseServer(_sseBody(payloads));
-            final agent = HttpAgent(url: _serverUri(server));
+            // This asserts the parser + transport faithfully reproduce the
+            // stored fixture event-for-event — a concern orthogonal to chunk
+            // synthesis. Story 4.8 made the default `synthesizeChunks: true`
+            // real, which would drop the fixture's (all-null, un-addressable)
+            // chunk lines and shift the list; pin synthesis off so the
+            // round-trip stays exact. Synthesis itself is covered in
+            // chunk_synthesis_test.dart.
+            final agent = HttpAgent(
+              url: _serverUri(server),
+              synthesizeChunks: false,
+            );
 
             final events = await agent.run(_input()).toList();
 
