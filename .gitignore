@@ -3,6 +3,8 @@
 .packages
 build/
 coverage/
+# Story 4.10: koel_http's merged headless-Chrome coverage pass (tool/coverage.sh with_chrome)
+coverage_chrome/
 *.g.dart
 *.freezed.dart
 *.mocks.dart

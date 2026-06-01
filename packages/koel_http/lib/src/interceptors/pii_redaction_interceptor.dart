@@ -1,6 +1,6 @@
 import 'package:koel_core/koel_core.dart';
 
-/// Scrubs consumer-supplied [patterns] out of the **free-text content** an
+/// Scrubs consumer-supplied `patterns` out of the **free-text content** an
 /// `AgUiEvent` carries, replacing every match with `[REDACTED]` before the event
 /// reaches subscribers or the reducer (Story 4.7 / FR-I2). **Default-OFF** — it
 /// does nothing unless a consumer adds it to `HttpAgent(interceptors: …)`.
@@ -36,7 +36,7 @@ import 'package:koel_core/koel_core.dart';
 ///
 /// **Order-independent, marker-safe.** All patterns are matched against the
 /// *original* text in a single pass; overlapping matches coalesce into one
-/// `[REDACTED]`. So the result does not depend on the order of [patterns], a
+/// `[REDACTED]`. So the result does not depend on the order of `patterns`, a
 /// pattern can never re-match a marker an earlier pattern inserted, and an
 /// empty-matching pattern (e.g. `\d*`) redacts only its non-empty matches rather
 /// than splicing the marker between every character.

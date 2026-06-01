@@ -14,7 +14,7 @@ import 'transport_stub.dart'
 /// One method, [connect], POSTs the encoded body and exposes the response's
 /// **live, unbuffered** byte stream — the `Stream<List<int>>` `SseParser`
 /// consumes. The implementation is selected at compile time: native streams
-/// through `package:http`'s `IOClient` ([io_transport.dart]); web is a throwing
+/// through `package:http`'s `IOClient` (`io_transport.dart`); web is a throwing
 /// stub until Story 4.10 (`package:http`'s `BrowserClient` buffers the whole
 /// body and cannot stream SSE — the reason web needs a hand-rolled transport).
 abstract interface class Transport {

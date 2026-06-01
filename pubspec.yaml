@@ -30,10 +30,11 @@ melos:
       description: Run `dart test` per package (CWD = package root for fixture reads, deferred-work.md :158), excluding the perf benches. Scaffold packages with no test files yet (exit 79) are tolerated; real failures propagate. See tool/test_package.sh.
       exec: bash "$MELOS_ROOT_PATH/tool/test_package.sh"
     test:coverage:
-      description: Per-package line + branch coverage gates (NFR-12) — koel_core ≥90% (kernel tier), koel_test ≥80% (tooling tier). Generated files excluded via each package's coverage_options.yaml; perf benches excluded by tag. See tool/coverage.sh.
+      description: Per-package line + branch coverage gates (NFR-12) — koel_core & koel_http ≥90% (kernel tier), koel_test ≥80% (tooling tier). koel_http merges a headless-Chrome pass (with_chrome) so its web transport is covered for real. Generated files excluded via each package's coverage_options.yaml; perf benches excluded by tag. See tool/coverage.sh.
       run: |
         set -e
         bash "$MELOS_ROOT_PATH/tool/coverage.sh" packages/koel_core 90 90
+        bash "$MELOS_ROOT_PATH/tool/coverage.sh" packages/koel_http 90 90 with_chrome
         bash "$MELOS_ROOT_PATH/tool/coverage.sh" packages/koel_test 80 80
     build:
       description: Run `build_runner build` in packages that declare build_runner (codegen-drift gate).

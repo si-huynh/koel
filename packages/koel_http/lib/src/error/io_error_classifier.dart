@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:koel_core/koel_core.dart';
 
 /// The native transport [ErrorClassifier] factory, selected by `dart.library.io`
-/// (see [error_classifier.dart]'s conditional import).
+/// (see `error_classifier.dart`'s conditional import).
 ErrorClassifier createErrorClassifier() => const TransportErrorClassifier();
 
 /// koel_http's transport-aware [ErrorClassifier]: refines [DefaultErrorClassifier]

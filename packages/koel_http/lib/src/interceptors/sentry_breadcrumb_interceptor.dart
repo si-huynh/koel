@@ -24,7 +24,7 @@ import 'package:sentry/sentry.dart';
 /// for a terminal error, the [KoelErrorCode]) — never message text, tool
 /// arguments, tool results, reasoning, or `input.forwardedProps` (which may hold
 /// the Story-4.5 reserved auth-headers key). Shipping a `delta` to Sentry would
-/// leak exactly the content [PIIRedactionInterceptor] exists to scrub, so the
+/// leak exactly the content `PIIRedactionInterceptor` exists to scrub, so the
 /// breadcrumb payload is deliberately content-free.
 ///
 /// **A side channel that never breaks the run.** Breadcrumb delivery is fire-

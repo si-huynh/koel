@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-05-28
-last_updated: 2026-06-01  # 4-9 → done (code-review)
+last_updated: 2026-06-01  # 4-10 → done (code-review)
 project: koel
 project_key: NOKEY
 tracking_system: file-system
@@ -96,7 +96,7 @@ development_status:
   4-7-sentry-pii-redaction-interceptors: done
   4-8-chunk-synthesis: done
   4-9-connection-lifecycle-hooks: done
-  4-10-web-transport-perf-baseline: backlog
+  4-10-web-transport-perf-baseline: done
   epic-4-retrospective: optional
 
   # Epic 5: Backend Bridges — koel_agno + koel_langgraph + koel_runtime

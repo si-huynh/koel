@@ -4,7 +4,7 @@ import 'package:koel_core/koel_core.dart';
 import 'package:logging/logging.dart';
 
 /// Writes human-readable run logs to `package:logging` at the architecture-§4
-/// per-category levels, gated by a single emission [level] threshold (Story 4.6
+/// per-category levels, gated by a single emission `level` threshold (Story 4.6
 /// / FR-B2/B3). The human-readable complement to
 /// [`EventTraceInterceptor`](EventTraceInterceptor)'s structured `TraceEntry`
 /// capture; compose whichever (or both) into `HttpAgent(interceptors: …)`.
@@ -14,8 +14,8 @@ import 'package:logging/logging.dart';
 /// HttpAgent(url: endpoint, interceptors: [LoggingInterceptor(level: Level.FINE)]);
 /// ```
 ///
-/// **[level] is an emission THRESHOLD, not a uniform level.** Each lifecycle
-/// category logs at its own **fixed** architecture-§4 level; [level] is the
+/// **`level` is an emission THRESHOLD, not a uniform level.** Each lifecycle
+/// category logs at its own **fixed** architecture-§4 level; `level` is the
 /// minimum that actually emits. So `LoggingInterceptor(level: Level.FINE)` shows
 /// everything, and the default `Level.INFO` shows lifecycle + errors but hides
 /// the per-event tail. The mapping (architecture §4):

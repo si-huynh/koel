@@ -1,3 +1,6 @@
+@TestOn('vm')
+library;
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -98,6 +101,27 @@ void main() {
           },
         );
       }
+    });
+
+    test('pause/resume propagates backpressure through the connection '
+        'wrappers without dropping events', () async {
+      // Pausing the consumer subscription must thread down through every
+      // StreamController wrapper the run is built from (`abortOnCancel`, the
+      // lifecycle `track`), so each wrapper's onPause/onResume passes the pause
+      // to the live byte stream and no buffered event is lost on resume.
+      final payloads = await _fixturePayloads('text_only_run');
+      final server = await _sseServer(_sseBody(payloads));
+      final agent = HttpAgent(url: _serverUri(server), synthesizeChunks: false);
+
+      final events = <AgUiEvent>[];
+      final done = Completer<void>();
+      final sub = agent.run(_input()).listen(events.add, onDone: done.complete);
+      sub.pause();
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+      sub.resume();
+      await done.future.timeout(const Duration(seconds: 2));
+
+      expect(events, await FixtureLoader.loadSynthesized('text_only_run'));
     });
 
     test('POSTs the input as JSON with the AG-UI headers (AC1)', () async {

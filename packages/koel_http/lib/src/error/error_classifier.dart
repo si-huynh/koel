@@ -6,7 +6,7 @@ import 'error_classifier_stub.dart'
 /// The koel_http transport [ErrorClassifier], resolved per platform at compile
 /// time — the seam `HttpAgent.run` builds its `InterceptorChain` over.
 ///
-/// Native ([io_error_classifier.dart]) refines [DefaultErrorClassifier] with
+/// Native (`io_error_classifier.dart`) refines [DefaultErrorClassifier] with
 /// real `dart:io` `is` checks, so `package:http`'s `IOClient`-wrapped
 /// `SocketException` classifies as `transportRefused` rather than slipping to
 /// `unknown` (AC4 — the base matches by `runtimeType` name and cannot see

@@ -33,7 +33,7 @@ import 'package:meta/meta.dart';
 /// event it produces — lazily, so a reconnect that fails before yielding data
 /// emits none.
 ///
-/// **Default retry predicate.** Without a [shouldRetry], only `TransportError`
+/// **Default retry predicate.** Without a `shouldRetry`, only `TransportError`
 /// (all four transport codes are transient) is retried; `BusinessError`,
 /// `ProtocolError`, and `AgentError` surface immediately, unchanged. A supplied
 /// `shouldRetry(error, attempt)` receives the typed `KoelError` and the 1-based
@@ -243,7 +243,7 @@ final class RetryInterceptor implements Interceptor {
   }
 }
 
-/// The default [RetryInterceptor.shouldRetry]: only `TransportError` is
+/// The default `RetryInterceptor.shouldRetry`: only `TransportError` is
 /// transient. `businessAuth` (a `BusinessError`) — and every `ProtocolError` /
 /// `AgentError` — is a terminal condition that re-POSTing cannot fix, so it
 /// surfaces immediately.

@@ -1,4 +1,4 @@
-/// Declarative retry/backoff configuration for an [HttpAgent] reconnection — the
+/// Declarative retry/backoff configuration for an `HttpAgent` reconnection — the
 /// convenience entry point to the `RetryInterceptor` engine (Story 4.4).
 ///
 /// A pure immutable data holder: `HttpAgent(retry: RetryPolicy(…))` maps it to a

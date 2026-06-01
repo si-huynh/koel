@@ -5,7 +5,7 @@ part 'trace_entry.freezed.dart';
 
 /// Where in a run's lifecycle a [TraceEntry] was captured.
 ///
-/// The `EventTraceInterceptor` sees only the event stream and the run [input] —
+/// The `EventTraceInterceptor` sees only the event stream and the run `input` —
 /// it has no view of the HTTP request/response. So the phases mark **run
 /// lifecycle position**, not transport-level request/response:
 ///
@@ -17,7 +17,21 @@ part 'trace_entry.freezed.dart';
 /// - [error] — one entry for a terminal `RunErrorEvent`, carrying that event
 ///   **instead of** an [event] entry, so every event still produces exactly one
 ///   entry.
-enum TracePhase { request, event, response, error }
+enum TracePhase {
+  /// One marker at run start, before any event (the entry's `event` is `null`).
+  request,
+
+  /// One entry per emitted non-error `AgUiEvent` — the bulk of a trace.
+  event,
+
+  /// One marker on graceful completion, after the last event (the entry's
+  /// `event` is `null`).
+  response,
+
+  /// One entry for a terminal `RunErrorEvent`, carrying that event **instead
+  /// of** an [event] entry, so every event still produces exactly one entry.
+  error,
+}
 
 /// A single structured observation of a run, written to a consumer's
 /// `Sink<TraceEntry>` by the `EventTraceInterceptor` (Story 4.6 / FR-B2).

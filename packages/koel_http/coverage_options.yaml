@@ -1,0 +1,16 @@
+# Files excluded from the koel_http coverage number (NFR-12), honored by
+# package:coverage's `format_coverage --check-ignore` (the architecture-blessed
+# mechanism, §6) when run with this package as CWD — see the root `test:coverage`
+# script.
+ignore_files:
+  # Generated code carries no hand-written logic.
+  - "**/*.freezed.dart"
+  - "**/*.g.dart"
+  - "**/*.mocks.dart"
+  # The default-branch transport fallback: it resolves on NO koel-supported
+  # platform (neither dart.library.io nor dart.library.js_interop), so it is dead
+  # on both the VM and Chrome coverage passes and would otherwise sink the gate
+  # with an unreachable throw. NOTE: web_transport.dart is NOT excluded — it is
+  # covered for real by the merged `dart test -p chrome` pass (Story 4.10, the
+  # `with_chrome` arg to tool/coverage.sh).
+  - "**/transport_stub.dart"

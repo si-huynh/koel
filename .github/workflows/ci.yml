@@ -1,5 +1,8 @@
 # ci.yml — primary per-PR gate: analyze + format-check + test.
-# Epic 1 skeleton: single Linux matrix entry. Expanded to 10 pkgs × 6 platforms in Epic 9 (AR-17 complete).
+# Epic 1 skeleton was a single Linux job. Story 4.10 grows it to a Linux + macOS
+# native matrix plus a headless-Chrome `web` job, so koel_http's dual transport
+# (native dart:io ⟂ web fetch/ReadableStream) both run on every PR (NFR-11). The
+# full 10 pkgs × 6 platforms expansion is still Epic 9 (AR-17).
 name: CI
 permissions:
   contents: read
@@ -13,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -29,3 +32,20 @@ jobs:
       - run: melos run analyze
       - run: melos run format:check
       - run: melos run test
+
+  # koel_http's web transport (Story 4.10) is `@TestOn('browser')` and is
+  # platform-skipped by the VM `melos run test` above; this job runs it against
+  # headless Chrome (preinstalled on ubuntu-latest), exercising the real
+  # fetch + ReadableStream + AbortController path.
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 3.12.0
+      - run: dart pub global activate melos 7.8.0
+      - run: melos bootstrap
+      - run: melos run build
+      - run: dart test -p chrome
+        working-directory: packages/koel_http

@@ -1,3 +1,6 @@
+@TestOn('vm')
+library;
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -29,8 +32,8 @@ typedef _Server = ({
 /// an initial `RUN_STARTED` + `TEXT_MESSAGE_START`, and **never** sends
 /// `RUN_FINISHED` — the long-running run a consumer cancels mid-stream (AC1).
 ///
-/// [firstEvent] completes once the opening frames are flushed (so a test can
-/// cancel mid-stream); [writeFailed] completes when a subsequent flush throws —
+/// `firstEvent` completes once the opening frames are flushed (so a test can
+/// cancel mid-stream); `writeFailed` completes when a subsequent flush throws —
 /// i.e. the server observes the client socket gone, proving the abort reached
 /// TCP (the detection lags the real close by up to one tick + the RST round-trip,
 /// so it bounds *that the connection tore down*, not the sub-50ms budget).

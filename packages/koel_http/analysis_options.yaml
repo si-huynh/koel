@@ -1,0 +1,24 @@
+# koel_http package-finalization analyzer config (Story 4.10, epic-sealing).
+#
+# Mirrors koel_core's 2.15 member-doc gate. Per Story 1.7, `plugins:` lives ONLY
+# at the workspace root (the analyzer rejects it in any inner file,
+# `plugins_in_inner_options`) — so this file declares NO `plugins:`. It only
+# `include:`s the root (inheriting `recommended.yaml` + the koel_lints plugin)
+# and layers the package-contract doc lints on top. Plugin-free → not a 1.7
+# reversal; scoped to koel_http now that the epic seals.
+include: ../../analysis_options.yaml
+
+analyzer:
+  # Generated code is not part of the documented public contract; excluding it
+  # keeps `public_member_api_docs` from firing on freezed/json_serializable output.
+  exclude:
+    - "**/*.freezed.dart"
+    - "**/*.g.dart"
+
+linter:
+  rules:
+    # Every exported public symbol carries a doc.
+    public_member_api_docs: true
+    # Keeps `[Type]` references in dartdoc resolvable so `dart doc` stays at
+    # exit 0 with no broken-reference warnings.
+    comment_references: true

@@ -35,7 +35,7 @@ import 'trace_entry.dart';
 ///
 /// A cancelled run simply stops: no [TracePhase.response] marker, no error.
 ///
-/// **The sink contract.** This interceptor only `add`s to [sink]; it never
+/// **The sink contract.** This interceptor only `add`s to `sink`; it never
 /// `close`s it. The consumer owns the sink's lifecycle — it may outlive a single
 /// run (e.g. one sink draining many sessions), so closing it here would be a
 /// use-after-close bug waiting to happen.

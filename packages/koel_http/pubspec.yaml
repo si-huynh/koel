@@ -36,6 +36,16 @@ dependencies:
   # makes the analyzer reject any non-test caller — the once-per-process contract
   # is enforced, not just documented.
   meta: ^1.16.0
+  # The web byte-streaming transport (Story 4.10). `package:web` is the WASM-ready
+  # JS-interop binding for `window.fetch` + `ReadableStream` + `AbortController` —
+  # the only way to stream SSE on web: `package:http`'s `BrowserClient` uses XHR
+  # and buffers the whole body (fatal for an infinite stream), and `EventSource`
+  # can't set the `Authorization` header `AuthInterceptor` needs (D4). Loaded only
+  # on web via the `transport.dart` conditional import (`dart.library.js_interop`),
+  # so the VM never sees it. Was transitive (via `http`/`test`); now direct. The
+  # JS↔Dart bridges (`dart:js_interop`) are SDK — no pubspec entry. No `dart:html`
+  # (legacy, not WASM-compatible).
+  web: ^1.1.0
   # koel_http's FIRST third-party runtime dep (Story 4.7). The pure-Dart Sentry
   # SDK (NOT sentry_flutter — koel_http is framework-free) backs the default-OFF
   # `SentryBreadcrumbInterceptor`: it adds AG-UI run breadcrumbs to the ambient
@@ -56,6 +66,13 @@ dev_dependencies:
   build_runner: ^2.4.0
   freezed: 3.2.6-dev.1
   test: ^1.25.0
+  # The web transport's browser integration test (Story 4.10) runs under
+  # `@TestOn('browser')`, where `dart:io` is unavailable — so its mock SSE server
+  # lives in a `spawnHybridUri` VM isolate whose `hybridMain(StreamChannel, …)`
+  # entrypoint types its channel with `package:stream_channel`. `package:test`
+  # pulls it transitively, but the hybrid server file imports it directly, so it
+  # is a first-class dev dep (per the `spawnHybridUri` doc's explicit note).
+  stream_channel: ^2.1.0
   # Reused in the agent suite: FixtureLoader replays the Epic 3 synthesized wire
   # fixtures through a local SSE server for the happy-path assertion (AC3).
   koel_test:
