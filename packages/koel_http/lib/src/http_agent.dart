@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:koel_core/koel_core.dart';
+import 'package:meta/meta.dart';
 
 import 'connection/cancellation.dart';
 import 'connection/lifecycle.dart';
@@ -156,6 +157,23 @@ class HttpAgent implements AbstractAgent {
       errorClassifier: transportErrorClassifier(),
     ).proceed(input);
   }
+
+  /// Builds the JSON request-body map POSTed for [input] — the single seam a
+  /// backend bridge overrides to reshape the wire body without reimplementing
+  /// the transport.
+  ///
+  /// The default is the canonical AG-UI encoding ([encodeRunAgentInput]). The
+  /// transport calls this synchronously, *before* the connection opens and
+  /// *after* any reserved transport keys (e.g. `AuthInterceptor`'s resolved
+  /// headers) have been stripped from [input], so an override sees the
+  /// already-sanitized payload. Keep overrides cheap and synchronous: a throw
+  /// here surfaces as a terminal `RunErrorEvent` exactly like any pre-connect
+  /// failure. Epic-5 adapters (`AgnoAgent`, `LangGraphAgent`) override this to
+  /// normalize `messages` to a backend's shape while delegating the other body
+  /// fields to `super.encodeBody(input)`.
+  @protected
+  Map<String, dynamic> encodeBody(RunAgentInput input) =>
+      encodeRunAgentInput(input);
 }
 
 /// The transport-level terminal `AbstractAgent` wrapped by [HttpAgent.run]'s
@@ -200,7 +218,7 @@ class _TransportTerminal implements AbstractAgent {
               ..remove(AuthInterceptor.transportHeadersKey),
           );
 
-    final body = utf8.encode(jsonEncode(encodeRunAgentInput(wireInput)));
+    final body = utf8.encode(jsonEncode(_agent.encodeBody(wireInput)));
     final response = await Transport().connect(
       _agent.url,
       body: body,

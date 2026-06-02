@@ -2,6 +2,10 @@
 
 Items deferred during BMAD workflows. Each entry records why the work was postponed.
 
+## Deferred from: code review of 5-1-agno-agent-message-conversion (2026-06-02)
+
+- **`Message.timestamp` serialized via `toIso8601String()` without `.toUtc()`** — `agnoMessageToWire` ([message_conversion.dart:198-199](../../packages/koel_agno/lib/src/conversion/message_conversion.dart#L198-L199)) emits a zone-less ISO string for a local `DateTime` (only when `includeTimestamp: true`, which defaults off). This mirrors koel_core's canonical codec ([message.g.dart:22](../../packages/koel_core/lib/src/message/message.g.dart#L22)) exactly — it is **not introduced by Story 5.1**, and normalizing only the agno converter would diverge from the canonical encoding the rest of koel emits. Any UTC-normalization decision belongs to koel_core's message codec. Revisit there if wire-side instant ambiguity ever bites a backend.
+
 ## Deferred from: code review of 4-10-web-transport-perf-baseline (2026-06-01)
 
 - **Long-mode hybrid mock server `Timer.periodic` never explicitly cancelled on teardown** — In `web_transport_server.dart`, the one-event-per-100ms `Timer.periodic` is cancelled only when a `flush()` throws (caught by `on Object` → emits `{'aborted'}`). On normal channel/test teardown the timer can fire after `server.close()`, and a `flush()` failure from teardown (not from `AbortController`) would emit a *false-positive* `aborted` signal / risk a `StateError` on a closed sink. Test-only; suite is green 17/17. Revisit if the browser cancel test flakes.

@@ -1,6 +1,6 @@
 # generated: 2026-05-28
-# last_updated: 2026-05-31
-# (most-recent change: 2026-06-01 dev-story — 4-7 → review)
+# last_updated: 2026-06-02
+# (most-recent change: 2026-06-02 create-story — epic-5 → in-progress, 5-1 → ready-for-dev)
 # project: koel
 # project_key: NOKEY
 # tracking_system: file-system
@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-05-28
-last_updated: 2026-06-01  # epic-4 → done + epic-4-retrospective → done (retro)
+last_updated: 2026-06-02  # 5-1 → done (code-review)
 project: koel
 project_key: NOKEY
 tracking_system: file-system
@@ -100,8 +100,9 @@ development_status:
   epic-4-retrospective: done
 
   # Epic 5: Backend Bridges — koel_agno + koel_langgraph + koel_runtime
-  epic-5: backlog
-  5-1-agno-agent-message-conversion: backlog
+  # In-progress 2026-06-02 — first story (5-1) created (agno group first, per epic-4 retro).
+  epic-5: in-progress
+  5-1-agno-agent-message-conversion: done
   5-2-agno-auth-interceptor-error-classifier: backlog
   5-3-agno-captured-fixtures-conformance: backlog
   5-4-langgraph-agent-protocol-conversion: backlog

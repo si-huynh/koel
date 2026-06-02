@@ -8,5 +8,21 @@ environment:
 
 resolution: workspace
 
+dependencies:
+  # koel_agno's runtime edges (bare workspace keys, mirroring koel_http's style).
+  # koel_core: the `Message`/`RunAgentInput`/`Interceptor` value+contract types
+  # the adapter converts and forwards. koel_http: `HttpAgent` — `AgnoAgent`
+  # extends it and overrides only the body-encoding seam. `http.Client` is the
+  # injectable transport seam the Addendum-A.3 constructor exposes (tests pass
+  # `MockClient`, backends a pooled client).
+  koel_core:
+  koel_http:
+  http: ^1.6.0
+
 dev_dependencies:
   koel_lints:
+  test: ^1.25.0
+  # FixtureLoader replays the Epic 3 synthesized wire fixtures so the inherited
+  # SSE parse path (AC3) is asserted against real captured events, not hand-rolled
+  # JSON.
+  koel_test:
