@@ -1,5 +1,6 @@
 import 'package:koel_core/koel_core.dart';
 import 'package:koel_test/koel_test.dart';
+import 'package:koel_test/src/fixture_envelope.dart';
 import 'package:test/test.dart';
 
 /// A non-conformant agent that violates the never-throw SPI by surfacing a raw
@@ -133,6 +134,24 @@ void main() {
       );
 
       expect(build(), equals(build()));
+    });
+
+    // 5.3 AC4 — the corpus-line guard `_loadExpectedCorpus` routes through.
+    // The runner reads its own shipped, all-pass corpus, so the corrupt path is
+    // unreachable with valid data; this locks that a malformed corpus line
+    // names the corpus in a FormatException rather than an opaque TypeError.
+    test('a malformed corpus line throws a corpus-naming FormatException', () {
+      const source = 'conformance corpus all_event_types.jsonl';
+      expect(
+        () => decodeFixtureEvent(source, 5, '{"payload":{"no":"type"}}'),
+        throwsA(
+          isA<FormatException>().having(
+            (e) => e.message,
+            'message',
+            allOf(contains(source), contains('line 5')),
+          ),
+        ),
+      );
     });
   });
 }

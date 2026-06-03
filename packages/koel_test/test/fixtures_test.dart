@@ -25,10 +25,19 @@ void main() {
   };
   const coverageFixture = 'all_event_types';
 
-  /// The four backend dirs that hold only `.placeholder` files until Epic 5.
+  /// The four backend fixture dirs (all exist from Story 3.2).
   const backendDirs = <String>{
     'dojo',
     'agno',
+    'langgraph',
+    'copilotkit_runtime',
+  };
+
+  /// Backend dirs still awaiting their Epic-5 capture — they hold only a
+  /// `.placeholder` and no `.jsonl`. `agno` graduated in Story 5.3 (real
+  /// `text_only_run.jsonl` captured), so it is no longer pending.
+  const pendingCaptureDirs = <String>{
+    'dojo',
     'langgraph',
     'copilotkit_runtime',
   };
@@ -119,9 +128,9 @@ void main() {
     });
 
     test(
-      'each backend dir carries a .placeholder and no captured fixtures',
+      'each pending backend dir carries a .placeholder and no captured fixtures',
       () {
-        for (final dir in backendDirs) {
+        for (final dir in pendingCaptureDirs) {
           expect(
             File('$fixturesDir/$dir/.placeholder').existsSync(),
             isTrue,
@@ -141,6 +150,28 @@ void main() {
         }
       },
     );
+
+    test('agno/ graduated (Story 5.3) — real text_only_run capture, no '
+        'placeholder', () {
+      expect(
+        File('$fixturesDir/agno/text_only_run.jsonl').existsSync(),
+        isTrue,
+        reason: 'agno/ must hold the captured text_only_run.jsonl',
+      );
+      expect(
+        File('$fixturesDir/agno/.placeholder').existsSync(),
+        isFalse,
+        reason: 'agno/ .placeholder must be removed once a capture lands',
+      );
+      // The capture is real (live agno), not synthesized.
+      final session =
+          (jsonDecode(linesOf('$fixturesDir/agno/text_only_run.jsonl').first)
+                  as Map<String, dynamic>)['_session']
+              as Map<String, dynamic>;
+      expect(session['synthesized'], isFalse);
+      expect(session['adapter'], startsWith('koel_agno@'));
+      expect(session['backendVersion'], startsWith('agno=='));
+    });
   });
 
   group('synthesized fixture format (AC2)', () {

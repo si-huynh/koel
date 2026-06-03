@@ -1,5 +1,12 @@
-# conformance.yml — placeholder. Real body wired in Epic 5.
-# AG-UI conformance suite via koel_test's ConformanceRunner.
+# conformance.yml — AG-UI conformance suite (FR-G4) via koel_test's
+# ConformanceRunner driven against each backend adapter. Story 1.5 shipped a
+# green-by-default placeholder; Story 5.3 wires the real lane (koel_agno).
+#
+# Offline by design: the conformance tests replay captured/synthesized fixtures
+# through a MockClient, so NO backend container runs in CI — live capture is a
+# one-time operator step (`make up-agno` → tool/capture_fixtures.dart). Stories
+# 5.6 (langgraph) and 5.9 (copilotkit) extend the lane by adding their own
+# `@Tags(['conformance'])` tests; `melos run conformance` picks them up.
 name: Conformance
 permissions:
   contents: read
@@ -9,7 +16,16 @@ on:
   push:
     branches: [main]
 jobs:
-  placeholder:
+  conformance:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Wired in Epic 5"
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 3.12.0
+      - run: dart pub global activate melos 7.8.0
+      - run: melos bootstrap
+      # Generated code (*.freezed.dart) is gitignored — ConformanceReport is
+      # freezed, so build before the conformance run (same as ci.yml).
+      - run: melos run build
+      - run: melos run conformance

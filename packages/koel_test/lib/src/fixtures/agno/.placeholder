@@ -1,5 +1,0 @@
-# Real agno protocol fixtures land here in Epic 5 Story 5.3
-# (koel_agno — Captured fixtures + ConformanceRunner green).
-# Captured live from a real agno backend per FR-G1; until then this directory
-# is intentionally empty of fixtures.
-# Do not hand-author captures here — synthesized fixtures live in ../synthesized/.

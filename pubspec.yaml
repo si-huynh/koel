@@ -30,12 +30,13 @@ melos:
       description: Run `dart test` per package (CWD = package root for fixture reads, deferred-work.md :158), excluding the perf benches. Scaffold packages with no test files yet (exit 79) are tolerated; real failures propagate. See tool/test_package.sh.
       exec: bash "$MELOS_ROOT_PATH/tool/test_package.sh"
     test:coverage:
-      description: Per-package line + branch coverage gates (NFR-12) — koel_core & koel_http ≥90% (kernel tier), koel_test ≥80% (tooling tier). koel_http merges a headless-Chrome pass (with_chrome) so its web transport is covered for real. Generated files excluded via each package's coverage_options.yaml; perf benches excluded by tag. See tool/coverage.sh.
+      description: Per-package line + branch coverage gates (NFR-12) — koel_core & koel_http ≥90% (kernel tier), koel_test & koel_agno ≥80% (tooling/adapter tier). koel_http merges a headless-Chrome pass (with_chrome) so its web transport is covered for real. Generated files excluded via each package's coverage_options.yaml; perf benches excluded by tag. See tool/coverage.sh.
       run: |
         set -e
         bash "$MELOS_ROOT_PATH/tool/coverage.sh" packages/koel_core 90 90
         bash "$MELOS_ROOT_PATH/tool/coverage.sh" packages/koel_http 90 90 with_chrome
         bash "$MELOS_ROOT_PATH/tool/coverage.sh" packages/koel_test 80 80
+        bash "$MELOS_ROOT_PATH/tool/coverage.sh" packages/koel_agno 80 80
     build:
       description: Run `build_runner build` in packages that declare build_runner (codegen-drift gate).
       exec: dart run build_runner build
@@ -51,5 +52,8 @@ melos:
       description: Run `dart fix --apply` per package (auto-apply analyzer fixes).
       exec: dart fix --apply
     capture-fixtures:
-      description: "Fixture-capture pipeline scaffold (4 backends → JSONL); wired per backend in Epic 5 — agno 5.3, langgraph 5.6, dojo+copilotkit 5.9. Pass --backend=<name>."
+      description: "Fixture-capture pipeline (4 backends → JSONL); agno live (5.3), langgraph 5.6, dojo+copilotkit 5.9. Pass --backend=<name> [--base-url=<url>] [--token=<t>]."
       run: dart run "$MELOS_ROOT_PATH/tool/capture_fixtures.dart"
+    conformance:
+      description: "AG-UI conformance lane (FR-G4) — runs the `conformance`-tagged tests (ConformanceRunner vs each backend adapter, offline MockClient replay) per package; tolerates packages with none yet. koel_agno now (5.3); langgraph 5.6, copilotkit 5.9 extend it. See tool/conformance.sh."
+      exec: bash "$MELOS_ROOT_PATH/tool/conformance.sh"

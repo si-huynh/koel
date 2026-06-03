@@ -2,8 +2,6 @@
 library;
 
 import 'dart:convert';
-import 'dart:io';
-import 'dart:isolate';
 
 import 'package:http/http.dart';
 import 'package:http/testing.dart';
@@ -12,6 +10,8 @@ import 'package:koel_core/koel_core.dart';
 import 'package:koel_http/koel_http.dart';
 import 'package:koel_test/koel_test.dart';
 import 'package:test/test.dart';
+
+import '_support.dart';
 
 /// A minimal run payload for tests that do not assert on the body.
 RunAgentInput _input() => const RunAgentInput(threadId: 't', runId: 'r');
@@ -33,27 +33,6 @@ RunAgentInput _input() => const RunAgentInput(threadId: 't', runId: 'r');
   });
   return (client: client, captured: captured);
 }
-
-/// Reads the raw wire `payload` of each event line in a synthesized fixture
-/// (skipping the `_session` header) — the bytes a real agno endpoint emits.
-Future<List<Map<String, dynamic>>> _fixturePayloads(String name) async {
-  final uri = Uri.parse(
-    'package:koel_test/src/fixtures/synthesized/$name.jsonl',
-  );
-  final resolved = await Isolate.resolvePackageUri(uri);
-  final lines = (await File.fromUri(
-    resolved!,
-  ).readAsLines()).where((line) => line.trim().isNotEmpty).toList();
-  return [
-    for (final line in lines.skip(1))
-      (jsonDecode(line) as Map<String, dynamic>)['payload']
-          as Map<String, dynamic>,
-  ];
-}
-
-/// Frames wire payloads as a `text/event-stream` body (`data: <json>\n\n`).
-String _sseBody(List<Map<String, dynamic>> payloads) =>
-    payloads.map((p) => 'data: ${jsonEncode(p)}\n\n').join();
 
 /// Adversarial proof (Epic-4 retro A7) that the `@protected encodeBody` seam is
 /// reachable and honored from a *different package* — the consumer it was built
@@ -167,7 +146,9 @@ void main() {
         '(AC3)', () {
       for (final name in const ['text_only_run', 'tool_call_basic']) {
         test('replays "$name" into the stored typed events', () async {
-          final h = _capturingClient(_sseBody(await _fixturePayloads(name)));
+          final h = _capturingClient(
+            sseBody(await fixturePayloads('synthesized', name)),
+          );
 
           final events = await AgnoAgent(
             baseURL: Uri.parse('http://host:8002'),

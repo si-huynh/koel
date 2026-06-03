@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
 
 import 'package:koel_core/koel_core.dart';
 
 import 'conformance_report.dart';
+import 'fixture_envelope.dart';
 
 /// The raw outcome of one conformance drive: the agent's emitted `events`, the
 /// run-terminating `error` (the first `RUN_ERROR`, or a wrapped thrown error),
@@ -104,19 +104,18 @@ final class ConformanceRunner {
     if (resolved == null) {
       throw StateError('cannot resolve the bundled conformance corpus: $uri');
     }
-    final lines = (await File.fromUri(resolved).readAsLines())
-        .where((line) => line.trim().isNotEmpty)
-        .skip(1); // drop the `_session` header
+    final lines = (await File.fromUri(
+      resolved,
+    ).readAsLines()).where((line) => line.trim().isNotEmpty).toList();
 
+    // Line 0 is the `_session` header; lines 1..N are the type catalogue. A
+    // malformed/hand-edited corpus line throws a corpus-naming `FormatException`
+    // (the same guard as `FixtureLoader`) instead of an opaque `TypeError`.
+    const source = 'conformance corpus all_event_types.jsonl';
     final corpus = <_Expected>[];
-    for (final line in lines) {
-      final payload =
-          (jsonDecode(line) as Map<String, dynamic>)['payload']
-              as Map<String, dynamic>;
-      corpus.add((
-        label: payload['type'] as String,
-        event: AgUiEvent.fromWire(payload),
-      ));
+    for (var i = 1; i < lines.length; i++) {
+      final (:type, :payload) = decodeFixtureEvent(source, i, lines[i]);
+      corpus.add((label: type, event: AgUiEvent.fromWire(payload)));
     }
     return corpus;
   }

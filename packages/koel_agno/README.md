@@ -16,6 +16,19 @@ import 'package:koel_agno/koel_agno.dart';
 
 The bridge lands in Epic 5.
 
+## Authentication
+
+`AgnoAgent`'s `token` is optional, and the `AgnoAuthInterceptor` is **default-ON**
+as a harmless convention: stock agno enforces **zero auth** on its AG-UI route
+(CORS only — `OQ-Agno-Auth` resolved against `agno==2.6.10`), so an open
+deployment simply ignores the `Authorization` header. Pass a `token` only when
+your deployment adds its own auth middleware (which then returns `401`/`403`,
+mapped to `businessAuth`/`businessForbidden` by `AgnoErrorClassifier`):
+
+```dart
+final agent = AgnoAgent(baseURL: Uri.parse('https://my-agno.example'), token: 'xyz');
+```
+
 ## Documentation
 
 API reference is on the pub.dev API tab (`dart doc`). Guides will live on the

@@ -1,0 +1,27 @@
+# koel_agno package-finalization analyzer config (Story 5.3, agno-group sealing).
+#
+# Mirrors koel_http/koel_test's sealer shape. Per Story 1.7, `plugins:` lives
+# ONLY at the workspace root (the analyzer rejects it in any inner file,
+# `plugins_in_inner_options`) — so this file declares NO `plugins:`. It only
+# `include:`s the root (inheriting `recommended.yaml` + the koel_lints plugin)
+# and layers the package-contract doc lints on top. Plugin-free → not a 1.7
+# reversal; scoped to koel_agno now that the agno group seals.
+include: ../../analysis_options.yaml
+
+analyzer:
+  # Forward-safe: koel_agno ships no codegen today (no freezed/json_serializable),
+  # but excluding generated output keeps `public_member_api_docs` correct if any
+  # is added later — same exclude list as the other sealed packages.
+  exclude:
+    - "**/*.freezed.dart"
+    - "**/*.g.dart"
+
+linter:
+  rules:
+    # Every exported public symbol (AgnoAgent, AgnoAuthInterceptor,
+    # AgnoErrorClassifier, AgnoConversionOptions, agnoMessageToWire, …) carries a
+    # doc — the member-doc gate turns on as the package finalizes.
+    public_member_api_docs: true
+    # Keeps `[Type]` references in dartdoc resolvable so `dart doc` stays at
+    # exit 0 with no broken-reference warnings.
+    comment_references: true

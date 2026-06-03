@@ -5,6 +5,8 @@ import 'dart:isolate';
 
 import 'package:koel_core/koel_core.dart';
 
+import 'fixture_envelope.dart';
+
 /// The typed `_session` header that opens every fixture `.jsonl` — the
 /// provenance of a captured or synthesized run.
 ///
@@ -22,6 +24,7 @@ final class FixtureSession {
     required this.threadId,
     required this.runId,
     required this.synthesized,
+    this.backendVersion,
   });
 
   /// Builds a [FixtureSession] from the **inner** `_session` object (the value
@@ -49,6 +52,12 @@ final class FixtureSession {
       threadId: require<String>('threadId'),
       runId: require<String>('runId'),
       synthesized: require<bool>('synthesized'),
+      // Optional: only live captures stamp it (a synthesized fixture has no
+      // backend). Absent → null; present-but-wrong-typed is a corrupt header,
+      // so it routes through `require` for the same ArgumentError as the rest.
+      backendVersion: session['backendVersion'] == null
+          ? null
+          : require<String>('backendVersion'),
     );
   }
 
@@ -70,6 +79,11 @@ final class FixtureSession {
   /// Whether the fixture is hand-synthesized (`true`) or captured from a live
   /// backend (`false`).
   final bool synthesized;
+
+  /// The backend's own version string for a live capture (e.g. `agno==2.6.10`),
+  /// or `null` for a synthesized fixture (which has no backend). Distinct from
+  /// [adapter], which carries the koel adapter's version (e.g. `koel_agno@…`).
+  final String? backendVersion;
 }
 
 /// Reads koel's bundled JSONL fixtures and decodes each into typed
@@ -156,14 +170,18 @@ abstract final class FixtureLoader {
 
     // Lines 1..N: decode each line's `payload` (the full wire object), never the
     // whole {type, timestamp, payload} envelope — the envelope's timestamp is
-    // not part of the event.
-    return <AgUiEvent>[
-      for (final line in lines.skip(1))
+    // not part of the event. A corrupt line (Epic-5 partial/truncated capture)
+    // throws a fixture-naming `FormatException` via `decodeFixtureEvent`, not an
+    // opaque `TypeError` (the 3.3/3.5 deferral cluster).
+    final events = <AgUiEvent>[];
+    for (var i = 1; i < lines.length; i++) {
+      events.add(
         AgUiEvent.fromWire(
-          (jsonDecode(line) as Map<String, dynamic>)['payload']
-              as Map<String, dynamic>,
+          decodeFixtureEvent('fixture "$name"', i, lines[i]).payload,
         ),
-    ];
+      );
+    }
+    return events;
   }
 
   /// Builds the [ArgumentError] for an unknown fixture name, enumerating the

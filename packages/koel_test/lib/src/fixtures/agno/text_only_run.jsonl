@@ -1,0 +1,12 @@
+{"_session":{"koelVersion":"0.0.1","adapter":"koel_agno@0.0.1","captured":"2026-06-03T01:44:37.864785Z","threadId":"t","runId":"r","synthesized":false,"backendVersion":"agno==2.6.10"}}
+{"type":"RUN_STARTED","timestamp":"2026-06-03T01:44:37.865785Z","payload":{"type":"RUN_STARTED","threadId":"t","runId":"r"}}
+{"type":"TEXT_MESSAGE_START","timestamp":"2026-06-03T01:44:37.866785Z","payload":{"type":"TEXT_MESSAGE_START","messageId":"msg-0","role":"assistant"}}
+{"type":"TEXT_MESSAGE_CONTENT","timestamp":"2026-06-03T01:44:37.867785Z","payload":{"type":"TEXT_MESSAGE_CONTENT","messageId":"msg-0","delta":"Hello"}}
+{"type":"TEXT_MESSAGE_CONTENT","timestamp":"2026-06-03T01:44:37.868785Z","payload":{"type":"TEXT_MESSAGE_CONTENT","messageId":"msg-0","delta":" from"}}
+{"type":"TEXT_MESSAGE_CONTENT","timestamp":"2026-06-03T01:44:37.869785Z","payload":{"type":"TEXT_MESSAGE_CONTENT","messageId":"msg-0","delta":" the"}}
+{"type":"TEXT_MESSAGE_CONTENT","timestamp":"2026-06-03T01:44:37.870785Z","payload":{"type":"TEXT_MESSAGE_CONTENT","messageId":"msg-0","delta":" koel_backend"}}
+{"type":"TEXT_MESSAGE_CONTENT","timestamp":"2026-06-03T01:44:37.871785Z","payload":{"type":"TEXT_MESSAGE_CONTENT","messageId":"msg-0","delta":" deterministic"}}
+{"type":"TEXT_MESSAGE_CONTENT","timestamp":"2026-06-03T01:44:37.872785Z","payload":{"type":"TEXT_MESSAGE_CONTENT","messageId":"msg-0","delta":" mock"}}
+{"type":"TEXT_MESSAGE_CONTENT","timestamp":"2026-06-03T01:44:37.873785Z","payload":{"type":"TEXT_MESSAGE_CONTENT","messageId":"msg-0","delta":" LLM."}}
+{"type":"TEXT_MESSAGE_END","timestamp":"2026-06-03T01:44:37.874785Z","payload":{"type":"TEXT_MESSAGE_END","messageId":"msg-0"}}
+{"type":"RUN_FINISHED","timestamp":"2026-06-03T01:44:37.875785Z","payload":{"type":"RUN_FINISHED","threadId":"t","runId":"r"}}

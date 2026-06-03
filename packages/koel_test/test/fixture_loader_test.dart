@@ -1,5 +1,6 @@
 import 'package:koel_core/koel_core.dart';
 import 'package:koel_test/koel_test.dart';
+import 'package:koel_test/src/fixture_envelope.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -46,6 +47,46 @@ void main() {
       );
     });
 
+    test('FixtureSession.backendVersion parses a live-capture header, and is '
+        'null when absent — backward-compatible with synthesized fixtures '
+        '(5.3 AC3)', () {
+      Map<String, dynamic> header({String? backendVersion}) => {
+        'koelVersion': '0.0.1',
+        'adapter': 'koel_agno@0.0.1',
+        'captured': '2026-06-03T00:00:00.000Z',
+        'threadId': 't',
+        'runId': 'r',
+        'synthesized': false,
+        'backendVersion': ?backendVersion,
+      };
+
+      expect(
+        FixtureSession.fromJson(
+          header(backendVersion: 'agno==2.6.10'),
+        ).backendVersion,
+        'agno==2.6.10',
+      );
+      // Absent → null (the seven synthesized fixtures omit it and must still
+      // parse unchanged).
+      expect(FixtureSession.fromJson(header()).backendVersion, isNull);
+    });
+
+    test('FixtureSession.fromJson rejects a wrong-typed backendVersion '
+        '(5.3 AC3)', () {
+      expect(
+        () => FixtureSession.fromJson(const {
+          'koelVersion': '0.0.1',
+          'adapter': 'koel_agno@0.0.1',
+          'captured': '2026-06-03T00:00:00.000Z',
+          'threadId': 't',
+          'runId': 'r',
+          'synthesized': false,
+          'backendVersion': 42, // not a String
+        }),
+        throwsArgumentError,
+      );
+    });
+
     test('unknown synthesized fixture throws an enumerated ArgumentError, '
         'not a KoelError (AC3)', () {
       expect(
@@ -86,6 +127,59 @@ void main() {
 
     test('an unknown fixture name surfaces ArgumentError (AC3)', () {
       expect(MockAgent.fromFixture('does_not_exist'), throwsArgumentError);
+    });
+  });
+
+  // 5.3 AC4 — the corrupt-line → fixture-naming FormatException guard (closes
+  // the 3.3 + 3.5 deferral cluster; reachable once live captures can emit
+  // partial/truncated lines). The shared guard sits behind both FixtureLoader
+  // and ConformanceRunner; here it is exercised with a fixture-style source.
+  group('decodeFixtureEvent corrupt-line guard', () {
+    Matcher throwsFormatNaming(String needle) => throwsA(
+      isA<FormatException>().having(
+        (e) => e.message,
+        'message',
+        contains(needle),
+      ),
+    );
+
+    test('a well-formed line decodes to (type, payload)', () {
+      final event = decodeFixtureEvent(
+        'fixture "x"',
+        1,
+        '{"type":"RUN_STARTED","timestamp":"2026-01-01T00:00:00.000Z",'
+            '"payload":{"type":"RUN_STARTED","threadId":"t","runId":"r"}}',
+      );
+      expect(event.type, 'RUN_STARTED');
+      expect(event.payload['threadId'], 't');
+    });
+
+    test('a non-object line throws a fixture-naming FormatException', () {
+      expect(
+        () => decodeFixtureEvent('fixture "x"', 3, '[1, 2, 3]'),
+        throwsFormatNaming('fixture "x" line 3'),
+      );
+    });
+
+    test('a missing payload throws (not an opaque TypeError)', () {
+      expect(
+        () => decodeFixtureEvent('fixture "x"', 2, '{"type":"RUN_STARTED"}'),
+        throwsFormatNaming('missing or non-object `payload`'),
+      );
+    });
+
+    test('a non-object payload throws', () {
+      expect(
+        () => decodeFixtureEvent('fixture "x"', 2, '{"payload":7}'),
+        throwsFormatNaming('missing or non-object `payload`'),
+      );
+    });
+
+    test('a non-String payload.type throws', () {
+      expect(
+        () => decodeFixtureEvent('fixture "x"', 4, '{"payload":{"type":9}}'),
+        throwsFormatNaming('`type` is missing or not a String'),
+      );
     });
   });
 }

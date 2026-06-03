@@ -25,8 +25,8 @@ RunAgentInput _input() => const RunAgentInput(threadId: 't', runId: 'r');
   return (client: client, captured: captured);
 }
 
-/// Runs [input] through a plain [HttpAgent] carrying [interceptor], returning the
-/// single captured request.
+/// Runs a fixed input through a plain [HttpAgent] carrying [interceptor],
+/// returning the single captured request.
 Future<Request> _runWith(Interceptor interceptor) async {
   final h = _capturingClient();
   await HttpAgent(

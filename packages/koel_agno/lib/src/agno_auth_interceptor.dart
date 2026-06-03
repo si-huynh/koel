@@ -1,10 +1,10 @@
 import 'package:koel_http/koel_http.dart';
 
 /// Default-ON Bearer auth for agno backends (FR-C1, Addendum A.3) — composed
-/// onto every [AgnoAgent] run unless the caller overrides it.
+/// onto every `AgnoAgent` run unless the caller overrides it.
 ///
 /// A thin specialization of [AuthInterceptor]: it resolves a fixed Bearer header
-/// from the constructor [token] rather than an async callback. When [token] is
+/// from the constructor `token` rather than an async callback. When `token` is
 /// `null` or blank (empty/whitespace — e.g. an unset env var defaulting to `''`)
 /// it is a true no-op (no `Authorization` header reaches the wire), which is the
 /// right default for open dev deployments. Otherwise every request carries
@@ -16,7 +16,7 @@ import 'package:koel_http/koel_http.dart';
 /// **Why default-ON is safe (OQ-Agno-Auth, resolved).** The agno reference
 /// backend (`agno 2.6.10`) enforces **zero auth** on its AG-UI route — it ignores
 /// the `Authorization` header entirely. So a default Bearer is a harmless client
-/// convention, not a requirement: [token] is optional, and a deployment that
+/// convention, not a requirement: `token` is optional, and a deployment that
 /// wants enforcement adds its own opt-in middleware (which returns 401/403 — see
 /// `AgnoErrorClassifier`). Stays default-ON per the resolved spike.
 class AgnoAuthInterceptor extends AuthInterceptor {
