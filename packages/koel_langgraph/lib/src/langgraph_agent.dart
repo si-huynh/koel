@@ -18,10 +18,12 @@ import 'langgraph_auth_interceptor.dart';
 /// koel's [Message] superset down to canonical AG-UI — done by overriding the
 /// [HttpAgent.encodeBody] seam for `messages` alone (see [langGraphMessageToWire]).
 ///
-/// The LangGraph error classifier and the surface-level
-/// `resume(threadId, resumeValue)` interrupt flow are **not** part of this agent
-/// yet — they arrive in Stories 5.6 and 5.5 respectively. Until then
-/// `LangGraphAgent` inherits [HttpAgent]'s `DefaultErrorClassifier`.
+/// Surface-level interrupt-resume is supported via [resume]: the consumer
+/// observes the `on_interrupt` `CUSTOM` event that rides a [run] stream and
+/// reopens the run on the same thread, where LangGraph rebuilds state
+/// server-side (no client-side reconstruction). The LangGraph-specific error
+/// classifier is **not** part of this agent yet — it arrives in Story 5.6; until
+/// then `LangGraphAgent` inherits [HttpAgent]'s `DefaultErrorClassifier`.
 class LangGraphAgent extends HttpAgent {
   /// Connects to the LangGraph deployment whose AG-UI route is [deploymentUrl].
   ///
@@ -84,4 +86,61 @@ class LangGraphAgent extends HttpAgent {
       for (final message in input.messages) langGraphMessageToWire(message),
     ],
   };
+
+  /// Reopens the run paused at a LangGraph `interrupt` on [threadId], delivering
+  /// [resumeValue] to the waiting node and streaming the resumed run's events.
+  ///
+  /// Interrupt-resume is **surface-level** here (FR-C2, PRD §6.1): the consumer
+  /// detects the pause itself — the interrupt rides the original [run] stream as
+  /// a canonical `CUSTOM` event (`{name: "on_interrupt", value: …}`,
+  /// [CustomEvent]); koel does **not** special-case it — then calls [resume]
+  /// with the value the paused node awaits. koel reconstructs **no** state;
+  /// LangGraph rebuilds it server-side from its checkpoint, keyed by [threadId]
+  /// (SPIKE-LG-RESUME).
+  ///
+  /// [resumeValue] is typed `Object?` because the protocol resolves it to a
+  /// server-side `Command(resume=<any JSON>)` — `ag-ui-langgraph` decodes a
+  /// JSON-parseable string and otherwise forwards the raw value, so a bare
+  /// string, number, bool, list, map, or `null` are all valid resume answers.
+  /// This mirrors [CustomEvent.value] (`value: any`, the inbound half of the
+  /// same interrupt cycle): whatever shape the `on_interrupt` carries out, the
+  /// resume can answer with the same shape.
+  ///
+  /// The resume POSTs to the **same** `deploymentUrl` (there is no separate
+  /// resume route) a `RunAgentInput` carrying the same [threadId] and
+  /// `forwardedProps: {"command": {"resume": resumeValue}}` — the exact shape
+  /// `ag-ui-langgraph` reads to build the server-side `Command(resume=…)`. The
+  /// `runId` is per-request (the **thread**, not the run, is the checkpoint
+  /// key), so a deterministic `resume-<threadId>` id is minted; the server keys
+  /// resumption on [threadId], not `runId`. Delegating to [run] means the
+  /// default-ON `x-api-key` auth, the canonical-AG-UI body encoding, and the
+  /// inherited SSE parse all apply unchanged — including the error contract: a
+  /// failed resume surfaces as a terminal `RunErrorEvent`, never a throw.
+  ///
+  /// Throws an [ArgumentError] when [threadId] is blank — a blank thread names
+  /// no checkpoint to reload, so it is a programmer error caught before any run
+  /// (the only throw; the resumed stream itself never throws). The thread is
+  /// trimmed before use so a padded id resolves to the same checkpoint.
+  ///
+  /// Deep (stateful sub-tree) interrupt-resume defers to v2
+  /// (OQ-LangGraph-Graduation).
+  Stream<AgUiEvent> resume(String threadId, Object? resumeValue) {
+    final thread = threadId.trim();
+    if (thread.isEmpty) {
+      throw ArgumentError.value(
+        threadId,
+        'threadId',
+        'must name the interrupted thread to reload its checkpoint',
+      );
+    }
+    return run(
+      RunAgentInput(
+        threadId: thread,
+        runId: 'resume-$thread',
+        forwardedProps: {
+          'command': {'resume': resumeValue},
+        },
+      ),
+    );
+  }
 }

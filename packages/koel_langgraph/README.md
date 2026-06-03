@@ -15,6 +15,25 @@ import 'package:koel_langgraph/koel_langgraph.dart';
 
 The bridge lands in Epic 5.
 
+## Interrupt-resume
+
+`koel_langgraph` ships **surface-level** interrupt-resume in v1. When a LangGraph
+run pauses on an `interrupt`, the pause surfaces on the `run()` stream as a
+canonical AG-UI `CUSTOM` event (`name: "on_interrupt"`). The consumer reads that
+value and reopens the run on the same thread:
+
+```dart
+final resumed = agent.resume(threadId, {'approved': true});
+```
+
+`resume` POSTs the value to the same deployment and reopens the SSE stream;
+LangGraph rebuilds run state **server-side** from its checkpoint — koel performs
+no client-side state reconstruction.
+
+**Deep** (stateful sub-tree) interrupt-resume defers to v2, tracked as
+`OQ-LangGraph-Graduation` in the koel open-questions registry (linkable once the
+docs site lands — `OQ-Docs-Framework`).
+
 ## Documentation
 
 API reference is on the pub.dev API tab (`dart doc`). Guides will live on the

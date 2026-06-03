@@ -217,5 +217,176 @@ void main() {
       // transport error.
       expect(events.single, isA<RunErrorEvent>());
     });
+
+    group('surface-level interrupt-resume (Story 5.5)', () {
+      test('resume POSTs forwardedProps.command.resume verbatim with a minted '
+          'runId, to deploymentUrl unchanged (AC2)', () async {
+        final h = _capturingClient();
+
+        await LangGraphAgent(
+          deploymentUrl: Uri.parse('http://host:8003/agent'),
+          client: h.client,
+        ).resume('t-int-1', {'approved': true}).toList();
+
+        final request = h.captured.single;
+        // Same route as run — there is no separate resume endpoint.
+        expect(request.url, Uri.parse('http://host:8003/agent'));
+        expect(request.method, 'POST');
+
+        final body = jsonDecode(request.body) as Map<String, dynamic>;
+        expect(body['threadId'], 't-int-1');
+        // runId is per-request (thread is the checkpoint key) — minted, not '0'.
+        expect(body['runId'], 'resume-t-int-1');
+        // The resume value nests exactly under forwardedProps.command.resume —
+        // not a top-level field, not a pre-built Command envelope.
+        expect(body['forwardedProps'], {
+          'command': {
+            'resume': {'approved': true},
+          },
+        });
+      });
+
+      test('resume is not auth-exempt — the default-ON x-api-key rides the '
+          'resume request (AC2)', () async {
+        final h = _capturingClient();
+
+        await LangGraphAgent(
+          deploymentUrl: Uri.parse('http://host:8003/agent'),
+          apiKey: 'secret-xyz',
+          client: h.client,
+        ).resume('t-int-1', const {}).toList();
+
+        expect(h.captured.single.headers['x-api-key'], 'secret-xyz');
+      });
+
+      test('a blank threadId throws ArgumentError before any run (AC1 '
+          'fail-fast — a blank thread names no checkpoint)', () {
+        final agent = LangGraphAgent(
+          deploymentUrl: Uri.parse('http://host:8003/agent'),
+        );
+
+        expect(() => agent.resume('   ', const {}), throwsArgumentError);
+      });
+
+      test('interrupt rides run() as a CustomEvent and resume() reopens the run '
+          'with the resumed state — no client-side reconstruction (AC3)', () async {
+        // The paused run ends with the interrupt surfaced as a canonical CUSTOM
+        // event; the resumed run replays RUN_STARTED…RUN_FINISHED. One client
+        // routes by whether the body carries the resume command — mirroring the
+        // single-route backend (CONTRACT.md: run and resume share POST /agent).
+        final interruptStream = sseBody(const [
+          {'type': 'RUN_STARTED', 'threadId': 't-int-1', 'runId': 'r-int-1'},
+          {
+            'type': 'CUSTOM',
+            'name': 'on_interrupt',
+            'value': {'question': 'approve?'},
+          },
+          {'type': 'RUN_FINISHED', 'threadId': 't-int-1', 'runId': 'r-int-1'},
+        ]);
+        final resumedStream = sseBody(const [
+          {
+            'type': 'RUN_STARTED',
+            'threadId': 't-int-1',
+            'runId': 'resume-t-int-1',
+          },
+          {
+            'type': 'TEXT_MESSAGE_START',
+            'messageId': 'm-r',
+            'role': 'assistant',
+          },
+          {
+            'type': 'TEXT_MESSAGE_CONTENT',
+            'messageId': 'm-r',
+            'delta': 'Resumed with value: approved-by-human',
+          },
+          {'type': 'TEXT_MESSAGE_END', 'messageId': 'm-r'},
+          {
+            'type': 'RUN_FINISHED',
+            'threadId': 't-int-1',
+            'runId': 'resume-t-int-1',
+          },
+        ]);
+        final client = MockClient((request) async {
+          final body = jsonDecode(request.body) as Map<String, dynamic>;
+          final isResume = (body['forwardedProps'] as Map).containsKey(
+            'command',
+          );
+          return Response(
+            isResume ? resumedStream : interruptStream,
+            200,
+            headers: const {'content-type': 'text/event-stream'},
+          );
+        });
+        final agent = LangGraphAgent(
+          deploymentUrl: Uri.parse('http://host:8003/agent'),
+          client: client,
+        );
+
+        // The consumer observes the interrupt itself — it is a plain CustomEvent
+        // on the run() stream, not special-cased by koel.
+        final paused = await agent
+            .run(const RunAgentInput(threadId: 't-int-1', runId: 'r-int-1'))
+            .toList();
+        // Filter by name, not .single — koel does not special-case the
+        // interrupt, so nothing guarantees it is the only CUSTOM event a run
+        // carries (real runs emit other custom/metadata events alongside it).
+        final interrupt = paused.whereType<CustomEvent>().firstWhere(
+          (e) => e.name == 'on_interrupt',
+        );
+        expect(interrupt.value, {'question': 'approve?'});
+
+        // resume() reopens the run and emits the resumed events verbatim — koel
+        // reconstructs nothing; LangGraph rebuilt the state server-side.
+        final resumed = await agent.resume('t-int-1', {
+          'approved': 'approved-by-human',
+        }).toList();
+        expect(resumed, const [
+          RunStartedEvent(threadId: 't-int-1', runId: 'resume-t-int-1'),
+          TextMessageStartEvent(messageId: 'm-r', role: 'assistant'),
+          TextMessageContentEvent(
+            messageId: 'm-r',
+            delta: 'Resumed with value: approved-by-human',
+          ),
+          TextMessageEndEvent(messageId: 'm-r'),
+          RunFinishedEvent(threadId: 't-int-1', runId: 'resume-t-int-1'),
+        ]);
+      });
+
+      test('resumeValue is Object? — a bare scalar rides command.resume '
+          'verbatim, matching the protocol contract (AC2; SPIKE-LG-RESUME used '
+          'a bare string)', () async {
+        final h = _capturingClient();
+
+        // The live spike resumed with the bare string "approved-by-human" — a
+        // Map<String,dynamic> signature could not express it. Object? matches
+        // the wire (Command(resume=<any JSON>)) and CustomEvent.value's any.
+        await LangGraphAgent(
+          deploymentUrl: Uri.parse('http://host:8003/agent'),
+          client: h.client,
+        ).resume('t-int-1', 'approved-by-human').toList();
+
+        final body = jsonDecode(h.captured.single.body) as Map<String, dynamic>;
+        expect(body['forwardedProps'], {
+          'command': {'resume': 'approved-by-human'},
+        });
+      });
+
+      test(
+        'a failed resume surfaces as a terminal RunErrorEvent, never a '
+        'throw — the inherited error contract applies to resume (AC1)',
+        () async {
+          final client = MockClient((_) async => Response('', 401));
+
+          final events = await LangGraphAgent(
+            deploymentUrl: Uri.parse('http://host:8003/agent'),
+            client: client,
+          ).resume('t-int-1', const {'approved': true}).toList();
+
+          // resume delegates to run, so the same "adapters never throw" contract
+          // holds — the 401 reaches the consumer as a terminal RunErrorEvent.
+          expect(events.single, isA<RunErrorEvent>());
+        },
+      );
+    });
   });
 }
