@@ -60,6 +60,15 @@ void main() {
       expect(request.body, isNot(contains('abc')));
     });
 
+    test('a padded non-blank token is trimmed inside the Bearer header — no '
+        'stray whitespace / newline reaches the wire', () async {
+      final request = await _runWith(AgnoAuthInterceptor(token: '  abc\n'));
+
+      // Surrounding whitespace is a caller typo, never a valid token; an
+      // un-trimmed trailing newline would also be a header-injection vector.
+      expect(request.headers['authorization'], 'Bearer abc');
+    });
+
     test('a blank token (empty or whitespace) is a no-op, not a blank '
         '`Bearer ` header', () async {
       for (final blank in const ['', '   ']) {

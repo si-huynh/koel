@@ -2,6 +2,23 @@
 
 Items deferred during BMAD workflows. Each entry records why the work was postponed.
 
+## Hand-off from: Story 5.4 implementation (2026-06-03) — langgraph-group opener → 5.6 sealer
+
+Story 5.4 is the langgraph-group **opener** (mirrors how 5.1 opened agno and deferred finalization to the 5.3 sealer). The following land in **Story 5.6** (the langgraph-group sealer), exactly as agno's equivalents landed in 5.3 — `LangGraphAgent` + `LangGraphAuthInterceptor` + `langGraphMessageToWire` ship now with full dartdocs and 100/100 coverage so each item below drops in clean:
+
+- **`packages/koel_langgraph/analysis_options.yaml` + the `public_member_api_docs` member-doc gate** — not added in 5.4 (koel_langgraph inherits the root config). 5.6 adds the koel_http/koel_test-shaped sealer config (no `plugins:` per Story 1.7; `include: ../../analysis_options.yaml`; generated-file `exclude`; `public_member_api_docs: true` + `comment_references: true`). The public surface is already fully dartdoc'd — verify the gate fires clean, backfill only if it surfaces an undocumented symbol.
+- **`packages/koel_langgraph/coverage_options.yaml`** — standard generated-file ignore list (forward-safe no-op; koel_langgraph has no codegen today).
+- **`test:coverage` gate entry** — the root `melos test:coverage` script gains `bash "$MELOS_ROOT_PATH/tool/coverage.sh" packages/koel_langgraph 80 80` (adapter tier ≥80%, VM-only). 5.4's tests already sit at line=100/branch=100, so the gate lands green.
+- **Conformance test + `conformance.yml` langgraph lane** — 5.4 proves the inherited SSE parse via a fixture round-trip in `langgraph_agent_test.dart` (synthesized `text_only_run`/`tool_call_basic`), **not** the formal `ConformanceRunner`. 5.6 adds `koel_langgraph/test/conformance_test.dart` (`@Tags(['conformance'])` + `dart_test.yaml` tag) asserting the **25/28** contract (3 `*_CHUNK` shapes are `synthesizeChunks`-normalized — carried from Story 5.3) and extends the `melos run conformance` lane to koel_langgraph.
+- **Real captured fixtures** — `tool/capture_fixtures.dart --backend=langgraph` (currently a stub) against `make up-langgraph` (port 8003, route `/agent`), stamping `adapter: koel_langgraph@0.0.1`, `synthesized: false`, `backendVersion: ag-ui-langgraph==0.0.37`. The `koel_test/.../fixtures/langgraph/.placeholder` + the `fixtures_test.dart` `pendingCaptureDirs` invariant (lists `langgraph`) stay until then.
+- **README finalization** — the default-ON `x-api-key` convention note (SPIKE-LG-AUTH resolved → `apiKey` optional) + the `deploymentUrl`-used-verbatim note. Deferred exactly as agno's README auth sentence deferred from 5.2 to the 5.3 sealer.
+
+Also Story-group siblings (not 5.6): **`LangGraphErrorClassifier extends DefaultErrorClassifier`** + the `errorClassifier()` override → **Story 5.6** (graph-state-mismatch → `agentInternal`, version-drift → `protocolVersionDrift`, 401/403 → `businessAuth`). **`LangGraphAgent.resume(threadId, resumeValue)`** (Addendum A.4's second method; wire frozen in CONTRACT.md SPIKE-LG-RESUME — same route, same `threadId`, `forwardedProps.command.resume`, interrupt as `CUSTOM {name:"on_interrupt"}`) → **Story 5.5**. Neither is stubbed in 5.4 (a throwing placeholder would be vestigial surface).
+
+## Deferred from: code review of 5-4-langgraph-agent-protocol-conversion (2026-06-03)
+
+- **`test/_support.dart` helper robustness — opaque failure on a bad fixture** [`packages/koel_langgraph/test/_support.dart:18-24`] — `Isolate.resolvePackageUri(...)!` force-unwraps (a missing/renamed fixture → bare `Null check operator` error, no filename), `.skip(1)` unconditionally assumes line 1 is the `_session` header (a headerless/empty fixture silently drops a real event or yields `[]`), and `jsonDecode(line) as Map` / `['payload'] as Map` casts throw raw `TypeError` on a malformed line. Test-infra only; the two fixtures in use (`text_only_run`, `tool_call_basic`) are known-good, and this is a faithful mirror of agno's `_support.dart` (same pattern). Add clear "fixture not found / malformed line N" guards if/when the helper is reused for less-trusted inputs — or generalize alongside the agno twin. (Source: Blind Hunter + Edge Case Hunter)
+
 ## Deferred from: Story 5.3 implementation (2026-06-03)
 
 - ~~**Real agno `text_only_run.jsonl` capture is an operator step — pending**~~ — **CLOSED 2026-06-03:** Si ran `make up-agno` + `dart run tool/capture_fixtures.dart --backend=agno`; the real `synthesized: false` fixture is committed (`backendVersion: agno==2.6.10`, CONTRACT.md mock-LLM text). The round-trip test in `koel_agno/test/conformance_test.dart` now asserts (no skip); `agno/.placeholder` removed; `fixtures_test.dart` updated (`pendingCaptureDirs` + agno-graduated assertion).

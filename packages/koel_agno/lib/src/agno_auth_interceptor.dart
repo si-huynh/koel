@@ -22,11 +22,14 @@ import 'package:koel_http/koel_http.dart';
 class AgnoAuthInterceptor extends AuthInterceptor {
   /// Creates a Bearer-auth interceptor for [token]. A `null` or blank
   /// (empty/whitespace) [token] yields a no-op (no header); any other [token]
-  /// injects an `Authorization: Bearer …` header carrying it on every run.
+  /// injects an `Authorization: Bearer <token.trim()>` header on every run
+  /// (surrounding whitespace is trimmed — a padded token is a caller typo, never
+  /// a valid token, and an un-trimmed trailing newline would be a header-injection
+  /// vector).
   AgnoAuthInterceptor({required String? token})
     : super(
         headers: () async => token == null || token.trim().isEmpty
             ? const <String, String>{}
-            : {'Authorization': 'Bearer $token'},
+            : {'Authorization': 'Bearer ${token.trim()}'},
       );
 }
