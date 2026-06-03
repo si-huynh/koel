@@ -40,6 +40,34 @@ void main() {
     'interrupt_resume',
   };
 
+  /// Every dojo route captured in Story 5.9 (all `synthesized: false`, driven via
+  /// `state.scenario`/message-content against the live AG-UI dojo backend),
+  /// EXCLUDING `/predictive_state_updates` (nondeterministic, RESOLVED #2). Drives
+  /// a decode sweep + the union-coverage assertion below.
+  const dojoCaptures = <String>{
+    'agentic_chat',
+    'agentic_chat_tool',
+    'backend_tool_rendering',
+    'human_in_the_loop',
+    'agentic_generative_ui',
+    'shared_state',
+    'tool_based_generative_ui',
+    'reasoning',
+    'activity',
+    'tool_call_result',
+    'error',
+    'cancellation',
+  };
+
+  /// The three representable copilotkit-runtime scenarios captured in Story 5.9
+  /// (the AG-UI events `CopilotRuntimeAgent` emits against the live multipart
+  /// wire; no `error` — the runtime swallows `RUN_ERROR`, RESOLVED #4).
+  const copilotkitCaptures = <String>{
+    'text_only_run',
+    'tool_call_basic',
+    'state_delta_basic',
+  };
+
   /// The four backend fixture dirs (all exist from Story 3.2).
   const backendDirs = <String>{
     'dojo',
@@ -49,9 +77,10 @@ void main() {
   };
 
   /// Backend dirs still awaiting their Epic-5 capture — they hold only a
-  /// `.placeholder` and no `.jsonl`. `agno` graduated in Story 5.3 and
-  /// `langgraph` in Story 5.6 (real captures landed), so neither is pending.
-  const pendingCaptureDirs = <String>{'dojo', 'copilotkit_runtime'};
+  /// `.placeholder` and no `.jsonl`. Empty after Story 5.9: `agno` graduated in
+  /// 5.3, `langgraph` in 5.6, and `dojo` + `copilotkit_runtime` in 5.9 — all four
+  /// backends now carry real captures.
+  const pendingCaptureDirs = <String>{};
 
   /// The `_session` header fields AC2 names.
   const requiredSessionFields = <String>{
@@ -207,6 +236,58 @@ void main() {
       expect(session['adapter'], startsWith('koel_langgraph@'));
       expect(session['backendVersion'], startsWith('langgraph=='));
     });
+
+    test('dojo/ graduated (Story 5.9) — real captures, no placeholder', () {
+      expect(
+        File('$fixturesDir/dojo/agentic_chat.jsonl').existsSync(),
+        isTrue,
+        reason: 'dojo/ must hold the captured agentic_chat.jsonl',
+      );
+      expect(
+        File('$fixturesDir/dojo/.placeholder').existsSync(),
+        isFalse,
+        reason: 'dojo/ .placeholder must be removed once a capture lands',
+      );
+      // The capture is real (live AG-UI dojo), stamped by koel_runtime.
+      final session =
+          (jsonDecode(linesOf('$fixturesDir/dojo/agentic_chat.jsonl').first)
+                  as Map<String, dynamic>)['_session']
+              as Map<String, dynamic>;
+      expect(session['synthesized'], isFalse);
+      expect(session['adapter'], startsWith('koel_runtime@'));
+      expect(session['backendVersion'], startsWith('dojo=='));
+    });
+
+    test('copilotkit_runtime/ graduated (Story 5.9) — real captures, no '
+        'placeholder', () {
+      expect(
+        File(
+          '$fixturesDir/copilotkit_runtime/text_only_run.jsonl',
+        ).existsSync(),
+        isTrue,
+        reason:
+            'copilotkit_runtime/ must hold the captured text_only_run.jsonl',
+      );
+      expect(
+        File('$fixturesDir/copilotkit_runtime/.placeholder').existsSync(),
+        isFalse,
+        reason:
+            'copilotkit_runtime/ .placeholder must be removed once a capture '
+            'lands',
+      );
+      // The capture is real (live CopilotKit runtime), stamped by koel_runtime.
+      final session =
+          (jsonDecode(
+                    linesOf(
+                      '$fixturesDir/copilotkit_runtime/text_only_run.jsonl',
+                    ).first,
+                  )
+                  as Map<String, dynamic>)['_session']
+              as Map<String, dynamic>;
+      expect(session['synthesized'], isFalse);
+      expect(session['adapter'], startsWith('koel_runtime@'));
+      expect(session['backendVersion'], startsWith('copilotkit=='));
+    });
   });
 
   group('captured fixture decode (Story 5.6)', () {
@@ -232,6 +313,92 @@ void main() {
         },
       );
     }
+  });
+
+  group('captured fixture decode (Story 5.9 — dojo + copilotkit_runtime)', () {
+    // Same purpose as the langgraph sweep: decode every captured dojo +
+    // copilotkit line through the public `FixtureLoader` so a truncated line, a
+    // missing file, or a `fromWire`/`Message.fromJson` regression in ANY capture
+    // fails CI loudly — not just the one fixture conformance Test B replays.
+    for (final scenario in dojoCaptures) {
+      test(
+        'dojo/$scenario.jsonl decodes to a non-empty typed event run',
+        () async {
+          final events = await FixtureLoader.loadDojo(scenario);
+          expect(
+            events,
+            isNotEmpty,
+            reason: 'dojo/$scenario.jsonl decoded to zero events',
+          );
+        },
+      );
+    }
+    for (final scenario in copilotkitCaptures) {
+      test(
+        'copilotkit_runtime/$scenario.jsonl decodes to a non-empty typed event '
+        'run',
+        () async {
+          final events = await FixtureLoader.loadCopilotkitRuntime(scenario);
+          expect(
+            events,
+            isNotEmpty,
+            reason: 'copilotkit_runtime/$scenario.jsonl decoded to zero events',
+          );
+        },
+      );
+    }
+  });
+
+  group('dojo capture coverage (Story 5.9 AC1)', () {
+    // The 3 `*_CHUNK` variants the dojo never emits (they stay the synthesized
+    // corpus's job — the epic's own dojo-fallback rule).
+    const chunkTypes = <String>{
+      'TEXT_MESSAGE_CHUNK',
+      'TOOL_CALL_CHUNK',
+      'REASONING_MESSAGE_CHUNK',
+    };
+
+    /// The union of every event type across all captured dojo fixtures.
+    Set<String> dojoUnion() {
+      final types = <String>{};
+      for (final scenario in dojoCaptures) {
+        for (final line in linesOf(
+          '$fixturesDir/dojo/$scenario.jsonl',
+        ).skip(1)) {
+          types.add(
+            ((jsonDecode(line) as Map<String, dynamic>)['payload']
+                    as Map<String, dynamic>)['type']
+                as String,
+          );
+        }
+      }
+      return types;
+    }
+
+    test('the dojo fixtures cover every non-chunk registered wire type EXCEPT '
+        'CUSTOM (RESOLVED #2 — only /predictive_state_updates emits CUSTOM, '
+        'excluded for determinism; CUSTOM is carried by the synthesized corpus '
+        '+ the langgraph capture)', () {
+      final union = dojoUnion();
+      // The honest, source-derived dojo surface: the 25 non-chunk types minus
+      // CUSTOM (which no captured dojo route emits). Asserted exactly so a future
+      // route change — gaining or losing a type — fails loudly with the diff.
+      final expected = registeredWireTypes.difference(chunkTypes)
+        ..remove('CUSTOM');
+      expect(
+        union,
+        equals(expected),
+        reason:
+            'dojo union must cover exactly the 24 non-chunk-non-CUSTOM types; '
+            'missing: ${expected.difference(union)}, '
+            'unexpected: ${union.difference(expected)}',
+      );
+    });
+
+    test('the dojo never emits the 3 *_CHUNK variants (synthesized-fallback '
+        'rule)', () {
+      expect(dojoUnion().intersection(chunkTypes), isEmpty);
+    });
   });
 
   group('synthesized fixture format (AC2)', () {

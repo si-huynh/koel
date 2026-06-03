@@ -1,0 +1,10 @@
+# Files excluded from the koel_runtime coverage number (NFR-12 / SC-2
+# "generated files excluded"), honored by package:coverage's `format_coverage
+# --check-ignore` (the architecture-blessed mechanism, §6) when run with this
+# package as CWD — see the root `test:coverage` script. koel_runtime ships no
+# codegen today, so this is a forward-safe no-op kept for parity with the other
+# sealed packages.
+ignore_files:
+  - "**/*.freezed.dart"
+  - "**/*.g.dart"
+  - "**/*.mocks.dart"

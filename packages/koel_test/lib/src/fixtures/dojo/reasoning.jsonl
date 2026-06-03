@@ -1,0 +1,15 @@
+{"_session":{"koelVersion":"0.0.1","adapter":"koel_runtime@0.0.1","captured":"2026-06-03T15:07:59.044635Z","threadId":"t","runId":"r","synthesized":false,"backendVersion":"dojo==0.1.18"}}
+{"type":"RUN_STARTED","timestamp":"2026-06-03T15:07:59.045635Z","payload":{"type":"RUN_STARTED","threadId":"t","runId":"r"}}
+{"type":"STEP_STARTED","timestamp":"2026-06-03T15:07:59.046635Z","payload":{"type":"STEP_STARTED","stepName":"reasoning"}}
+{"type":"REASONING_START","timestamp":"2026-06-03T15:07:59.047635Z","payload":{"type":"REASONING_START","messageId":"reason-1"}}
+{"type":"REASONING_MESSAGE_START","timestamp":"2026-06-03T15:07:59.048635Z","payload":{"type":"REASONING_MESSAGE_START","messageId":"reason-1","role":"reasoning"}}
+{"type":"REASONING_MESSAGE_CONTENT","timestamp":"2026-06-03T15:07:59.049635Z","payload":{"type":"REASONING_MESSAGE_CONTENT","messageId":"reason-1","delta":"Let me think step by step. "}}
+{"type":"REASONING_MESSAGE_CONTENT","timestamp":"2026-06-03T15:07:59.050635Z","payload":{"type":"REASONING_MESSAGE_CONTENT","messageId":"reason-1","delta":"The answer follows from the premises."}}
+{"type":"REASONING_MESSAGE_END","timestamp":"2026-06-03T15:07:59.051635Z","payload":{"type":"REASONING_MESSAGE_END","messageId":"reason-1"}}
+{"type":"REASONING_ENCRYPTED_VALUE","timestamp":"2026-06-03T15:07:59.052635Z","payload":{"type":"REASONING_ENCRYPTED_VALUE","subtype":"message","entityId":"reason-1","encryptedValue":"c2NyaXB0ZWQtZGV0ZXJtaW5pc3RpYw=="}}
+{"type":"REASONING_END","timestamp":"2026-06-03T15:07:59.053635Z","payload":{"type":"REASONING_END","messageId":"reason-1"}}
+{"type":"STEP_FINISHED","timestamp":"2026-06-03T15:07:59.054635Z","payload":{"type":"STEP_FINISHED","stepName":"reasoning"}}
+{"type":"TEXT_MESSAGE_START","timestamp":"2026-06-03T15:07:59.055635Z","payload":{"type":"TEXT_MESSAGE_START","messageId":"msg-1","role":"assistant"}}
+{"type":"TEXT_MESSAGE_CONTENT","timestamp":"2026-06-03T15:07:59.056635Z","payload":{"type":"TEXT_MESSAGE_CONTENT","messageId":"msg-1","delta":"42"}}
+{"type":"TEXT_MESSAGE_END","timestamp":"2026-06-03T15:07:59.057635Z","payload":{"type":"TEXT_MESSAGE_END","messageId":"msg-1"}}
+{"type":"RUN_FINISHED","timestamp":"2026-06-03T15:07:59.058635Z","payload":{"type":"RUN_FINISHED","threadId":"t","runId":"r"}}

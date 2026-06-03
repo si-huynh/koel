@@ -1,0 +1,4 @@
+{"_session":{"koelVersion":"0.0.1","adapter":"koel_runtime@0.0.1","captured":"2026-06-03T15:07:45.943680Z","threadId":"t","runId":"r","synthesized":false,"backendVersion":"dojo==0.1.18"}}
+{"type":"RUN_STARTED","timestamp":"2026-06-03T15:07:45.944680Z","payload":{"type":"RUN_STARTED","threadId":"t","runId":"r"}}
+{"type":"MESSAGES_SNAPSHOT","timestamp":"2026-06-03T15:07:45.945680Z","payload":{"type":"MESSAGES_SNAPSHOT","messages":[{"id":"m-1","role":"user","content":"hello"},{"id":"id-0","role":"assistant","toolCalls":[{"id":"id-1","type":"function","function":{"name":"get_weather","arguments":"{\"city\": \"San Francisco\"}"}}]},{"id":"id-2","role":"tool","content":"{\"city\": \"San Francisco\", \"conditions\": \"sunny\", \"wind_speed\": \"10\", \"temperature\": \"20\", \"humidity\": \"60\"}","toolCallId":"id-1"}]}}
+{"type":"RUN_FINISHED","timestamp":"2026-06-03T15:07:45.946680Z","payload":{"type":"RUN_FINISHED","threadId":"t","runId":"r"}}

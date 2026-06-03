@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-05-28
-last_updated: 2026-06-03  # 5-8 → done (code review: 6 AC + 4 RESOLVED honored, 1 patch fixed [ImageMessageOutput disclosure], 4 deferred to 5.9, 6 dismissed; gates green)
+last_updated: 2026-06-04  # 5-9 → done (code-review: all 8 ACs met, gates green; 1 patch applied — dropped dead conformance Test B skip-guard; 3 deferred, ordering-violation tracked)
 project: koel
 project_key: NOKEY
 tracking_system: file-system
@@ -110,7 +110,7 @@ development_status:
   5-6-langgraph-fixtures-classifier-conformance: done
   5-7-multipart-graphql-stream-parser: done
   5-8-copilot-runtime-agent: done
-  5-9-copilot-runtime-fixtures-dojo-conformance: backlog
+  5-9-copilot-runtime-fixtures-dojo-conformance: done
   epic-5-retrospective: optional
 
   # Epic 6: Flutter Glue & Persistence — koel_flutter

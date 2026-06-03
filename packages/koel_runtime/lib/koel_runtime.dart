@@ -2,4 +2,5 @@
 library;
 
 export 'src/copilot_runtime_agent.dart';
+export 'src/error/copilot_runtime_error_classifier.dart';
 export 'src/multipart_graphql_stream_parser.dart';

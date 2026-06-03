@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:koel_core/koel_core.dart';
 import 'package:meta/meta.dart';
 
+import 'error/copilot_runtime_error_classifier.dart';
 import 'multipart_graphql_stream_parser.dart';
 
 /// `AbstractAgent` over the CopilotKit Next.js runtime — one constructor call
@@ -50,8 +51,9 @@ import 'multipart_graphql_stream_parser.dart';
 /// and drops the remaining text. So this agent's `RUN_ERROR` path surfaces only
 /// **transport/parser** failures (the sole observable error surface here);
 /// copilotkit is a transport-conformance target, not an AG-UI-event-matrix source
-/// (the AG-UI dojo covers all event types). Refinement of the error codes from a
-/// GraphQL `extensions.code` envelope is Story 5.9's `CopilotRuntimeErrorClassifier`.
+/// (the AG-UI dojo covers all event types). Those transport failures are refined
+/// by [CopilotRuntimeErrorClassifier] (the [errorClassifier] seam) onto the
+/// business/agent [KoelErrorCode] vocabulary.
 final class CopilotRuntimeAgent implements AbstractAgent {
   /// Connects to the CopilotKit runtime whose GraphQL endpoint is
   /// [graphqlEndpoint] — the **full** endpoint, used verbatim (e.g.
@@ -148,14 +150,15 @@ final class CopilotRuntimeAgent implements AbstractAgent {
 
   /// The [ErrorClassifier] each run's `InterceptorChain` routes failures through.
   ///
-  /// The default is the framework-free [DefaultErrorClassifier], which passes a
-  /// typed `KoelError` (this agent's non-2xx [TransportError], the parser's
-  /// [ProtocolError]) through unchanged and buckets an unknown raw throw into
-  /// `AgentError(unknown)`. Story 5.9 swaps in `CopilotRuntimeErrorClassifier`
-  /// (the GraphQL `extensions.code` refinement) here without touching [run] —
-  /// the seam mirrors `HttpAgent.errorClassifier()`.
+  /// [CopilotRuntimeErrorClassifier] maps the copilotkit transport statuses
+  /// (401/403/429 → business codes, the documented internal 500 → `agentInternal`)
+  /// off this agent's non-2xx [TransportError], and delegates every other failure
+  /// — the parser's [ProtocolError], a `package:http` `ClientException` — to the
+  /// framework-free [DefaultErrorClassifier] (D5: no `koel_http` transport
+  /// classifier). The seam mirrors `HttpAgent.errorClassifier()`; overriding it
+  /// is the only change Story 5.9 makes to this agent — [run] is untouched.
   @protected
-  ErrorClassifier errorClassifier() => const DefaultErrorClassifier();
+  ErrorClassifier errorClassifier() => const CopilotRuntimeErrorClassifier();
 
   /// Builds the GraphQL `variables` map for [input]: `{data: …, properties: {}}`.
   ///

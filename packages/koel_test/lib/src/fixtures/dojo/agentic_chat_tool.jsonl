@@ -1,0 +1,6 @@
+{"_session":{"koelVersion":"0.0.1","adapter":"koel_runtime@0.0.1","captured":"2026-06-03T15:07:45.937235Z","threadId":"t","runId":"r","synthesized":false,"backendVersion":"dojo==0.1.18"}}
+{"type":"RUN_STARTED","timestamp":"2026-06-03T15:07:45.938235Z","payload":{"type":"RUN_STARTED","threadId":"t","runId":"r"}}
+{"type":"TOOL_CALL_START","timestamp":"2026-06-03T15:07:45.939235Z","payload":{"type":"TOOL_CALL_START","toolCallId":"id-0","toolCallName":"change_background"}}
+{"type":"TOOL_CALL_ARGS","timestamp":"2026-06-03T15:07:45.940235Z","payload":{"type":"TOOL_CALL_ARGS","toolCallId":"id-0","delta":"{\"background\": \"linear-gradient(135deg, #667eea 0%, #764ba2 100%)\"}"}}
+{"type":"TOOL_CALL_END","timestamp":"2026-06-03T15:07:45.941235Z","payload":{"type":"TOOL_CALL_END","toolCallId":"id-0"}}
+{"type":"RUN_FINISHED","timestamp":"2026-06-03T15:07:45.942235Z","payload":{"type":"RUN_FINISHED","threadId":"t","runId":"r"}}

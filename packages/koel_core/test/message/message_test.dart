@@ -114,6 +114,47 @@ void main() {
       );
     });
 
+    test('fromJson decodes an assistant tool-call message that omits content — '
+        'a dojo MESSAGES_SNAPSHOT turn — to the empty string, not a throw', () {
+      // An assistant message carrying `toolCalls` has no textual `content` on
+      // the AG-UI wire (Story 5.9 dojo `MESSAGES_SNAPSHOT`); decoding must
+      // tolerate absence and preserve the non-nullable invariant.
+      final decoded = Message.fromJson(const {
+        'id': 'id-0',
+        'role': 'assistant',
+        'toolCalls': [
+          {
+            'id': 'id-1',
+            'type': 'function',
+            'function': {'name': 'get_weather', 'arguments': '{}'},
+          },
+        ],
+      });
+
+      expect(decoded.role, MessageRole.assistant);
+      expect(decoded.content, '');
+      // An explicit null is treated identically to absence.
+      expect(
+        Message.fromJson(const {
+          'id': 'id-2',
+          'role': 'assistant',
+          'content': null,
+        }).content,
+        '',
+      );
+    });
+
+    test('fromJson still parses a present content string', () {
+      expect(
+        Message.fromJson(const {
+          'id': 'm-1',
+          'role': 'user',
+          'content': 'hello',
+        }).content,
+        'hello',
+      );
+    });
+
     test('copyWith updates one field and leaves others identical', () {
       final m = base();
       final updated = m.copyWith(content: 'world');

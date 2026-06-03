@@ -116,6 +116,13 @@ abstract final class FixtureLoader {
   static Future<List<AgUiEvent>> loadLangGraph(String scenario) =>
       _load('langgraph', scenario);
 
+  /// Loads a captured CopilotKit-runtime fixture
+  /// (`lib/src/fixtures/copilotkit_runtime/<scenario>.jsonl`), keyed per
+  /// scenario. The fixture is the AG-UI event sequence `CopilotRuntimeAgent`
+  /// produces against the live multipart-GraphQL wire (Story 5.9 capture).
+  static Future<List<AgUiEvent>> loadCopilotkitRuntime(String scenario) =>
+      _load('copilotkit_runtime', scenario);
+
   /// The shared load+decode pipeline behind every public loader.
   ///
   /// Resolves the bundled asset, reads its lines, validates+discards the

@@ -1,0 +1,17 @@
+{"_session":{"koelVersion":"0.0.1","adapter":"koel_runtime@0.0.1","captured":"2026-06-03T15:07:45.923678Z","threadId":"t","runId":"r","synthesized":false,"backendVersion":"dojo==0.1.18"}}
+{"type":"RUN_STARTED","timestamp":"2026-06-03T15:07:45.924678Z","payload":{"type":"RUN_STARTED","threadId":"t","runId":"r"}}
+{"type":"TEXT_MESSAGE_START","timestamp":"2026-06-03T15:07:45.925678Z","payload":{"type":"TEXT_MESSAGE_START","messageId":"id-0","role":"assistant"}}
+{"type":"TEXT_MESSAGE_CONTENT","timestamp":"2026-06-03T15:07:45.926678Z","payload":{"type":"TEXT_MESSAGE_CONTENT","messageId":"id-0","delta":"counting down: "}}
+{"type":"TEXT_MESSAGE_CONTENT","timestamp":"2026-06-03T15:07:45.927678Z","payload":{"type":"TEXT_MESSAGE_CONTENT","messageId":"id-0","delta":"10  "}}
+{"type":"TEXT_MESSAGE_CONTENT","timestamp":"2026-06-03T15:07:45.928678Z","payload":{"type":"TEXT_MESSAGE_CONTENT","messageId":"id-0","delta":"9  "}}
+{"type":"TEXT_MESSAGE_CONTENT","timestamp":"2026-06-03T15:07:45.929678Z","payload":{"type":"TEXT_MESSAGE_CONTENT","messageId":"id-0","delta":"8  "}}
+{"type":"TEXT_MESSAGE_CONTENT","timestamp":"2026-06-03T15:07:45.930678Z","payload":{"type":"TEXT_MESSAGE_CONTENT","messageId":"id-0","delta":"7  "}}
+{"type":"TEXT_MESSAGE_CONTENT","timestamp":"2026-06-03T15:07:45.931678Z","payload":{"type":"TEXT_MESSAGE_CONTENT","messageId":"id-0","delta":"6  "}}
+{"type":"TEXT_MESSAGE_CONTENT","timestamp":"2026-06-03T15:07:45.932678Z","payload":{"type":"TEXT_MESSAGE_CONTENT","messageId":"id-0","delta":"5  "}}
+{"type":"TEXT_MESSAGE_CONTENT","timestamp":"2026-06-03T15:07:45.933678Z","payload":{"type":"TEXT_MESSAGE_CONTENT","messageId":"id-0","delta":"4  "}}
+{"type":"TEXT_MESSAGE_CONTENT","timestamp":"2026-06-03T15:07:45.934678Z","payload":{"type":"TEXT_MESSAGE_CONTENT","messageId":"id-0","delta":"3  "}}
+{"type":"TEXT_MESSAGE_CONTENT","timestamp":"2026-06-03T15:07:45.935678Z","payload":{"type":"TEXT_MESSAGE_CONTENT","messageId":"id-0","delta":"2  "}}
+{"type":"TEXT_MESSAGE_CONTENT","timestamp":"2026-06-03T15:07:45.936678Z","payload":{"type":"TEXT_MESSAGE_CONTENT","messageId":"id-0","delta":"1  "}}
+{"type":"TEXT_MESSAGE_CONTENT","timestamp":"2026-06-03T15:07:45.937678Z","payload":{"type":"TEXT_MESSAGE_CONTENT","messageId":"id-0","delta":"✓"}}
+{"type":"TEXT_MESSAGE_END","timestamp":"2026-06-03T15:07:45.938678Z","payload":{"type":"TEXT_MESSAGE_END","messageId":"id-0"}}
+{"type":"RUN_FINISHED","timestamp":"2026-06-03T15:07:45.939678Z","payload":{"type":"RUN_FINISHED","threadId":"t","runId":"r"}}

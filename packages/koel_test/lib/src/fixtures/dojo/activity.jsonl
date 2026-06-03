@@ -1,0 +1,6 @@
+{"_session":{"koelVersion":"0.0.1","adapter":"koel_runtime@0.0.1","captured":"2026-06-03T15:07:59.052253Z","threadId":"t","runId":"r","synthesized":false,"backendVersion":"dojo==0.1.18"}}
+{"type":"RUN_STARTED","timestamp":"2026-06-03T15:07:59.053253Z","payload":{"type":"RUN_STARTED","threadId":"t","runId":"r"}}
+{"type":"ACTIVITY_SNAPSHOT","timestamp":"2026-06-03T15:07:59.054253Z","payload":{"type":"ACTIVITY_SNAPSHOT","messageId":"act-1","activityType":"search","content":{"status":"running","hits":0},"replace":true}}
+{"type":"ACTIVITY_DELTA","timestamp":"2026-06-03T15:07:59.055253Z","payload":{"type":"ACTIVITY_DELTA","messageId":"act-1","activityType":"search","patch":[{"op":"replace","path":"/hits","value":3},{"op":"replace","path":"/status","value":"done"}]}}
+{"type":"RAW","timestamp":"2026-06-03T15:07:59.056253Z","payload":{"type":"RAW","event":{"provider":"scripted","kind":"trace","seq":1},"source":"dojo-longtail"}}
+{"type":"RUN_FINISHED","timestamp":"2026-06-03T15:07:59.057253Z","payload":{"type":"RUN_FINISHED","threadId":"t","runId":"r"}}

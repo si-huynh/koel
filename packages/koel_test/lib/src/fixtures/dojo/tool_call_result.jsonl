@@ -1,0 +1,7 @@
+{"_session":{"koelVersion":"0.0.1","adapter":"koel_runtime@0.0.1","captured":"2026-06-03T15:07:59.056406Z","threadId":"t","runId":"r","synthesized":false,"backendVersion":"dojo==0.1.18"}}
+{"type":"RUN_STARTED","timestamp":"2026-06-03T15:07:59.057406Z","payload":{"type":"RUN_STARTED","threadId":"t","runId":"r"}}
+{"type":"TOOL_CALL_START","timestamp":"2026-06-03T15:07:59.058406Z","payload":{"type":"TOOL_CALL_START","toolCallId":"tc-1","toolCallName":"get_weather"}}
+{"type":"TOOL_CALL_ARGS","timestamp":"2026-06-03T15:07:59.059406Z","payload":{"type":"TOOL_CALL_ARGS","toolCallId":"tc-1","delta":"{\"city\":\"San Francisco\"}"}}
+{"type":"TOOL_CALL_END","timestamp":"2026-06-03T15:07:59.060406Z","payload":{"type":"TOOL_CALL_END","toolCallId":"tc-1"}}
+{"type":"TOOL_CALL_RESULT","timestamp":"2026-06-03T15:07:59.061406Z","payload":{"type":"TOOL_CALL_RESULT","messageId":"tr-1","toolCallId":"tc-1","content":"{\"conditions\":\"sunny\",\"temperature\":\"20\"}","role":"tool"}}
+{"type":"RUN_FINISHED","timestamp":"2026-06-03T15:07:59.062406Z","payload":{"type":"RUN_FINISHED","threadId":"t","runId":"r"}}

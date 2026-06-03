@@ -32,3 +32,8 @@ dependencies:
 dev_dependencies:
   koel_lints:
   test: ^1.25.0
+  # ConformanceRunner drives CopilotRuntimeAgent over the synthesized
+  # all_event_types corpus (the 7/28 representable partition); FixtureLoader
+  # replays the captured copilotkit_runtime fixtures through the agent. Workspace
+  # dev-only dep — does not widen the lib/ surface (D5 stays clean).
+  koel_test:

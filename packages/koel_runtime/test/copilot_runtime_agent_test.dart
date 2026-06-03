@@ -198,7 +198,8 @@ void main() {
 
     group('adapter-never-throw: terminal RunErrorEvent (AC4)', () {
       test(
-        'a non-2xx response yields RUN_STARTED → RUN_ERROR(TransportError)',
+        'a non-2xx 500 yields RUN_STARTED → RUN_ERROR, classified to '
+        'agentInternal by the wired CopilotRuntimeErrorClassifier (5.9 AC5)',
         () async {
           final client = MockClient(
             (request) async => http.Response.bytes(
@@ -213,10 +214,16 @@ void main() {
             const RunStartedEvent(threadId: 't1', runId: 'r1'),
           );
           expect(events, hasLength(2));
+          // The agent's terminal throws TransportError(statusCode:500); the
+          // errorClassifier() seam (now CopilotRuntimeErrorClassifier, not the
+          // 5.8 DefaultErrorClassifier placeholder) refines it to agentInternal,
+          // preserving the transport failure as the cause. This pins the seam.
           final error = (events.last as RunErrorEvent).error;
-          expect(error, isA<TransportError>());
-          expect(error.code, KoelErrorCode.transportClosed);
-          expect((error as TransportError).statusCode, 500);
+          expect(error, isA<AgentError>());
+          expect(error.code, KoelErrorCode.agentInternal);
+          final cause = (error as AgentError).cause;
+          expect(cause, isA<TransportError>());
+          expect((cause! as TransportError).statusCode, 500);
         },
       );
 

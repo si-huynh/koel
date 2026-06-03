@@ -8,10 +8,28 @@
 // `--backend=langgraph` (Story 5.6) captures the six scenarios a live LangGraph
 // deployment (`make up-langgraph`, port 8003, `POST /agent`) natively emits —
 // text, state, tool, error, and the interrupt→resume pair — each into its own
-// `<scenario>.jsonl` under koel_test. The remaining two backends are still
-// scaffolded — wired in Story 5.9 (dojo + copilotkit). Invoke via
-// `dart run tool/capture_fixtures.dart --backend=<name> [--base-url=…] [--token=…]`
-// or `melos run capture-fixtures -- --backend=<name>`.
+// `<scenario>.jsonl` under koel_test.
+//
+// `--backend=dojo` (Story 5.9) captures the twelve deterministic AG-UI dojo
+// routes (`make up-dojo`, port 8001, SSE over `POST /<route>`), one fixture each,
+// EXCLUDING `/predictive_state_updates` (nondeterministic dog names, RESOLVED
+// #2). The dojo has no `/status`, so its version is operator-supplied via
+// `--backend-version` (default `0.1.18`, RESOLVED #1). Still zero-dep SSE.
+//
+// `--backend=copilotkit_runtime` (Story 5.9) is the ASYMMETRIC branch: the
+// CopilotKit Next.js runtime (`make up-copilotkit`, port 8004,
+// `POST /api/copilotkit`) speaks multipart/mixed GraphQL Incremental Delivery,
+// where a part means an AG-UI event only after the stateful Story-5.7 converter
+// reconstruction. So this branch is NOT zero-dep `dart:io` SSE — it imports
+// `package:koel_runtime` (a workspace package) + `package:http` (a transitive
+// workspace dep) and drives the real `CopilotRuntimeAgent`, recording exactly the
+// events an SDK consumer's agent emits (RESOLVED #3). Version is read live from
+// the `x-copilotkit-runtime-version` response header. This is the one documented
+// exception to the tool's otherwise-`dart:io`-only, no-`package:http` contract.
+//
+// Invoke via `dart run tool/capture_fixtures.dart --backend=<name>
+// [--base-url=…] [--token=…] [--backend-version=…] [--agent-name=…]` or
+// `melos run capture-fixtures -- --backend=<name>`.
 //
 // Honest scope (Story 5.3, per ../koel_backend/backends/agno/CONTRACT.md): agno
 // + the shared mock-LLM emits ONLY the text-run event chain (RUN_STARTED →
@@ -36,15 +54,17 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:http/http.dart' as http;
+import 'package:koel_core/koel_core.dart';
+import 'package:koel_runtime/koel_runtime.dart';
+
 /// The four AG-UI backends Epic 5 captures, mapped to the story that wires each.
-/// `agno` is live (Story 5.3), `langgraph` is live (Story 5.6); the rest stay
-/// scaffolded until Story 5.9.
+/// `agno` (5.3), `langgraph` (5.6), and — this story — `dojo` + `copilotkit`
+/// (5.9) are all live.
 const Map<String, String> _backends = {
   'agno': '5.3',
   'langgraph': '5.6',
-  // TODO(Epic 5): Story 5.9 — capture AG-UI Dojo real-run fixtures.
   'dojo': '5.9',
-  // TODO(Epic 5): Story 5.9 — capture CopilotKit Next.js runtime fixtures.
   'copilotkit_runtime': '5.9',
 };
 
@@ -60,6 +80,22 @@ const String _koelAgnoVersion = '0.0.1';
 /// The koel_langgraph adapter version stamped into `_session.adapter`. Tracks
 /// koel_langgraph's pubspec `version`.
 const String _koelLangGraphVersion = '0.0.1';
+
+/// The koel_runtime adapter version stamped into a dojo/copilotkit fixture's
+/// `_session.adapter`. Tracks koel_runtime's pubspec `version`.
+const String _koelRuntimeVersion = '0.0.1';
+
+/// The dojo backend version stamped into `_session.backendVersion` when no
+/// `--backend-version` flag is passed. The dojo exposes NO version HTTP endpoint
+/// (RESOLVED #1 — its version lives only in the Docker `LABEL`), so the stamp is
+/// operator-supplied; this default is the pinned python SDK version
+/// (`ag-ui-protocol==0.1.18`, SPIKE-DOJO-COVERAGE).
+const String _dojoDefaultVersion = '0.1.18';
+
+/// The copilotkit runtime version stamped when the live
+/// `x-copilotkit-runtime-version` response header is somehow absent (it should
+/// always be present on 1.8.14; this is the pinned fallback, SPIKE-CK-FRAMING).
+const String _copilotkitDefaultVersion = '1.8.14';
 
 /// The canonical text-run `RunAgentInput` POSTed to capture agno's
 /// `text_only_run` (the exact shape from CONTRACT.md's probe — camelCase, parsed
@@ -184,9 +220,20 @@ Future<void> main(List<String> args) async {
         // `x-api-key` header (langgraph's SPIKE-LG-AUTH convention, not Bearer).
         apiKey: _option(args, '--token') ?? _option(args, '--api-key'),
       );
+    case 'dojo':
+      await _captureDojo(
+        baseUrl: _option(args, '--base-url') ?? 'http://localhost:8001',
+        // dojo has no `/status`; the version is operator-supplied (RESOLVED #1).
+        backendVersion: _option(args, '--backend-version'),
+      );
+    case 'copilotkit_runtime':
+      await _captureCopilotkit(
+        baseUrl: _option(args, '--base-url') ?? 'http://localhost:8004',
+        agentName: _option(args, '--agent-name') ?? 'koel_scripted',
+      );
     default:
-      // The remaining backends are scaffolded; their capture lands in Story 5.9.
-      stdout.writeln('wired in Epic 5 Story $story');
+      // Unreachable: `backend` was validated against `_backends` above.
+      throw StateError('unhandled backend "$backend" (story $story)');
   }
 }
 
@@ -346,6 +393,319 @@ Map<String, dynamic> _langGraphInput(_LangGraphScenario scenario) =>
           : <String, dynamic>{},
     };
 
+/// One captured dojo scenario: the fixture [file] it lands in, the [route]
+/// POSTed to, and the last-user-message [content] that selects the route's
+/// branch (`/agentic_chat` keys text/tool/backend-tool off it; the other routes
+/// ignore it and emit their scripted sequence).
+typedef _DojoScenario = ({String file, String route, String content});
+
+/// The twelve deterministic dojo routes captured (SPIKE-DOJO-COVERAGE) — the 7
+/// upstream + 5 `handlers_ext/` gap-fill routes, EXCLUDING
+/// `/predictive_state_updates` (RESOLVED #2 — its `random.choice(dog_names)`
+/// content is nondeterministic beyond the documented id fields, so a golden
+/// fixture would false-pass capture-twice-diff). Their union covers the non-chunk
+/// AG-UI wire types except `CUSTOM`, which ONLY `/predictive_state_updates`
+/// emits; `CUSTOM` is carried by the synthesized corpus + the langgraph capture,
+/// so excluding the route loses no overall type (RESOLVED #2). The 3 `*_CHUNK`
+/// variants the dojo never emits stay the synthesized corpus's job.
+const List<_DojoScenario> _dojoScenarios = [
+  (file: 'agentic_chat', route: 'agentic_chat', content: 'hello'),
+  (file: 'agentic_chat_tool', route: 'agentic_chat', content: 'tool'),
+  (
+    file: 'backend_tool_rendering',
+    route: 'backend_tool_rendering',
+    content: 'hello',
+  ),
+  (file: 'human_in_the_loop', route: 'human_in_the_loop', content: 'hello'),
+  (
+    file: 'agentic_generative_ui',
+    route: 'agentic_generative_ui',
+    content: 'hello',
+  ),
+  (file: 'shared_state', route: 'shared_state', content: 'hello'),
+  (
+    file: 'tool_based_generative_ui',
+    route: 'tool_based_generative_ui',
+    content: 'hello',
+  ),
+  (file: 'reasoning', route: 'reasoning', content: 'hello'),
+  (file: 'activity', route: 'activity', content: 'hello'),
+  (file: 'tool_call_result', route: 'tool_call_result', content: 'hello'),
+  (file: 'error', route: 'error', content: 'hello'),
+  (file: 'cancellation', route: 'cancellation', content: 'hello'),
+];
+
+/// Captures every deterministic dojo route ([_dojoScenarios]) into
+/// `packages/koel_test/lib/src/fixtures/dojo/`. Zero-dep `dart:io`/`dart:convert`
+/// (an SSE `data:` frame already IS a canonical AG-UI event), exactly like the
+/// agno/langgraph branches — NOT the copilotkit branch's koel_runtime path.
+///
+/// The dojo exposes no `/status`, so [backendVersion] is operator-supplied
+/// (RESOLVED #1), defaulting to [_dojoDefaultVersion]. The backend is open by
+/// design (NFR-2) → no auth header.
+Future<void> _captureDojo({
+  required String baseUrl,
+  String? backendVersion,
+}) async {
+  final base = Uri.parse(baseUrl);
+  final version = (backendVersion == null || backendVersion.trim().isEmpty)
+      ? _dojoDefaultVersion
+      : backendVersion.trim();
+  final client = HttpClient();
+  String? failure;
+  try {
+    var captured = 0;
+    for (final scenario in _dojoScenarios) {
+      final payloads = _normalizeUuids(
+        await _postSseRun(
+          client,
+          _endpoint(base, scenario.route),
+          _dojoInput(scenario.content),
+          const {}, // dojo is open by design (no auth header)
+          'POST /${scenario.route}',
+        ),
+      );
+      final out = File(
+        'packages/koel_test/lib/src/fixtures/dojo/${scenario.file}.jsonl',
+      );
+      await out.writeAsString(
+        _renderFixture(
+          adapter: 'koel_runtime@$_koelRuntimeVersion',
+          backendVersion: 'dojo==$version',
+          threadId: 't',
+          runId: 'r',
+          payloads: payloads,
+        ),
+      );
+      stdout.writeln(
+        'captured ${payloads.length} events → ${out.path} (${scenario.route})',
+      );
+      captured++;
+    }
+    stdout.writeln('captured $captured dojo fixtures (dojo==$version)');
+  } on SocketException catch (error) {
+    failure =
+        'cannot reach dojo at $baseUrl — run `make up-dojo` in '
+        '../koel_backend first. ($error)';
+  } on _CaptureFailure catch (e) {
+    failure = e.message;
+  } catch (error) {
+    failure =
+        'unexpected failure capturing from $baseUrl — check --base-url and '
+        'that dojo is healthy. ($error)';
+  } finally {
+    client.close(force: true);
+  }
+  if (failure != null) {
+    stderr.writeln('capture_fixtures: $failure');
+    exit(1);
+  }
+}
+
+/// The `RunAgentInput` body for a dojo route: a minimal single-user-message run
+/// whose [content] selects the `/agentic_chat` branch (ignored by the other
+/// routes). camelCase wire shape, parsed by the dojo's `RunAgentInput`.
+Map<String, dynamic> _dojoInput(String content) => <String, dynamic>{
+  'threadId': 't',
+  'runId': 'r',
+  'state': <String, dynamic>{},
+  'messages': [
+    {'id': 'm-1', 'role': 'user', 'content': content},
+  ],
+  'tools': <dynamic>[],
+  'context': <dynamic>[],
+  'forwardedProps': <String, dynamic>{},
+};
+
+/// One captured copilotkit scenario: the fixture [file] it lands in and the
+/// last-user-message [content] the scripted runtime agent keys its scenario off
+/// (`text`|`tool`|`state`; no `error` — the runtime swallows `RUN_ERROR`,
+/// RESOLVED #4).
+typedef _CopilotkitScenario = ({String file, String content});
+
+/// The three representable, deterministic copilotkit scenarios (CONTRACT
+/// `## Event-type coverage`). No `error` fixture — the runtime ends an in-agent
+/// failure with `status:Success` and emits no GraphQL `errors`, so `RUN_ERROR`
+/// is unobservable on the copilotkit wire (the dojo `/error` route + synthesized
+/// `error_path` carry it instead).
+const List<_CopilotkitScenario> _copilotkitScenarios = [
+  (file: 'text_only_run', content: 'text'),
+  (file: 'tool_call_basic', content: 'tool'),
+  (file: 'state_delta_basic', content: 'state'),
+];
+
+/// Captures each copilotkit scenario into
+/// `packages/koel_test/lib/src/fixtures/copilotkit_runtime/` by driving the REAL
+/// [CopilotRuntimeAgent] over the live multipart-GraphQL wire (RESOLVED #3).
+///
+/// **Why this branch is NOT zero-dep `dart:io` SSE.** A copilotkit multipart
+/// part means an AG-UI event only after the stateful `GraphQLIncrementalConverter`
+/// reconstruction (Story 5.7) inside `koel_runtime` — it cannot be hand-rolled in
+/// the tool without duplicating ~200 LOC of reviewed logic. So this branch
+/// imports `package:koel_runtime` (a workspace package, same kind as
+/// `package:koel_core`) and `package:http` (a koel_runtime-transitive workspace
+/// dep), the one documented exception to the tool's no-`package:http` rule. The
+/// captured fixture is exactly what an SDK consumer's `CopilotRuntimeAgent`
+/// emits — the most honest "real capture". A [_HeaderCapturingClient] wraps the
+/// transport to read the live `x-copilotkit-runtime-version` header without a
+/// second request or duplicating the agent's GraphQL request shape.
+///
+/// The driven agent's typed events already drop the GraphQL-layer nondeterminism
+/// (`createdAt`, the `ck-<uuid>` AgentState id are converter-stripped), so only
+/// `messageId`/`toolCallId` need normalizing; `runId` is the input's fixed `r`
+/// and is left intact (conformance Test B replays the run against it).
+Future<void> _captureCopilotkit({
+  required String baseUrl,
+  required String agentName,
+}) async {
+  // The runtime endpoint is `<base>/api/copilotkit` — two path segments (a
+  // single 'api/copilotkit' segment would percent-encode the slash → 404).
+  final root = Uri.parse(baseUrl);
+  final endpoint = root.replace(
+    pathSegments: [
+      ...root.pathSegments.where((s) => s.isNotEmpty),
+      'api',
+      'copilotkit',
+    ],
+  );
+  final client = http.Client();
+  final tracker = _HeaderCapturingClient(client);
+  String? failure;
+  try {
+    var captured = 0;
+    String? version;
+    for (final scenario in _copilotkitScenarios) {
+      final events = await CopilotRuntimeAgent(
+        graphqlEndpoint: endpoint,
+        agentName: agentName,
+        client: tracker,
+      ).run(_copilotkitInput(scenario.content)).toList();
+
+      // The agent never throws (adapter-never-throw): a backend-unreachable or
+      // non-2xx run surfaces as a terminal RUN_ERROR, not a SocketException — so
+      // detect it here rather than relying on the catch below.
+      final errors = events.whereType<RunErrorEvent>().toList();
+      if (errors.isNotEmpty) {
+        final error = errors.first.error;
+        throw _CaptureFailure(
+          'copilotkit ${scenario.file} terminated with RUN_ERROR '
+          '(${error.code}: ${error.message}) — is `make up-copilotkit` running '
+          'on $baseUrl with agentName "$agentName"?',
+        );
+      }
+
+      version = tracker.runtimeVersion ?? _copilotkitDefaultVersion;
+      final payloads = _normalizeIds(
+        [for (final event in events) _copilotkitEventWire(event)],
+        const {'messageId': 'msg', 'toolCallId': 'tool'},
+      );
+      final out = File(
+        'packages/koel_test/lib/src/fixtures/copilotkit_runtime/'
+        '${scenario.file}.jsonl',
+      );
+      await out.writeAsString(
+        _renderFixture(
+          adapter: 'koel_runtime@$_koelRuntimeVersion',
+          backendVersion: 'copilotkit==$version',
+          threadId: 't',
+          runId: 'r',
+          payloads: payloads,
+        ),
+      );
+      stdout.writeln(
+        'captured ${payloads.length} events → ${out.path} (${scenario.content})',
+      );
+      captured++;
+    }
+    stdout.writeln(
+      'captured $captured copilotkit fixtures '
+      '(copilotkit==${version ?? _copilotkitDefaultVersion})',
+    );
+  } on SocketException catch (error) {
+    failure =
+        'cannot reach copilotkit at $baseUrl — run `make up-copilotkit` in '
+        '../koel_backend first. ($error)';
+  } on _CaptureFailure catch (e) {
+    failure = e.message;
+  } catch (error) {
+    failure =
+        'unexpected failure capturing from $baseUrl — check --base-url and '
+        'that copilotkit is healthy. ($error)';
+  } finally {
+    // The tool owns this client (the agent never closes an injected client).
+    client.close();
+  }
+  if (failure != null) {
+    stderr.writeln('capture_fixtures: $failure');
+    exit(1);
+  }
+}
+
+/// The `RunAgentInput` for a copilotkit scenario: one user message whose
+/// [content] (`text`|`tool`|`state`) selects the scripted runtime agent's
+/// branch. The fixed thread/run ids (`t`/`r`) are what the agent stamps onto its
+/// synthesized `RUN_STARTED`/`RUN_FINISHED`, so they stay deterministic.
+RunAgentInput _copilotkitInput(String content) => RunAgentInput(
+  threadId: 't',
+  runId: 'r',
+  messages: [
+    Message(
+      id: 'm-1',
+      role: MessageRole.user,
+      content: content,
+      timestamp: DateTime.utc(2026, 6, 3),
+    ),
+  ],
+);
+
+/// Serializes one AG-UI event the copilotkit run emits back to its wire payload.
+///
+/// The sealed [AgUiEvent] base deliberately exposes only `fromWire`; each
+/// concrete subtype carries `toJson`. The copilotkit bridge emits a known small
+/// set (the run envelope + the four representable message families), so this
+/// switches over exactly those and fails loud on anything else — an unexpected
+/// type is a real signal worth investigating against the live wire, not a silent
+/// drop.
+Map<String, dynamic> _copilotkitEventWire(AgUiEvent event) => switch (event) {
+  RunStartedEvent() => event.toJson(),
+  RunFinishedEvent() => event.toJson(),
+  TextMessageStartEvent() => event.toJson(),
+  TextMessageContentEvent() => event.toJson(),
+  TextMessageEndEvent() => event.toJson(),
+  ToolCallStartEvent() => event.toJson(),
+  ToolCallArgsEvent() => event.toJson(),
+  ToolCallEndEvent() => event.toJson(),
+  ToolCallResultEvent() => event.toJson(),
+  StateSnapshotEvent() => event.toJson(),
+  _ => throw _CaptureFailure(
+    'copilotkit run emitted an unexpected ${event.runtimeType}; extend '
+    '_copilotkitEventWire after checking the live wire shape',
+  ),
+};
+
+/// An `http.Client` decorator that records the `x-copilotkit-runtime-version`
+/// response header as responses pass through, so the copilotkit capture can stamp
+/// the live backend version WITHOUT a second request or duplicating the agent's
+/// GraphQL request shape (RESOLVED #3). Delegates every send to [_inner]; the
+/// tool owns [_inner]'s lifecycle (the agent never closes an injected client).
+class _HeaderCapturingClient extends http.BaseClient {
+  _HeaderCapturingClient(this._inner);
+
+  final http.Client _inner;
+
+  /// The last observed `x-copilotkit-runtime-version` value, or `null` if the
+  /// header was absent on every response.
+  String? runtimeVersion;
+
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) async {
+    final response = await _inner.send(request);
+    runtimeVersion =
+        response.headers['x-copilotkit-runtime-version'] ?? runtimeVersion;
+    return response;
+  }
+}
+
 /// Reads `GET <base>/status` for the backend version stamp (e.g. `agno==2.6.10`
 /// or `langgraph==0.0.37`). The status route is always open (no auth) on every
 /// Epic-5 backend, per each CONTRACT.md §6.5.
@@ -434,6 +794,54 @@ List<Map<String, dynamic>> _normalizeIds(
               ? stable(entry.key, entry.value as String)
               : entry.value,
       },
+  ];
+}
+
+/// Matches a v4-style UUID — the shape every dojo route mints for its
+/// server-side ids (`messageId`, `toolCallId`, `runId`, and the nested
+/// MESSAGES_SNAPSHOT `messages[].id`/`toolCalls[].id`).
+final RegExp _uuidPattern = RegExp(
+  r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-'
+  r'[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+);
+
+/// Deep-normalizes every UUID-shaped string value in [payloads] to a stable
+/// first-seen token (`id-0`, `id-1`, …) under ONE shared namespace, so a
+/// cross-reference (a tool message's `toolCallId` reusing its `toolCalls[].id`)
+/// maps to the same token and stays linked. Recurses through maps and lists;
+/// non-UUID strings (the caller-fixed `t`/`r`, scripted literals like
+/// `reason-1`) pass through untouched.
+///
+/// Unlike the top-level-key [_normalizeIds] (agno/langgraph, whose wire leaves
+/// ids only at the payload root), the dojo's MESSAGES_SNAPSHOT nests minted ids
+/// inside `messages[]`, so the dojo needs value-shaped normalization. After this
+/// the only residual per-capture variance is the synthetic envelope timestamp
+/// ([_renderFixture] stamps the real instant), which is informational —
+/// `FixtureLoader` decodes the payload only — so the captured event payloads are
+/// byte-identical across re-capture.
+List<Map<String, dynamic>> _normalizeUuids(
+  List<Map<String, dynamic>> payloads,
+) {
+  final remap = <String, String>{};
+  String token(String uuid) =>
+      remap.putIfAbsent(uuid, () => 'id-${remap.length}');
+
+  Object? walk(Object? node) {
+    if (node is String) {
+      return _uuidPattern.hasMatch(node) ? token(node) : node;
+    }
+    if (node is Map) {
+      return <String, dynamic>{
+        for (final entry in node.entries)
+          entry.key as String: walk(entry.value),
+      };
+    }
+    if (node is List) return [for (final element in node) walk(element)];
+    return node;
+  }
+
+  return [
+    for (final payload in payloads) walk(payload)! as Map<String, dynamic>,
   ];
 }
 

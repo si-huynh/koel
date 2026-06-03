@@ -1,5 +1,0 @@
-# Real AG-UI dojo protocol fixtures land here in Epic 5 Story 5.9
-# (koel_runtime — Fixtures + dojo fallback + ConformanceRunner green).
-# Captured live from the AG-UI dojo backend (integrations/server-starter-all-features)
-# per FR-G1; until then this directory is intentionally empty of fixtures.
-# Do not hand-author captures here — synthesized fixtures live in ../synthesized/.

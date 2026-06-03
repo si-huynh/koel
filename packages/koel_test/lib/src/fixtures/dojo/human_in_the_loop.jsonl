@@ -1,0 +1,17 @@
+{"_session":{"koelVersion":"0.0.1","adapter":"koel_runtime@0.0.1","captured":"2026-06-03T15:07:47.977572Z","threadId":"t","runId":"r","synthesized":false,"backendVersion":"dojo==0.1.18"}}
+{"type":"RUN_STARTED","timestamp":"2026-06-03T15:07:47.978572Z","payload":{"type":"RUN_STARTED","threadId":"t","runId":"r"}}
+{"type":"TOOL_CALL_START","timestamp":"2026-06-03T15:07:47.979572Z","payload":{"type":"TOOL_CALL_START","toolCallId":"id-0","toolCallName":"generate_task_steps"}}
+{"type":"TOOL_CALL_ARGS","timestamp":"2026-06-03T15:07:47.980572Z","payload":{"type":"TOOL_CALL_ARGS","toolCallId":"id-0","delta":"{\"steps\":["}}
+{"type":"TOOL_CALL_ARGS","timestamp":"2026-06-03T15:07:47.981572Z","payload":{"type":"TOOL_CALL_ARGS","toolCallId":"id-0","delta":"{\"description\": \"Step 1\", \"status\": \"enabled\"},"}}
+{"type":"TOOL_CALL_ARGS","timestamp":"2026-06-03T15:07:47.982572Z","payload":{"type":"TOOL_CALL_ARGS","toolCallId":"id-0","delta":"{\"description\": \"Step 2\", \"status\": \"enabled\"},"}}
+{"type":"TOOL_CALL_ARGS","timestamp":"2026-06-03T15:07:47.983572Z","payload":{"type":"TOOL_CALL_ARGS","toolCallId":"id-0","delta":"{\"description\": \"Step 3\", \"status\": \"enabled\"},"}}
+{"type":"TOOL_CALL_ARGS","timestamp":"2026-06-03T15:07:47.984572Z","payload":{"type":"TOOL_CALL_ARGS","toolCallId":"id-0","delta":"{\"description\": \"Step 4\", \"status\": \"enabled\"},"}}
+{"type":"TOOL_CALL_ARGS","timestamp":"2026-06-03T15:07:47.985572Z","payload":{"type":"TOOL_CALL_ARGS","toolCallId":"id-0","delta":"{\"description\": \"Step 5\", \"status\": \"enabled\"},"}}
+{"type":"TOOL_CALL_ARGS","timestamp":"2026-06-03T15:07:47.986572Z","payload":{"type":"TOOL_CALL_ARGS","toolCallId":"id-0","delta":"{\"description\": \"Step 6\", \"status\": \"enabled\"},"}}
+{"type":"TOOL_CALL_ARGS","timestamp":"2026-06-03T15:07:47.987572Z","payload":{"type":"TOOL_CALL_ARGS","toolCallId":"id-0","delta":"{\"description\": \"Step 7\", \"status\": \"enabled\"},"}}
+{"type":"TOOL_CALL_ARGS","timestamp":"2026-06-03T15:07:47.988572Z","payload":{"type":"TOOL_CALL_ARGS","toolCallId":"id-0","delta":"{\"description\": \"Step 8\", \"status\": \"enabled\"},"}}
+{"type":"TOOL_CALL_ARGS","timestamp":"2026-06-03T15:07:47.989572Z","payload":{"type":"TOOL_CALL_ARGS","toolCallId":"id-0","delta":"{\"description\": \"Step 9\", \"status\": \"enabled\"},"}}
+{"type":"TOOL_CALL_ARGS","timestamp":"2026-06-03T15:07:47.990572Z","payload":{"type":"TOOL_CALL_ARGS","toolCallId":"id-0","delta":"{\"description\": \"Step 10\", \"status\": \"enabled\"}"}}
+{"type":"TOOL_CALL_ARGS","timestamp":"2026-06-03T15:07:47.991572Z","payload":{"type":"TOOL_CALL_ARGS","toolCallId":"id-0","delta":"]}"}}
+{"type":"TOOL_CALL_END","timestamp":"2026-06-03T15:07:47.992572Z","payload":{"type":"TOOL_CALL_END","toolCallId":"id-0"}}
+{"type":"RUN_FINISHED","timestamp":"2026-06-03T15:07:47.993572Z","payload":{"type":"RUN_FINISHED","threadId":"t","runId":"r"}}

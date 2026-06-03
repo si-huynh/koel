@@ -1,0 +1,6 @@
+{"_session":{"koelVersion":"0.0.1","adapter":"koel_runtime@0.0.1","captured":"2026-06-03T15:00:36.810454Z","threadId":"t","runId":"r","synthesized":false,"backendVersion":"copilotkit==1.8.14"}}
+{"type":"RUN_STARTED","timestamp":"2026-06-03T15:00:36.811454Z","payload":{"type":"RUN_STARTED","threadId":"t","runId":"r"}}
+{"type":"STATE_SNAPSHOT","timestamp":"2026-06-03T15:00:36.812454Z","payload":{"type":"STATE_SNAPSHOT","snapshot":{"status":"ready","count":1}}}
+{"type":"STATE_SNAPSHOT","timestamp":"2026-06-03T15:00:36.813454Z","payload":{"type":"STATE_SNAPSHOT","snapshot":{"status":"ready","count":2}}}
+{"type":"STATE_SNAPSHOT","timestamp":"2026-06-03T15:00:36.814454Z","payload":{"type":"STATE_SNAPSHOT","snapshot":{"status":"ready","count":2}}}
+{"type":"RUN_FINISHED","timestamp":"2026-06-03T15:00:36.815454Z","payload":{"type":"RUN_FINISHED","threadId":"t","runId":"r"}}
