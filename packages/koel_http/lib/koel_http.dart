@@ -2,6 +2,7 @@
 library;
 
 export 'src/connection/reconnect_policy.dart';
+export 'src/error/error_classifier.dart';
 export 'src/http_agent.dart';
 export 'src/interceptors/auth_interceptor.dart';
 export 'src/interceptors/event_trace_interceptor.dart';

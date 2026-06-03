@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-05-28
-last_updated: 2026-06-02  # 5-1 → done (code-review)
+last_updated: 2026-06-03  # 5-2 → done (code-review)
 project: koel
 project_key: NOKEY
 tracking_system: file-system
@@ -103,7 +103,7 @@ development_status:
   # In-progress 2026-06-02 — first story (5-1) created (agno group first, per epic-4 retro).
   epic-5: in-progress
   5-1-agno-agent-message-conversion: done
-  5-2-agno-auth-interceptor-error-classifier: backlog
+  5-2-agno-auth-interceptor-error-classifier: done
   5-3-agno-captured-fixtures-conformance: backlog
   5-4-langgraph-agent-protocol-conversion: backlog
   5-5-langgraph-surface-interrupt-resume: backlog

@@ -16,6 +16,27 @@ class ClientException implements Exception {}
 /// An unmapped custom exception, used to drive the `unknown` bucket.
 class CustomException implements Exception {}
 
+/// A `SocketException` subtype whose runtime-type *name* is not the bare
+/// `SocketException`. Locks the documented name-match caveat (Story 2.3): the
+/// base classifier matches `dart:io` shapes by `runtimeType.toString()`, so a
+/// renamed/private-impl subtype slips to `unknown` even though `is
+/// SocketException` would catch it (the is-vs-name asymmetry). koel_http's
+/// `TransportErrorClassifier` (real `is`) is the layer that closes this on the
+/// native transport path.
+class RenamedSocketException implements SocketException {
+  @override
+  String get message => 'refused';
+
+  @override
+  OSError? get osError => null;
+
+  @override
+  InternetAddress? get address => null;
+
+  @override
+  int? get port => null;
+}
+
 const _input = RunAgentInput(threadId: 't', runId: 'r');
 
 void main() {
@@ -88,6 +109,20 @@ void main() {
 
     test('ArgumentError → AgentError(unknown)', () {
       final raw = ArgumentError('bad');
+      final e = classifier.classify(raw, null, _input);
+      expect(e, isA<AgentError>());
+      expect(e.code, KoelErrorCode.unknown);
+      expect(e.cause, same(raw));
+    });
+
+    test('a SocketException subtype with a non-bare runtime name slips to '
+        'unknown — the documented is-vs-name asymmetry (Story 2.3)', () {
+      final raw = RenamedSocketException();
+      // Sanity: it really IS a SocketException — an `is` check would catch it.
+      expect(raw, isA<SocketException>());
+      // But the base matches dart:io shapes by runtime-type NAME, so the renamed
+      // subtype routes to unknown. koel_http's TransportErrorClassifier (real
+      // `is`) closes this on the native path.
       final e = classifier.classify(raw, null, _input);
       expect(e, isA<AgentError>());
       expect(e.code, KoelErrorCode.unknown);

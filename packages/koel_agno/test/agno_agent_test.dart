@@ -179,23 +179,76 @@ void main() {
       }
     });
 
-    test('token is accepted but emits no Authorization header (AC5, '
-        '→ Story 5.2)', () async {
-      final h = _capturingClient();
+    group('default-ON AgnoAuthInterceptor (AC2)', () {
+      test('a non-null token injects Authorization: Bearer <token> without an '
+          'explicit interceptor list', () async {
+        final h = _capturingClient();
 
-      await AgnoAgent(
+        await AgnoAgent(
+          baseURL: Uri.parse('http://host:8002'),
+          token: 'secret-xyz',
+          client: h.client,
+        ).run(_input()).toList();
+
+        final request = h.captured.single;
+        expect(request.headers['authorization'], 'Bearer secret-xyz');
+        // The token rides the header only — never the wire body.
+        expect(request.body, isNot(contains('secret-xyz')));
+      });
+
+      test(
+        'a null token leaves the chain a no-op (no Authorization header)',
+        () async {
+          final h = _capturingClient();
+
+          await AgnoAgent(
+            baseURL: Uri.parse('http://host:8002'),
+            client: h.client,
+          ).run(_input()).toList();
+
+          expect(
+            h.captured.single.headers.keys.map((k) => k.toLowerCase()),
+            isNot(contains('authorization')),
+          );
+        },
+      );
+
+      test(
+        'a caller-supplied inner AuthInterceptor overrides the default '
+        'token (the default is prepended outermost; inner keys win)',
+        () async {
+          final h = _capturingClient();
+
+          await AgnoAgent(
+            baseURL: Uri.parse('http://host:8002'),
+            token: 'default-token',
+            client: h.client,
+            interceptors: [
+              AuthInterceptor(
+                headers: () async => {'Authorization': 'Bearer override'},
+              ),
+            ],
+          ).run(_input()).toList();
+
+          // The default AgnoAuthInterceptor runs first; the caller's interceptor
+          // runs last and its key wins the merge.
+          expect(h.captured.single.headers['authorization'], 'Bearer override');
+        },
+      );
+    });
+
+    test('a 401 response classifies to BusinessError(businessAuth) end-to-end '
+        '(AC3 + AC5 default registration of AgnoErrorClassifier)', () async {
+      final client = MockClient((_) async => Response('', 401));
+
+      final events = await AgnoAgent(
         baseURL: Uri.parse('http://host:8002'),
-        token: 'secret-xyz',
-        client: h.client,
+        client: client,
       ).run(_input()).toList();
 
-      final request = h.captured.single;
-      expect(
-        request.headers.keys.map((k) => k.toLowerCase()),
-        isNot(contains('authorization')),
-      );
-      // The token never leaks onto the wire body either.
-      expect(request.body, isNot(contains('secret-xyz')));
+      final error = (events.single as RunErrorEvent).error;
+      expect(error, isA<BusinessError>());
+      expect(error.code, KoelErrorCode.businessAuth);
     });
 
     test('HttpAgent.encodeBody is an override seam honored cross-package '

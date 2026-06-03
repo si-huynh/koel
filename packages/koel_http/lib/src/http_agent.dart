@@ -154,7 +154,7 @@ class HttpAgent implements AbstractAgent {
     return InterceptorChain(
       interceptors: interceptors,
       agent: _TransportTerminal(this),
-      errorClassifier: transportErrorClassifier(),
+      errorClassifier: errorClassifier(),
     ).proceed(input);
   }
 
@@ -174,6 +174,22 @@ class HttpAgent implements AbstractAgent {
   @protected
   Map<String, dynamic> encodeBody(RunAgentInput input) =>
       encodeRunAgentInput(input);
+
+  /// The [ErrorClassifier] each run's `InterceptorChain` routes failures
+  /// through — the seam a backend bridge overrides to recognize its own failure
+  /// shapes (HTTP status codes, provider error envelopes) on top of the native
+  /// transport refinement.
+  ///
+  /// The default is the platform [transportErrorClassifier]: native refines
+  /// [DefaultErrorClassifier] with real `dart:io` `is` checks (so a
+  /// `package:http`-wrapped `SocketException` classifies as `transportRefused`,
+  /// not `unknown`); every other platform falls back to the web-safe base. The
+  /// transport calls this once while assembling the chain. Epic-5 adapters
+  /// (`AgnoAgent`) override it to map backend-specific statuses while delegating
+  /// the rest to this default — keep overrides cheap and non-throwing (an
+  /// `ErrorClassifier` must never throw; see [ErrorClassifier.classify]).
+  @protected
+  ErrorClassifier errorClassifier() => transportErrorClassifier();
 }
 
 /// The transport-level terminal `AbstractAgent` wrapped by [HttpAgent.run]'s

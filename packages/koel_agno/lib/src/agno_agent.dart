@@ -1,7 +1,9 @@
 import 'package:koel_core/koel_core.dart';
 import 'package:koel_http/koel_http.dart';
 
+import 'agno_auth_interceptor.dart';
 import 'conversion/message_conversion.dart';
+import 'error/agno_error_classifier.dart';
 
 /// `HttpAgent` targeting an Agno backend's `POST baseURL/agno-chat` route — one
 /// constructor call connects a Flutter/Dart app to Agno (FR-C1, Addendum A.3).
@@ -16,23 +18,30 @@ class AgnoAgent extends HttpAgent {
   /// Connects to the Agno backend rooted at [baseURL]; runs POST to
   /// `baseURL/agno-chat` (the join is trailing-slash-safe).
   ///
-  /// [client] and [interceptors] forward straight to [HttpAgent]. [conversion]
-  /// tunes message normalization (defaults to a const [AgnoConversionOptions]).
-  /// [token] is accepted per the Addendum A.3 surface but is a **pinned no-op**
-  /// in this story — auth wiring is Story 5.2 (see [token]).
+  /// [token] wires a default-ON [AgnoAuthInterceptor] (Bearer auth) prepended to
+  /// the chain — outermost, so a caller-supplied inner `AuthInterceptor` in
+  /// [interceptors] wins the merge. [client] forwards straight
+  /// to [HttpAgent]; [conversion] tunes message normalization (defaults to a
+  /// const [AgnoConversionOptions]).
   AgnoAgent({
     required Uri baseURL,
     this.token,
     super.client,
-    super.interceptors,
+    List<Interceptor>? interceptors,
     AgnoConversionOptions? conversion,
   }) : _conversion = conversion ?? const AgnoConversionOptions(),
-       super(url: _agnoChatEndpoint(baseURL));
+       super(
+         url: _agnoChatEndpoint(baseURL),
+         interceptors: [
+           AgnoAuthInterceptor(token: token),
+           ...?interceptors,
+         ],
+       );
 
-  /// The bearer token accepted at construction. **Pinned no-op in Story 5.1**:
-  /// it is stored but never consumed, so no `Authorization` header is emitted.
-  // Consumed in Story 5.2 (AgnoAuthInterceptor extends AuthInterceptor);
-  // pinned no-op here.
+  /// The bearer token injected by the default-ON [AgnoAuthInterceptor] as an
+  /// `Authorization: Bearer …` header on every run. `null` (the default) or a
+  /// blank token leaves the interceptor a no-op — the right default for open
+  /// agno deployments.
   final String? token;
 
   final AgnoConversionOptions _conversion;
@@ -78,4 +87,7 @@ class AgnoAgent extends HttpAgent {
         agnoMessageToWire(message, _conversion),
     ],
   };
+
+  @override
+  ErrorClassifier errorClassifier() => const AgnoErrorClassifier();
 }

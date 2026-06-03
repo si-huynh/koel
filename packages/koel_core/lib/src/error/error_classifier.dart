@@ -30,6 +30,14 @@ abstract class ErrorClassifier {
 /// [KoelErrorCode.unknown] bucket. That tradeoff buys web-safety with zero
 /// dependencies and is acceptable for these types.
 ///
+/// Note the **is-vs-name asymmetry**: the `is TimeoutException`/`is
+/// FormatException` arms catch *subclasses*, but the name-match arms recognize
+/// only the exact bare names — so a renamed or private-impl subtype (e.g. a
+/// `_SocketException` wrapper) is missed and routes to [KoelErrorCode.unknown]
+/// even though it `is` a `SocketException`. The native `koel_http`
+/// `TransportErrorClassifier` closes this on the real transport path with `is`
+/// checks; the base accepts it as the price of web-safety.
+///
 /// Status-code-aware refinement (HTTP 429 → [KoelErrorCode.businessRateLimited],
 /// 401 → [KoelErrorCode.businessAuth], 403 → [KoelErrorCode.businessForbidden])
 /// is **not** this classifier's job — it belongs to `koel_http`/adapter
