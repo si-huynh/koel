@@ -8,5 +8,14 @@ environment:
 
 resolution: workspace
 
+dependencies:
+  # The only runtime edge: koel_core's value+contract types. koel_runtime is
+  # independent of koel_http (D5/AR-10) and carries ZERO GraphQL-client
+  # dependency — the multipart/@defer body is hand-rolled from dart:convert
+  # alone. AgUiEvent + the event leaves, ProtocolError/KoelErrorCode all come
+  # through the koel_core.dart barrel (AR-20).
+  koel_core:
+
 dev_dependencies:
   koel_lints:
+  test: ^1.25.0

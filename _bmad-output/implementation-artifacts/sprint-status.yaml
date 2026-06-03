@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-05-28
-last_updated: 2026-06-03  # 5-6 → done (code-review: PASS, 2 patches applied — langgraph capture decode sweep + Message timestamp dartdoc scope; 1 defer — Message.toJson epoch leak)
+last_updated: 2026-06-03  # 5-7 → done (code review: 1 patch applied [ResultMessageOutput skip-on-missing-field], 2 defers → deferred-work; 28 tests, line 100%/branch 92.5%, all gates green)
 project: koel
 project_key: NOKEY
 tracking_system: file-system
@@ -108,7 +108,7 @@ development_status:
   5-4-langgraph-agent-protocol-conversion: done
   5-5-langgraph-surface-interrupt-resume: done
   5-6-langgraph-fixtures-classifier-conformance: done
-  5-7-multipart-graphql-stream-parser: backlog
+  5-7-multipart-graphql-stream-parser: done
   5-8-copilot-runtime-agent: backlog
   5-9-copilot-runtime-fixtures-dojo-conformance: backlog
   epic-5-retrospective: optional

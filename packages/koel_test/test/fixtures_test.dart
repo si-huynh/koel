@@ -216,19 +216,21 @@ void main() {
     // `text_only_run` was ever decoded (conformance Test B) — the other five
     // captures were committed golden artifacts no test loaded.
     for (final scenario in langGraphCaptures) {
-      test('langgraph/$scenario.jsonl decodes to a non-empty typed event run',
-          () async {
-        // `loadLangGraph` throws on a missing file, surfaces a `FormatException`
-        // on a corrupt/truncated line, and runs every payload through
-        // `AgUiEvent.fromWire` (incl. `Message.fromJson` for MESSAGES_SNAPSHOT),
-        // so any capture regression fails here loudly.
-        final events = await FixtureLoader.loadLangGraph(scenario);
-        expect(
-          events,
-          isNotEmpty,
-          reason: 'langgraph/$scenario.jsonl decoded to zero events',
-        );
-      });
+      test(
+        'langgraph/$scenario.jsonl decodes to a non-empty typed event run',
+        () async {
+          // `loadLangGraph` throws on a missing file, surfaces a `FormatException`
+          // on a corrupt/truncated line, and runs every payload through
+          // `AgUiEvent.fromWire` (incl. `Message.fromJson` for MESSAGES_SNAPSHOT),
+          // so any capture regression fails here loudly.
+          final events = await FixtureLoader.loadLangGraph(scenario);
+          expect(
+            events,
+            isNotEmpty,
+            reason: 'langgraph/$scenario.jsonl decoded to zero events',
+          );
+        },
+      );
     }
   });
 
