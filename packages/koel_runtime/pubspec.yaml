@@ -9,12 +9,25 @@ environment:
 resolution: workspace
 
 dependencies:
-  # The only runtime edge: koel_core's value+contract types. koel_runtime is
+  # The koel runtime edge: koel_core's value+contract types. koel_runtime is
   # independent of koel_http (D5/AR-10) and carries ZERO GraphQL-client
   # dependency — the multipart/@defer body is hand-rolled from dart:convert
-  # alone. AgUiEvent + the event leaves, ProtocolError/KoelErrorCode all come
-  # through the koel_core.dart barrel (AR-20).
+  # alone. AbstractAgent/InterceptorChain/DefaultErrorClassifier, AgUiEvent + the
+  # event leaves, TransportError/KoelErrorCode all come through the koel_core.dart
+  # barrel (AR-20).
   koel_core:
+  # The agent's POST transport (Story 5.8): `CopilotRuntimeAgent` POSTs the
+  # `generateCopilotResponse` GraphQL mutation over `http.Request`/`Client.send`,
+  # whose `StreamedResponse.stream` is the live, unbuffered `Stream<List<int>>`
+  # the 5.7 `MultipartGraphQLStreamParser` consumes. `http.Client` is also the
+  # injectable seam the constructor exposes for tests (`MockClient`). This is the
+  # ONE non-koel runtime edge (D5 still forbids koel_http + any GraphQL client).
+  # Pin matches the workspace (koel_http/pubspec.yaml).
+  http: ^1.6.0
+  # `@protected` on the `errorClassifier()` swap seam (the Story 5.9 override
+  # point — `CopilotRuntimeErrorClassifier` replaces the default without touching
+  # `run`). Direct dep so the import resolves under `depend_on_referenced_packages`.
+  meta: ^1.16.0
 
 dev_dependencies:
   koel_lints:
