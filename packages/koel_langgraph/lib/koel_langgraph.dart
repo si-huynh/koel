@@ -1,6 +1,7 @@
 /// AG-UI adapter for LangGraph backends.
 library;
 
+export 'src/error/langgraph_error_classifier.dart';
 export 'src/langgraph_agent.dart';
 export 'src/langgraph_auth_interceptor.dart';
 

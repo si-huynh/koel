@@ -1,0 +1,12 @@
+{"_session":{"koelVersion":"0.0.1","adapter":"koel_langgraph@0.0.1","captured":"2026-06-03T05:03:35.050652Z","threadId":"t-tool","runId":"r","synthesized":false,"backendVersion":"langgraph==0.0.37"}}
+{"type":"RUN_STARTED","timestamp":"2026-06-03T05:03:35.051652Z","payload":{"type":"RUN_STARTED","threadId":"t-tool","runId":"run-0"}}
+{"type":"STEP_STARTED","timestamp":"2026-06-03T05:03:35.052652Z","payload":{"type":"STEP_STARTED","stepName":"entry"}}
+{"type":"TOOL_CALL_START","timestamp":"2026-06-03T05:03:35.053652Z","payload":{"type":"TOOL_CALL_START","toolCallId":"tool-0","toolCallName":"get_weather","parentMessageId":"tool-scripted-1"}}
+{"type":"TOOL_CALL_ARGS","timestamp":"2026-06-03T05:03:35.054652Z","payload":{"type":"TOOL_CALL_ARGS","toolCallId":"tool-0","delta":"{\"city\": \"Hanoi\"}"}}
+{"type":"TOOL_CALL_END","timestamp":"2026-06-03T05:03:35.055652Z","payload":{"type":"TOOL_CALL_END","toolCallId":"tool-0"}}
+{"type":"CUSTOM","timestamp":"2026-06-03T05:03:35.056652Z","payload":{"type":"CUSTOM","name":"manually_emit_tool_call","value":{"id":"tool-scripted-1","name":"get_weather","args":{"city":"Hanoi"}}}}
+{"type":"STATE_SNAPSHOT","timestamp":"2026-06-03T05:03:35.057652Z","payload":{"type":"STATE_SNAPSHOT","snapshot":{"scenario":"tool","messages":[{"content":"hello","additional_kwargs":{},"response_metadata":{},"type":"human","id":"m-1"}],"tools":[]}}}
+{"type":"STEP_FINISHED","timestamp":"2026-06-03T05:03:35.058652Z","payload":{"type":"STEP_FINISHED","stepName":"entry"}}
+{"type":"STATE_SNAPSHOT","timestamp":"2026-06-03T05:03:35.059652Z","payload":{"type":"STATE_SNAPSHOT","snapshot":{"messages":[{"content":"hello","additional_kwargs":{},"response_metadata":{},"type":"human","id":"m-1"}],"scenario":"tool"}}}
+{"type":"MESSAGES_SNAPSHOT","timestamp":"2026-06-03T05:03:35.060652Z","payload":{"type":"MESSAGES_SNAPSHOT","messages":[{"id":"m-1","role":"user","content":"hello"}]}}
+{"type":"RUN_FINISHED","timestamp":"2026-06-03T05:03:35.061652Z","payload":{"type":"RUN_FINISHED","threadId":"t-tool","runId":"run-1"}}

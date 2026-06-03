@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-05-28
-last_updated: 2026-06-03  # 5-5 → done (code-review: resumeValue Object? parity + 5 patches, +34 tests, gates green)
+last_updated: 2026-06-03  # 5-6 → done (code-review: PASS, 2 patches applied — langgraph capture decode sweep + Message timestamp dartdoc scope; 1 defer — Message.toJson epoch leak)
 project: koel
 project_key: NOKEY
 tracking_system: file-system
@@ -107,7 +107,7 @@ development_status:
   5-3-agno-captured-fixtures-conformance: done
   5-4-langgraph-agent-protocol-conversion: done
   5-5-langgraph-surface-interrupt-resume: done
-  5-6-langgraph-fixtures-classifier-conformance: backlog
+  5-6-langgraph-fixtures-classifier-conformance: done
   5-7-multipart-graphql-stream-parser: backlog
   5-8-copilot-runtime-agent: backlog
   5-9-copilot-runtime-fixtures-dojo-conformance: backlog

@@ -1,0 +1,4 @@
+{"_session":{"koelVersion":"0.0.1","adapter":"koel_langgraph@0.0.1","captured":"2026-06-03T05:03:35.056429Z","threadId":"t-error","runId":"r","synthesized":false,"backendVersion":"langgraph==0.0.37"}}
+{"type":"RUN_STARTED","timestamp":"2026-06-03T05:03:35.057429Z","payload":{"type":"RUN_STARTED","threadId":"t-error","runId":"run-0"}}
+{"type":"STEP_STARTED","timestamp":"2026-06-03T05:03:35.058429Z","payload":{"type":"STEP_STARTED","stepName":"entry"}}
+{"type":"RUN_ERROR","timestamp":"2026-06-03T05:03:35.059429Z","payload":{"type":"RUN_ERROR","message":"scripted error scenario"}}

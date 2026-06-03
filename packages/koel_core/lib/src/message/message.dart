@@ -36,7 +36,7 @@ abstract class Message with _$Message {
     required String id,
     required MessageRole role,
     required String content,
-    required DateTime timestamp,
+    @JsonKey(fromJson: _timestampFromWire) required DateTime timestamp,
     String? toolCallId,
     String? name,
   }) = _Message;
@@ -45,3 +45,22 @@ abstract class Message with _$Message {
   factory Message.fromJson(Map<String, dynamic> json) =>
       _$MessageFromJson(json);
 }
+
+/// Decodes the wire `timestamp` for [Message.fromJson].
+///
+/// `timestamp` is a koel addition — the canonical AG-UI `Message` does not carry
+/// it (see `agnoMessageToWire`/`langGraphMessageToWire`, whose encode side omits
+/// it by default). So a backend-sourced message — e.g. a `MESSAGES_SNAPSHOT`
+/// replay streamed by LangGraph or any native-AG-UI backend — arrives without
+/// one. An absent/`null` wire value defaults to the epoch sentinel
+/// (`1970-01-01T00:00:00Z`) so decoding canonical wire — where `timestamp` is
+/// either absent or an ISO-8601 string — never throws and stays deterministic
+/// (the field's non-nullable invariant is preserved for every consumer); a
+/// present value is parsed as ISO-8601, exactly as before. A present
+/// *non-canonical* value (e.g. an epoch number, an empty string) surfaces a
+/// caller-visible throw rather than being coerced — inside a `MESSAGES_SNAPSHOT`
+/// the decoder catches it as `ProtocolError(protocolMalformed)`; coercing such
+/// shapes would be speculative parsing this kernel deliberately avoids.
+DateTime _timestampFromWire(Object? wire) => wire == null
+    ? DateTime.fromMillisecondsSinceEpoch(0, isUtc: true)
+    : DateTime.parse(wire as String);

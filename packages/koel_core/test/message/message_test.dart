@@ -71,6 +71,49 @@ void main() {
       expect(Message.fromJson(m.toJson()), equals(m));
     });
 
+    test('fromJson decodes a canonical AG-UI message that omits timestamp — '
+        'a backend MESSAGES_SNAPSHOT replay — to the epoch sentinel, not a '
+        'throw', () {
+      // `timestamp` is a koel addition absent from the AG-UI `Message`, so a
+      // native-AG-UI backend (e.g. LangGraph) re-emits inbound messages without
+      // it. Decoding must tolerate that and stay deterministic.
+      final decoded = Message.fromJson(const {
+        'id': 'm-1',
+        'role': 'user',
+        'content': 'hello',
+      });
+
+      expect(decoded.id, 'm-1');
+      expect(decoded.role, MessageRole.user);
+      expect(decoded.content, 'hello');
+      expect(
+        decoded.timestamp,
+        DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
+      );
+      // An explicit null is treated identically to absence.
+      expect(
+        Message.fromJson(const {
+          'id': 'm-2',
+          'role': 'assistant',
+          'content': 'hi',
+          'timestamp': null,
+        }).timestamp,
+        DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
+      );
+    });
+
+    test('fromJson still parses a present ISO-8601 timestamp', () {
+      expect(
+        Message.fromJson({
+          'id': 'm-1',
+          'role': 'user',
+          'content': 'hello',
+          'timestamp': ts.toIso8601String(),
+        }).timestamp,
+        ts,
+      );
+    });
+
     test('copyWith updates one field and leaves others identical', () {
       final m = base();
       final updated = m.copyWith(content: 'world');

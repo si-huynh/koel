@@ -201,9 +201,9 @@ void main() {
       });
     });
 
-    test('inherits HttpAgent DefaultErrorClassifier — a 401 surfaces as a '
-        'terminal RunErrorEvent, not a throw (AC1; classifier override is '
-        'Story 5.6)', () async {
+    test('the LangGraphErrorClassifier maps a 401 to businessAuth, surfaced as '
+        'a terminal RunErrorEvent — not a throw (AC2; Story 5.6 override wired '
+        'end-to-end)', () async {
       final client = MockClient((_) async => Response('', 401));
 
       final events = await LangGraphAgent(
@@ -212,10 +212,15 @@ void main() {
       ).run(_input()).toList();
 
       // Adapters never throw — every failure reaches the consumer as a terminal
-      // RunErrorEvent. The langgraph-specific mapping (401 -> businessAuth) is
-      // Story 5.6; here the inherited DefaultErrorClassifier produces a typed
-      // transport error.
-      expect(events.single, isA<RunErrorEvent>());
+      // RunErrorEvent. With the Story 5.6 `errorClassifier()` override active,
+      // the 401 the x-api-key middleware emits is refined to `businessAuth`
+      // (the unit-level mapping lives in langgraph_error_classifier_test); this
+      // asserts the override is wired into the run pipeline, not just declared.
+      final event = events.single;
+      expect(event, isA<RunErrorEvent>());
+      final error = (event as RunErrorEvent).error;
+      expect(error, isA<BusinessError>());
+      expect(error.code, KoelErrorCode.businessAuth);
     });
 
     group('surface-level interrupt-resume (Story 5.5)', () {

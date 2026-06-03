@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:koel_test/koel_test.dart';
 import 'package:test/test.dart';
 
 /// Story 3.2 structural validation of the synthesized fixture set + storage
@@ -25,6 +26,20 @@ void main() {
   };
   const coverageFixture = 'all_event_types';
 
+  /// Every langgraph scenario captured in Story 5.6 (all `synthesized: false`,
+  /// driven via `state.scenario` against the live backend). The graduation test
+  /// only asserts `text_only_run`'s presence + header; this list drives a decode
+  /// sweep so a truncated line, a missing file, or a `Message.fromJson` regression
+  /// in ANY capture fails CI loudly — not just the one fixture conformance replays.
+  const langGraphCaptures = <String>{
+    'text_only_run',
+    'state_delta_basic',
+    'tool_call_basic',
+    'error_path',
+    'interrupt_paused',
+    'interrupt_resume',
+  };
+
   /// The four backend fixture dirs (all exist from Story 3.2).
   const backendDirs = <String>{
     'dojo',
@@ -34,13 +49,9 @@ void main() {
   };
 
   /// Backend dirs still awaiting their Epic-5 capture — they hold only a
-  /// `.placeholder` and no `.jsonl`. `agno` graduated in Story 5.3 (real
-  /// `text_only_run.jsonl` captured), so it is no longer pending.
-  const pendingCaptureDirs = <String>{
-    'dojo',
-    'langgraph',
-    'copilotkit_runtime',
-  };
+  /// `.placeholder` and no `.jsonl`. `agno` graduated in Story 5.3 and
+  /// `langgraph` in Story 5.6 (real captures landed), so neither is pending.
+  const pendingCaptureDirs = <String>{'dojo', 'copilotkit_runtime'};
 
   /// The `_session` header fields AC2 names.
   const requiredSessionFields = <String>{
@@ -172,6 +183,53 @@ void main() {
       expect(session['adapter'], startsWith('koel_agno@'));
       expect(session['backendVersion'], startsWith('agno=='));
     });
+
+    test('langgraph/ graduated (Story 5.6) — real text_only_run capture, no '
+        'placeholder', () {
+      expect(
+        File('$fixturesDir/langgraph/text_only_run.jsonl').existsSync(),
+        isTrue,
+        reason: 'langgraph/ must hold the captured text_only_run.jsonl',
+      );
+      expect(
+        File('$fixturesDir/langgraph/.placeholder').existsSync(),
+        isFalse,
+        reason: 'langgraph/ .placeholder must be removed once a capture lands',
+      );
+      // The capture is real (live langgraph), not synthesized.
+      final session =
+          (jsonDecode(
+                    linesOf('$fixturesDir/langgraph/text_only_run.jsonl').first,
+                  )
+                  as Map<String, dynamic>)['_session']
+              as Map<String, dynamic>;
+      expect(session['synthesized'], isFalse);
+      expect(session['adapter'], startsWith('koel_langgraph@'));
+      expect(session['backendVersion'], startsWith('langgraph=='));
+    });
+  });
+
+  group('captured fixture decode (Story 5.6)', () {
+    // Unlike the structure-only checks above, this group decodes each captured
+    // line's `payload` into a typed `AgUiEvent` via the public `FixtureLoader`
+    // (semantic decode is its job, per Story 3.3). It closes the gap where only
+    // `text_only_run` was ever decoded (conformance Test B) — the other five
+    // captures were committed golden artifacts no test loaded.
+    for (final scenario in langGraphCaptures) {
+      test('langgraph/$scenario.jsonl decodes to a non-empty typed event run',
+          () async {
+        // `loadLangGraph` throws on a missing file, surfaces a `FormatException`
+        // on a corrupt/truncated line, and runs every payload through
+        // `AgUiEvent.fromWire` (incl. `Message.fromJson` for MESSAGES_SNAPSHOT),
+        // so any capture regression fails here loudly.
+        final events = await FixtureLoader.loadLangGraph(scenario);
+        expect(
+          events,
+          isNotEmpty,
+          reason: 'langgraph/$scenario.jsonl decoded to zero events',
+        );
+      });
+    }
   });
 
   group('synthesized fixture format (AC2)', () {

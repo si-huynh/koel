@@ -17,7 +17,7 @@ import 'package:koel_core/koel_core.dart';
 ///
 /// Emits `{id, role, content}` always; adds `toolCallId`/`name` **only when
 /// non-null** (an unset field is *absent*, never an explicit `null`). The role
-/// string is [MessageRole.name], identity with AG-UI's role vocabulary
+/// string is `MessageRole.name`, identity with AG-UI's role vocabulary
 /// (`user`/`assistant`/`system`/`tool`).
 ///
 /// Unlike agno there is **no options type**: Addendum A.4's `LangGraphAgent`

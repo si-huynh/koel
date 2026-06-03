@@ -1,0 +1,15 @@
+{"_session":{"koelVersion":"0.0.1","adapter":"koel_langgraph@0.0.1","captured":"2026-06-03T05:03:35.043558Z","threadId":"t-state","runId":"r","synthesized":false,"backendVersion":"langgraph==0.0.37"}}
+{"type":"RUN_STARTED","timestamp":"2026-06-03T05:03:35.044558Z","payload":{"type":"RUN_STARTED","threadId":"t-state","runId":"run-0"}}
+{"type":"STEP_STARTED","timestamp":"2026-06-03T05:03:35.045558Z","payload":{"type":"STEP_STARTED","stepName":"entry"}}
+{"type":"STATE_SNAPSHOT","timestamp":"2026-06-03T05:03:35.046558Z","payload":{"type":"STATE_SNAPSHOT","snapshot":{"messages":[],"scenario":"state"}}}
+{"type":"CUSTOM","timestamp":"2026-06-03T05:03:35.047558Z","payload":{"type":"CUSTOM","name":"manually_emit_state","value":{"messages":[],"scenario":"state","counter":1}}}
+{"type":"STATE_SNAPSHOT","timestamp":"2026-06-03T05:03:35.048558Z","payload":{"type":"STATE_SNAPSHOT","snapshot":{"messages":[],"scenario":"state"}}}
+{"type":"TEXT_MESSAGE_START","timestamp":"2026-06-03T05:03:35.049558Z","payload":{"type":"TEXT_MESSAGE_START","messageId":"msg-0","role":"assistant"}}
+{"type":"TEXT_MESSAGE_CONTENT","timestamp":"2026-06-03T05:03:35.050558Z","payload":{"type":"TEXT_MESSAGE_CONTENT","messageId":"msg-0","delta":"State snapshot emitted."}}
+{"type":"TEXT_MESSAGE_END","timestamp":"2026-06-03T05:03:35.051558Z","payload":{"type":"TEXT_MESSAGE_END","messageId":"msg-0"}}
+{"type":"CUSTOM","timestamp":"2026-06-03T05:03:35.052558Z","payload":{"type":"CUSTOM","name":"manually_emit_message","value":{"message_id":"msg-scripted-text","message":"State snapshot emitted.","role":"assistant"}}}
+{"type":"STATE_SNAPSHOT","timestamp":"2026-06-03T05:03:35.053558Z","payload":{"type":"STATE_SNAPSHOT","snapshot":{"messages":[],"scenario":"state"}}}
+{"type":"STEP_FINISHED","timestamp":"2026-06-03T05:03:35.054558Z","payload":{"type":"STEP_FINISHED","stepName":"entry"}}
+{"type":"STATE_SNAPSHOT","timestamp":"2026-06-03T05:03:35.055558Z","payload":{"type":"STATE_SNAPSHOT","snapshot":{"messages":[{"content":"hello","additional_kwargs":{},"response_metadata":{},"type":"human","id":"m-1"}],"scenario":"state"}}}
+{"type":"MESSAGES_SNAPSHOT","timestamp":"2026-06-03T05:03:35.056558Z","payload":{"type":"MESSAGES_SNAPSHOT","messages":[{"id":"m-1","role":"user","content":"hello"}]}}
+{"type":"RUN_FINISHED","timestamp":"2026-06-03T05:03:35.057558Z","payload":{"type":"RUN_FINISHED","threadId":"t-state","runId":"run-1"}}

@@ -1,0 +1,8 @@
+# Declares the test tags koel_langgraph uses so `dart test` stays warning-free.
+#
+# `conformance` marks the AG-UI conformance lane (`test/conformance_test.dart`):
+# `ConformanceRunner` driven against `LangGraphAgent` over the synthesized
+# all_event_types corpus. `melos run conformance` selects it via
+# `--tags conformance` (the FR-G4 CI lane); it also runs under `melos run test`.
+tags:
+  conformance: {} # the declaration alone suppresses the "undeclared tag" warning

@@ -1,0 +1,12 @@
+{"_session":{"koelVersion":"0.0.1","adapter":"koel_langgraph@0.0.1","captured":"2026-06-03T05:03:35.069658Z","threadId":"t-interrupt","runId":"r","synthesized":false,"backendVersion":"langgraph==0.0.37"}}
+{"type":"RUN_STARTED","timestamp":"2026-06-03T05:03:35.070658Z","payload":{"type":"RUN_STARTED","threadId":"t-interrupt","runId":"run-0"}}
+{"type":"STEP_STARTED","timestamp":"2026-06-03T05:03:35.071658Z","payload":{"type":"STEP_STARTED","stepName":"interrupt"}}
+{"type":"TEXT_MESSAGE_START","timestamp":"2026-06-03T05:03:35.072658Z","payload":{"type":"TEXT_MESSAGE_START","messageId":"msg-0","role":"assistant"}}
+{"type":"TEXT_MESSAGE_CONTENT","timestamp":"2026-06-03T05:03:35.073658Z","payload":{"type":"TEXT_MESSAGE_CONTENT","messageId":"msg-0","delta":"Resumed with value: approved-by-human"}}
+{"type":"TEXT_MESSAGE_END","timestamp":"2026-06-03T05:03:35.074658Z","payload":{"type":"TEXT_MESSAGE_END","messageId":"msg-0"}}
+{"type":"CUSTOM","timestamp":"2026-06-03T05:03:35.075658Z","payload":{"type":"CUSTOM","name":"manually_emit_message","value":{"message_id":"msg-scripted-resumed","message":"Resumed with value: approved-by-human","role":"assistant"}}}
+{"type":"STATE_SNAPSHOT","timestamp":"2026-06-03T05:03:35.076658Z","payload":{"type":"STATE_SNAPSHOT","snapshot":{"scenario":"interrupt","messages":[],"tools":[]}}}
+{"type":"STEP_FINISHED","timestamp":"2026-06-03T05:03:35.077658Z","payload":{"type":"STEP_FINISHED","stepName":"interrupt"}}
+{"type":"STATE_SNAPSHOT","timestamp":"2026-06-03T05:03:35.078658Z","payload":{"type":"STATE_SNAPSHOT","snapshot":{"messages":[{"content":"hello","additional_kwargs":{},"response_metadata":{},"type":"human","id":"m-1"}],"scenario":"interrupt"}}}
+{"type":"MESSAGES_SNAPSHOT","timestamp":"2026-06-03T05:03:35.079658Z","payload":{"type":"MESSAGES_SNAPSHOT","messages":[{"id":"m-1","role":"user","content":"hello"}]}}
+{"type":"RUN_FINISHED","timestamp":"2026-06-03T05:03:35.080658Z","payload":{"type":"RUN_FINISHED","threadId":"t-interrupt","runId":"run-1"}}

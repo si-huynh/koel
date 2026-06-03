@@ -2,6 +2,7 @@ import 'package:koel_core/koel_core.dart';
 import 'package:koel_http/koel_http.dart';
 
 import 'conversion/message_conversion.dart';
+import 'error/langgraph_error_classifier.dart';
 import 'langgraph_auth_interceptor.dart';
 
 /// `HttpAgent` targeting a LangGraph deployment's AG-UI route — one constructor
@@ -21,9 +22,10 @@ import 'langgraph_auth_interceptor.dart';
 /// Surface-level interrupt-resume is supported via [resume]: the consumer
 /// observes the `on_interrupt` `CUSTOM` event that rides a [run] stream and
 /// reopens the run on the same thread, where LangGraph rebuilds state
-/// server-side (no client-side reconstruction). The LangGraph-specific error
-/// classifier is **not** part of this agent yet — it arrives in Story 5.6; until
-/// then `LangGraphAgent` inherits [HttpAgent]'s `DefaultErrorClassifier`.
+/// server-side (no client-side reconstruction). Transport/parser failures are
+/// refined by [LangGraphErrorClassifier] (the `x-api-key` 401/403/429 mappings);
+/// an in-graph failure still reaches the consumer as a terminal `RunErrorEvent`,
+/// never a throw.
 class LangGraphAgent extends HttpAgent {
   /// Connects to the LangGraph deployment whose AG-UI route is [deploymentUrl].
   ///
@@ -86,6 +88,9 @@ class LangGraphAgent extends HttpAgent {
       for (final message in input.messages) langGraphMessageToWire(message),
     ],
   };
+
+  @override
+  ErrorClassifier errorClassifier() => const LangGraphErrorClassifier();
 
   /// Reopens the run paused at a LangGraph `interrupt` on [threadId], delivering
   /// [resumeValue] to the waiting node and streaming the resumed run's events.

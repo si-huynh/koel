@@ -11,9 +11,39 @@ surfacing — verified against captured fixtures via the conformance runner.
 ```dart
 // pubspec.yaml:  dart pub add koel_langgraph
 import 'package:koel_langgraph/koel_langgraph.dart';
+
+final agent = LangGraphAgent(
+  deploymentUrl: Uri.parse('http://localhost:8003/agent'),
+);
 ```
 
-The bridge lands in Epic 5.
+`deploymentUrl` is the **full** AG-UI POST endpoint and is used **verbatim** —
+nothing is appended. Unlike a base URL, `ag-ui-langgraph`'s route path is
+caller-configured (`add_langgraph_fastapi_endpoint(..., path: …)`), so koel
+assumes no canonical suffix: pass the exact endpoint your deployment exposes.
+
+## Authentication
+
+`LangGraphAgent`'s `apiKey` is optional, and the `LangGraphAuthInterceptor` is
+**default-ON** as a harmless convention. `ag-ui-langgraph==0.0.37` ships **no
+built-in auth** on its AG-UI route (verified against source — `SPIKE-LG-AUTH`),
+so `x-api-key` is a koel-side, LangGraph-Platform-style convention rather than a
+framework requirement. With `apiKey == null` (the default) or a blank value the
+interceptor is a no-op — the right default for an open local deployment, which
+simply ignores the header. Pass an `apiKey` only when your deployment enforces
+one (returning `401`/`403`/`429`, mapped to
+`businessAuth`/`businessForbidden`/`businessRateLimited` by
+`LangGraphErrorClassifier`):
+
+```dart
+final agent = LangGraphAgent(
+  deploymentUrl: Uri.parse('https://my-langgraph.example/agent'),
+  apiKey: 'xyz',
+);
+```
+
+The key is trimmed and injected as the `x-api-key` header, prepended outermost so
+a caller-supplied inner `AuthInterceptor` wins the merge.
 
 ## Interrupt-resume
 
