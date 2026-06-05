@@ -22,3 +22,8 @@ export 'src/session_storage/secure_session_storage.dart'
 export 'src/message/message_content_parser.dart';
 export 'src/message/message_segment.dart'
     show MessageSegment, TextSegment, CodeBlockSegment;
+
+// ---- Generative UI: tool-call → Widget + replay-safety (F-E2/F-F7) --------
+export 'src/generative_ui/widget_resolver.dart'
+    show WidgetResolver, UnknownGenerativeUI;
+export 'src/generative_ui/tool_replay_context.dart' show ToolReplayContext;
