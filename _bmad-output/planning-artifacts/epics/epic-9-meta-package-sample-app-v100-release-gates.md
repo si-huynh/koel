@@ -105,6 +105,12 @@ So that NFR-1..NFR-5 regression-relative SLOs become CI-enforceable per OQ-Perf-
 
 ## Story 9.5: `conformance.yml` + `publish-dry-run.yml` complete green
 
+> **Gate (SCP-2026-06-05):** `CopilotRuntimeAgent` here is the **v2 native-AG-UI/SSE**
+> agent (full matrix) from Epic-5 stories 5.10–5.11 — NOT the removed legacy GraphQL
+> bridge. v1.0.0 must not publish until 5.10–5.11 land, so CopilotKit ships at full
+> fidelity (no lossy 7/28 adapter). 9.2's sample-app README likewise references the
+> v2 `CopilotRuntimeAgent`.
+
 As a release manager,
 I want `conformance.yml` running `ConformanceRunner` against all three backends using captured fixtures + `publish-dry-run.yml` running `pub publish --dry-run` per package,
 So that conformance + publish-readiness are continuously enforced per FR-I1 + PRD §12 R-5.

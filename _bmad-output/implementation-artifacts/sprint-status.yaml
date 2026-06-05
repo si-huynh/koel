@@ -36,7 +36,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-05-28
-last_updated: 2026-06-05  # epic-5-retrospective → done (retro 2026-06-05; Si: close 5 real-debt items + agno local-LLM validation BEFORE Epic 6; 7/28 = parity truth, document not fix)
+last_updated: 2026-06-05  # SCP-2026-06-05: epic-5 REOPENED for CopilotKit v2 — remove lossy GraphQL bridge (D5 reversed), repurpose koel_runtime as native-AG-UI/SSE adapter; 5-7..5-9 superseded; add 5-10/5-11; gate Epic 9. (Earlier same day: retro → done; AI-5.1..5.8 debt-pass committed.)
 project: koel
 project_key: NOKEY
 tracking_system: file-system
@@ -101,6 +101,10 @@ development_status:
 
   # Epic 5: Backend Bridges — koel_agno + koel_langgraph + koel_runtime
   # In-progress 2026-06-02 — first story (5-1) created (agno group first, per epic-4 retro).
+  # REOPENED 2026-06-05 via SCP-2026-06-05: CopilotKit dropped GraphQL (v2 ≥1.52 = native
+  # AG-UI/SSE). Remove the lossy GraphQL bridge, repurpose koel_runtime as the v2 adapter
+  # (CopilotRuntimeAgent extends HttpAgent — D5 reversed). 5-7..5-9 superseded by 5-10/5-11.
+  # Returns to done when 5-11 completes. Gate Epic 9 (9.2/9.5) on the v2 group.
   epic-5: in-progress
   5-1-agno-agent-message-conversion: done
   5-2-agno-auth-interceptor-error-classifier: done
@@ -108,9 +112,11 @@ development_status:
   5-4-langgraph-agent-protocol-conversion: done
   5-5-langgraph-surface-interrupt-resume: done
   5-6-langgraph-fixtures-classifier-conformance: done
-  5-7-multipart-graphql-stream-parser: done
-  5-8-copilot-runtime-agent: done
-  5-9-copilot-runtime-fixtures-dojo-conformance: done
+  5-7-multipart-graphql-stream-parser: done            # superseded by 5-10/5-11 (SCP-2026-06-05) — GraphQL parser removed
+  5-8-copilot-runtime-agent: done                      # superseded by 5-10 (SCP-2026-06-05) — GraphQL agent replaced by v2
+  5-9-copilot-runtime-fixtures-dojo-conformance: done  # superseded by 5-11 (SCP-2026-06-05) — GraphQL fixtures/conformance removed
+  5-10-copilot-runtime-v2-agent: backlog               # CopilotRuntimeAgent extends HttpAgent — native AG-UI/SSE, full matrix
+  5-11-remove-graphql-bridge-v2-backend-conformance: backlog  # tag+remove GraphQL; harden copilotkit_v2 backend + fixtures + conformance
   epic-5-retrospective: done  # 2026-06-05 — see epic-5-retro-2026-06-05.md; AI-5.1..5.6 gate Epic 6 kickoff
 
   # Epic 6: Flutter Glue & Persistence — koel_flutter

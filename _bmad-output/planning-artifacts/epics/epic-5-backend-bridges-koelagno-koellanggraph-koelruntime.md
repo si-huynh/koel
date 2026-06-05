@@ -225,3 +225,49 @@ So that all four reference backends are conformance-verified per FR-G1 + FR-G4 +
 **And** `dart analyze` exits 0 per NFR-13.
 
 ---
+
+## Story group — CopilotKit v2 transition (added by SCP-2026-06-05)
+
+> CopilotKit dropped the GraphQL multipart transport (EOL ≤1.8.14). v2 (≥1.52) is
+> native AG-UI over SSE, live-verified (`spike-copilotkit-v2-2026-06-05.md`). These
+> stories **replace** the lossy GraphQL bridge (5.7–5.9, now superseded) with a
+> full-fidelity v2 adapter and **reverse D5** (`koel_runtime` depends on `koel_http`).
+
+## Story 5.10: `koel_runtime` — `CopilotRuntimeAgent` v2 (native AG-UI over SSE)
+
+As an SDK consumer of a CopilotKit ≥1.52 runtime,
+I want `CopilotRuntimeAgent extends HttpAgent` that POSTs to `{endpoint}/agent/{agentName}/run` and parses the `text/event-stream` AG-UI response,
+So that I get the full AG-UI event matrix (not the legacy 7/28 GraphQL surface) with the same adapter-never-throw + timeout contract as agno/langgraph.
+
+**Given** `packages/koel_runtime/lib/src/copilot_runtime_agent.dart`,
+**When** I inspect it,
+**Then** `class CopilotRuntimeAgent extends HttpAgent` (D5 reversed; depends on `koel_http`),
+**And** the constructor is `CopilotRuntimeAgent({required Uri endpoint, required String agentName, String? authToken, http.Client? client})`.
+
+**Given** a run against the v2 runtime,
+**When** `run(input)` executes,
+**Then** it POSTs the **complete** `RunAgentInput` (`tools`/`context`/`forwardedProps` present — the runtime 500s on a partial body) to `{endpoint}/agent/{agentName}/run`,
+**And** inherits SSE parsing, `connectTimeout`/`readTimeout` (AI-5.3 free), and the terminal-`RunErrorEvent` contract from `HttpAgent`.
+
+**Given** captured v2 fixtures,
+**When** conformance runs,
+**Then** the full AG-UI matrix passes (incl. `STATE_DELTA`, `RUN_ERROR`, `STEP_*`, `CUSTOM`) — no 7/28 partition.
+
+## Story 5.11: Remove the GraphQL bridge + harden the v2 backend + fixtures + conformance
+
+As the SDK maintainer,
+I want the legacy GraphQL bridge removed and the CopilotKit reference backend + fixtures + conformance moved to v2,
+So that koel ships one full-fidelity CopilotKit adapter with zero lossy surface and no dead-transport maintenance.
+
+**Given** the legacy GraphQL implementation,
+**When** I retire it,
+**Then** `git tag archive/koel-runtime-graphql` is created first (craft preservation),
+**And** `MultipartGraphQLStreamParser`, `graphql_event_conversion`, the GraphQL `copilot_runtime_error_classifier` specifics, the `copilotkit_runtime` GraphQL fixtures + conformance lane, and `koel_backend/backends/copilotkit` are deleted,
+**And** `deferred-work.md` is reconciled (AI-5.1/5.4/5.5/5.7 retired with the code; AI-5.2/5.8 unaffected).
+
+**Given** `koel_backend/backends/copilotkit_v2/`,
+**When** I harden it,
+**Then** it ships a Dockerfile + `docker-compose` profile + `Makefile up-copilotkit-v2`,
+**And** `dart run tool/capture_fixtures.dart --backend=copilotkit` captures full-matrix v2 fixtures,
+**And** `conformance.yml` is complete green across agno + langgraph + the v2 `CopilotRuntimeAgent`,
+**And** `koel_runtime` README/dartdoc describe the native-SSE full-matrix adapter (no GraphQL, no 7/28).

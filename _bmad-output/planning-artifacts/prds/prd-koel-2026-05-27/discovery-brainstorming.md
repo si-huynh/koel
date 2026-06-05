@@ -171,7 +171,7 @@ The session resolved 10 open research questions (OQ-1 through OQ-10) into design
 | OQ-1 | Next.js runtime exposes AG-UI endpoint in parallel? | N/A for koel — `koel_agno` direct + `koel_runtime` separate for GraphQL bridge | #6 |
 | OQ-2 | LangGraph interrupt resume on wire? | Defer to `koel_langgraph` when demand surfaces; model as resume token in metaEvents echoback | #6 #8 |
 | OQ-3 | Agno `/agno-chat` independent auth? | **Spike A required** | Action item |
-| OQ-4 | CopilotKit drops GraphQL → `koel_runtime` dies? | Acceptable risk; foundation core/http/agno survives | #18 |
+| OQ-4 | CopilotKit drops GraphQL → `koel_runtime` dies? | **RESOLVED (SCP-2026-06-05):** confirmed live — CopilotKit ≥1.52 (v2) is native AG-UI over SSE; GraphQL multipart is EOL at ≤1.8.14. `koel_runtime` does NOT die — repurposed as the v2 adapter (`CopilotRuntimeAgent extends HttpAgent`, full event matrix); lossy GraphQL bridge removed (D5 reversed). | #18 |
 | OQ-5 | TPS features needing Next.js? | Out of scope — TPS app wires aux endpoints itself downstream | #5 #20 |
 | OQ-6 | `ag_ui` v0.1.0 sufficient? | No — full rewrite with inspired-by credit | #9 |
 | OQ-7 | Capture authoritative wire traffic? | **Spike B required** | Action item |

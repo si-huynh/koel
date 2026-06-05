@@ -338,7 +338,17 @@ exercises both paths.
 
 ### D5 — `koel_runtime` GraphQL client
 
-**Decision:** Hand-rolled HTTP+JSON parser; no GraphQL client library dependency.
+> **REVERSED by SCP-2026-06-05.** CopilotKit dropped the GraphQL multipart
+> transport (EOL ≤1.8.14); v2 (≥1.52) is native AG-UI over SSE
+> (`POST {endpoint}/agent/{agentName}/run` → `text/event-stream`), live-verified in
+> [spike-copilotkit-v2-2026-06-05.md](spike-copilotkit-v2-2026-06-05.md). koel
+> therefore **removes** the GraphQL bridge and repurposes `koel_runtime` as a
+> native-SSE adapter: `CopilotRuntimeAgent extends HttpAgent` (joins
+> agno/langgraph), **depending on `koel_http`** — the independence rationale below
+> no longer applies, and **AR-10** (the hand-rolled `MultipartGraphQLStreamParser`)
+> is retired. The original GraphQL decision (below) is kept for history.
+
+**Decision (HISTORICAL — superseded):** Hand-rolled HTTP+JSON parser; no GraphQL client library dependency.
 **Rationale:** CopilotKit Next.js runtime serves `generateCopilotResponse` via HTTP
 @defer/multipart streaming (not WebSocket subscriptions). `package:graphql` 5.2.4
 brings cache, ObservableQuery, WebSocketLink — none of which koel_runtime needs.

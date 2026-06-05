@@ -365,10 +365,18 @@ class LangGraphAgent extends HttpAgent {
 
 ### A.5 `koel_runtime`
 
+> **Revised by SCP-2026-06-05 (D5 reversed).** CopilotKit dropped the GraphQL
+> multipart transport (EOL ≤1.8.14); v2 (≥1.52) is native AG-UI over SSE
+> (`POST {endpoint}/agent/{agentName}/run` → `text/event-stream`). So
+> `CopilotRuntimeAgent` now **`extends HttpAgent`** (joins agno/langgraph) at full
+> event-matrix fidelity — no GraphQL endpoint, no hand-rolled parser, no 7/28
+> lossy surface.
+
 ```dart
-class CopilotRuntimeAgent implements AbstractAgent {
+class CopilotRuntimeAgent extends HttpAgent {
   CopilotRuntimeAgent({
-    required Uri graphqlEndpoint,
+    required Uri endpoint,        // CopilotKit runtime base, e.g. https://app/api/copilotkit
+    required String agentName,    // the registered runtime agent to dispatch to
     String? authToken,
     http.Client? client,
   });
