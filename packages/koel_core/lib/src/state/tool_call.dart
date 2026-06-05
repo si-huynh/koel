@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'tool_call.freezed.dart';
+part 'tool_call.g.dart';
 
 /// An in-flight tool invocation accumulated by the reducer — the element type of
 /// `ChatState.pendingToolCalls`.
@@ -25,4 +26,8 @@ abstract class ToolCall with _$ToolCall {
     @Default('') String arguments,
     String? parentMessageId,
   }) = _ToolCall;
+
+  /// Decodes a [ToolCall] from its JSON map.
+  factory ToolCall.fromJson(Map<String, dynamic> json) =>
+      _$ToolCallFromJson(json);
 }

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -7,6 +8,7 @@ import '../message/message.dart';
 import 'tool_call.dart';
 
 part 'chat_state.freezed.dart';
+part 'chat_state.g.dart';
 
 /// Lifecycle phase of the current run, folded from the `RUN_*`/`STEP_*` events.
 ///
@@ -62,8 +64,37 @@ abstract class ChatState with _$ChatState {
     Message? pendingMessage,
     @Default(<ToolCall>[]) List<ToolCall> pendingToolCalls,
     @Default(<String, dynamic>{}) Map<String, dynamic> state,
-    @Default(<String, Uint8List>{}) Map<String, Uint8List> reasoningEcho,
-    KoelError? error,
+    @JsonKey(toJson: _reasoningEchoToWire, fromJson: _reasoningEchoFromWire)
+    @Default(<String, Uint8List>{})
+    Map<String, Uint8List> reasoningEcho,
+
+    /// The last folded failure. **Not persisted**: [KoelError] is intentionally
+    /// codec-less (its [KoelError.cause] is often non-serializable), and a
+    /// failed run's error is stale across an app restart — FR-D1 restores the
+    /// conversation, not a live error banner. Excluded from the JSON codec, so a
+    /// state reloaded from persistence always has `error == null` (even one
+    /// persisted while [phase] was [RunPhase.error]).
+    @JsonKey(includeToJson: false, includeFromJson: false) KoelError? error,
     @Default(RunPhase.idle) RunPhase phase,
   }) = _ChatState;
+
+  /// Decodes a [ChatState] from its JSON map.
+  factory ChatState.fromJson(Map<String, dynamic> json) =>
+      _$ChatStateFromJson(json);
 }
+
+/// Encodes [ChatState.reasoningEcho] for `toJson`: each opaque [Uint8List] blob
+/// becomes a base64 string ([Uint8List] has no native JSON form). Inverse of
+/// [_reasoningEchoFromWire]; the byte↔string round-trip is lossless (D3).
+Map<String, String> _reasoningEchoToWire(Map<String, Uint8List> echo) =>
+    echo.map((k, v) => MapEntry(k, base64Encode(v)));
+
+/// Decodes the wire `reasoningEcho` for [ChatState.fromJson], the inverse of
+/// [_reasoningEchoToWire]. Takes `Object?` (not `Map<String, dynamic>`) because
+/// json_serializable hands the custom `fromJson` the raw decoded value untyped —
+/// mirroring [Message]'s `_timestampFromWire` — so a typed param would mismatch
+/// the generated cast.
+Map<String, Uint8List> _reasoningEchoFromWire(Object? wire) =>
+    (wire as Map<String, dynamic>).map(
+      (k, v) => MapEntry(k, base64Decode(v as String)),
+    );

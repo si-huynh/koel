@@ -17,6 +17,13 @@ dependencies:
   # koel_core: ChatSession/ChatState/RunPhase appear in the controller's public
   # signature (A.6), so this is a regular dependency. Bare key — pub workspace.
   koel_core:
+  # hive_ce ("Hive Community Edition"): the maintained successor to the abandoned
+  # `hive` (2.2.3). HiveSessionStorage stores `jsonEncode(state.toJson())` as a
+  # String in a Box<String> — runtime API only (openBox/get/put/delete/keys), so
+  # NO hive_ce_generator (no TypeAdapter/typeId) and NO hive_ce_flutter. The
+  # consumer adds hive_ce_flutter and calls `Hive.initFlutter()` in their own
+  # app bootstrap (D5/D7) — koel never owns Hive's storage-path init.
+  hive_ce: ^2.19.3
 
 dev_dependencies:
   koel_lints:

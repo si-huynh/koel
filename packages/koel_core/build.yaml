@@ -10,3 +10,9 @@ targets:
           # camelCase wire keys verbatim — no automatic snake_case mangling
           # (architecture §3).
           field_rename: none
+          # Recurse into nested `toJson()` so a composite's `toJson()` returns a
+          # pure JSON map (not embedded model objects). Required by ChatState
+          # (Story 6.3): persistence round-trips via `ChatState.fromJson(
+          # state.toJson())`, which only holds when nested Message/ToolCall are
+          # already maps. Final `jsonEncode` output is unchanged either way.
+          explicit_to_json: true

@@ -12,3 +12,6 @@ export 'src/controller/koel_chat_controller.dart';
 
 // ---- Scope: InheritedWidget client publication (F-D5) ---------------------
 export 'src/scope/koel_client_scope.dart';
+
+// ---- Session storage: Hive-backed persistence (F-D1) ----------------------
+export 'src/session_storage/hive_session_storage.dart' show HiveSessionStorage;
