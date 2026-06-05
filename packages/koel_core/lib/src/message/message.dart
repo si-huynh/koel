@@ -36,7 +36,12 @@ abstract class Message with _$Message {
     required String id,
     required MessageRole role,
     @JsonKey(fromJson: _contentFromWire) required String content,
-    @JsonKey(fromJson: _timestampFromWire) required DateTime timestamp,
+    @JsonKey(
+      fromJson: _timestampFromWire,
+      toJson: _timestampToWire,
+      includeIfNull: false,
+    )
+    required DateTime timestamp,
     String? toolCallId,
     String? name,
   }) = _Message;
@@ -61,9 +66,27 @@ abstract class Message with _$Message {
 /// caller-visible throw rather than being coerced — inside a `MESSAGES_SNAPSHOT`
 /// the decoder catches it as `ProtocolError(protocolMalformed)`; coercing such
 /// shapes would be speculative parsing this kernel deliberately avoids.
-DateTime _timestampFromWire(Object? wire) => wire == null
-    ? DateTime.fromMillisecondsSinceEpoch(0, isUtc: true)
-    : DateTime.parse(wire as String);
+DateTime _timestampFromWire(Object? wire) =>
+    wire == null ? _epochSentinel : DateTime.parse(wire as String);
+
+/// Encodes [Message.timestamp] for `toJson`, the inverse of [_timestampFromWire].
+///
+/// A [timestamp] equal to the [_epochSentinel] is the "wire carried none" marker
+/// (set by [_timestampFromWire] on an absent value, and by the reducer for a
+/// not-yet-instant streamed message — `chat_state_reducer.dart`'s `_epoch`, the
+/// same value). Returning `null` for it, paired with `@JsonKey(includeIfNull:
+/// false)`, **omits** the key — so decoding a `timestamp`-less wire message then
+/// re-encoding it (a `MESSAGES_SNAPSHOT` replay, or a `ChatState` persisted to
+/// Hive in Epic 6) round-trips faithfully instead of fabricating a
+/// `1970-01-01T00:00:00.000Z` the backend never sent. A real instant encodes as
+/// ISO-8601, exactly as before.
+String? _timestampToWire(DateTime timestamp) =>
+    timestamp == _epochSentinel ? null : timestamp.toIso8601String();
+
+/// The UTC Unix epoch — the sentinel a `timestamp`-less wire [Message] decodes to
+/// and the value [_timestampToWire] omits on re-encode. `DateTime` is not a
+/// `const` expression, so this is a top-level `final`, not a class constant.
+final _epochSentinel = DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
 
 /// Decodes the wire `content` for [Message.fromJson].
 ///

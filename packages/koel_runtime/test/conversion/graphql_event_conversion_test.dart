@@ -131,6 +131,63 @@ void main() {
         ]);
       });
 
+      test('holds END until @stream deltas complete — a mid-@stream @defer '
+          'status with content after it reconstructs canonical '
+          'START→…content…→END (AI-5.1)', () {
+        final converter = GraphQLIncrementalConverter();
+        // The live wire resolves status:Success after the FIRST content delta,
+        // then streams the rest — emitting END at the status would produce
+        // START→CONTENT→END→CONTENT…, violating AG-UI order.
+        final events = converter.ingest(
+          incrementalPart([
+            textStart(0, 'm1'),
+            contentDelta(0, 0, 'Hello'),
+            messageSuccess(0), // mid-stream status — END held, not emitted
+            contentDelta(0, 1, ', world'),
+            contentDelta(0, 2, '!'),
+          ]),
+        );
+        expect(events, const [
+          TextMessageStartEvent(messageId: 'm1', role: 'assistant'),
+          TextMessageContentEvent(messageId: 'm1', delta: 'Hello'),
+          TextMessageContentEvent(messageId: 'm1', delta: ', world'),
+          TextMessageContentEvent(messageId: 'm1', delta: '!'),
+        ]);
+        // finish() flushes the held END at stream completion, in canonical order.
+        expect(converter.finish(), const [
+          TextMessageEndEvent(messageId: 'm1'),
+        ]);
+      });
+
+      test('flushes a held END when the next message opens — per-message '
+          'bracketing across two messages whose statuses resolve mid-@stream '
+          '(AI-5.1)', () {
+        final converter = GraphQLIncrementalConverter();
+        final events = converter.ingest(
+          incrementalPart([
+            textStart(0, 'm1'),
+            contentDelta(0, 0, 'A'),
+            messageSuccess(0), // held
+            contentDelta(0, 1, 'B'), // late content for m1
+            textStart(1, 'm2'), // opens m2 → flush m1's END first
+            contentDelta(1, 0, 'C'),
+            messageSuccess(1), // held
+          ]),
+        );
+        expect(
+          [...events, ...converter.finish()],
+          const [
+            TextMessageStartEvent(messageId: 'm1', role: 'assistant'),
+            TextMessageContentEvent(messageId: 'm1', delta: 'A'),
+            TextMessageContentEvent(messageId: 'm1', delta: 'B'),
+            TextMessageEndEvent(messageId: 'm1'),
+            TextMessageStartEvent(messageId: 'm2', role: 'assistant'),
+            TextMessageContentEvent(messageId: 'm2', delta: 'C'),
+            TextMessageEndEvent(messageId: 'm2'),
+          ],
+        );
+      });
+
       test('a content delta to an unopened message index is skipped', () {
         final events = GraphQLIncrementalConverter().ingest(
           incrementalPart([

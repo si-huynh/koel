@@ -61,6 +61,37 @@ classifies the genuinely observable surfaces — transport/parser throws and HTT
 statuses (401/403/429 → business codes, the documented internal 500 →
 `agentInternal`).
 
+### Representable event surface: a lossy 7-of-28 bridge
+
+CopilotKit's `generateCopilotResponse` GraphQL schema carries only **four
+message-output shapes** (the selection set is verbatim from
+`@copilotkit/runtime-client-gql@1.8.14`), so `koel_runtime` can reconstruct only
+the AG-UI events those shapes encode:
+
+| GraphQL message output | AG-UI event(s) emitted |
+|---|---|
+| `TextMessageOutput` | `TEXT_MESSAGE_START` · `TEXT_MESSAGE_CONTENT` · `TEXT_MESSAGE_END` |
+| `ActionExecutionMessageOutput` | `TOOL_CALL_START` · `TOOL_CALL_ARGS` · `TOOL_CALL_END` |
+| `AgentStateMessageOutput` | `STATE_SNAPSHOT` |
+| `ResultMessageOutput` | `TOOL_CALL_RESULT` (when the runtime emits one) |
+
+The agent synthesizes the `RUN_STARTED`/`RUN_FINISHED` envelope itself (the wire's
+initial part carries `runId:null`, which the events forbid). Every **other** AG-UI
+type — run-lifecycle errors, `STEP_*`, `THINKING_*`/reasoning, `MESSAGES_SNAPSHOT`,
+`STATE_DELTA`, `ACTIVITY`, `RAW`, `CUSTOM`, the `*_CHUNK` variants — has **no
+representation in CopilotKit's GraphQL protocol** and is therefore never produced
+here. This is a property of the upstream transport, not a koel limitation: koel is
+a faithful port, so it surfaces exactly what the protocol carries rather than
+fabricating events the runtime never sends. Conformance reflects this honestly —
+the copilotkit lane asserts an exact **7-of-28** representable partition (vs the
+native-AG-UI passthrough adapters' 25/28). The full AG-UI matrix is carried by the
+dojo captures + the synthesized corpus.
+
+> The runtime resolves each message's terminal `@defer status` *mid-`@stream`*
+> (before its remaining `content`/`arguments` deltas). `koel_runtime` holds each
+> message's `END` until its deltas are observed complete, so consumers always see
+> canonical `START → …all content… → END` order regardless of the wire artefact.
+
 ## Documentation
 
 API reference is on the pub.dev API tab (`dart doc`). Guides will live on the

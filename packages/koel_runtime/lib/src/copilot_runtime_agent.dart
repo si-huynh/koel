@@ -72,6 +72,14 @@ final class CopilotRuntimeAgent implements AbstractAgent {
   /// client); when null a default client is created and owned per run. An injected
   /// client is **never** closed by the agent — the caller owns its lifecycle.
   ///
+  /// [connectTimeout] bounds the wait for response headers; [readTimeout] bounds
+  /// idle time between response bytes (and the non-2xx error-body drain) — both
+  /// exceed → `transportTimeout`. They mirror `HttpAgent`'s timeouts so a stalled
+  /// runtime cannot wedge a run open forever with `RUN_STARTED` emitted and no
+  /// `RUN_ERROR` following. Like `HttpAgent`, `connectTimeout` does not abort the
+  /// in-flight `send` of an injected client (the caller owns its lifecycle); an
+  /// owned client's socket is torn down by the per-run `close`.
+  ///
   /// Throws an [ArgumentError] at construction when [graphqlEndpoint] is not an
   /// absolute `http(s)` URL with an authority, or when [agentName] is blank —
   /// fail-fast on a misconfiguration rather than an opaque transport failure
@@ -80,6 +88,8 @@ final class CopilotRuntimeAgent implements AbstractAgent {
     required Uri graphqlEndpoint,
     required String agentName,
     this.authToken,
+    this.connectTimeout = const Duration(seconds: 30),
+    this.readTimeout = const Duration(minutes: 5),
     http.Client? client,
   }) : graphqlEndpoint = _validateEndpoint(graphqlEndpoint),
        agentName = _validateAgentName(agentName),
@@ -96,6 +106,13 @@ final class CopilotRuntimeAgent implements AbstractAgent {
   /// `null` (the default) sends no `Authorization` header — the right default for
   /// the open local runtime.
   final String? authToken;
+
+  /// Maximum time to await response headers; exceeding it → `transportTimeout`.
+  final Duration connectTimeout;
+
+  /// Maximum idle time between response bytes (and the non-2xx drain); exceeding
+  /// it → `transportTimeout`.
+  final Duration readTimeout;
 
   final http.Client? _client;
 
@@ -262,15 +279,23 @@ final class _CopilotRuntimeTerminal implements AbstractAgent {
           }),
         );
 
-      final response = await client.send(request);
+      // `connectTimeout` bounds the wait for headers (a bare `TimeoutException`
+      // the chain's `DefaultErrorClassifier` maps to `transportTimeout`). It does
+      // not abort the in-flight `send` — an owned client's socket is torn down by
+      // the `finally`'s `close`; an injected client is the caller's to abort.
+      final response = await client
+          .send(request)
+          .timeout(_agent.connectTimeout);
 
       // A non-2xx response is not a thrown exception — detect it and throw the
       // typed error the classifier passes through (idempotently) to
       // `RunErrorEvent`. Drain the body first so an owned client's socket is not
-      // leaked; a drain error is irrelevant — the status is the failure we report.
+      // leaked; the drain is `readTimeout`-bounded so a slow/multi-MB error body
+      // cannot wedge the run. A drain error (timeout included) is irrelevant — the
+      // status is the failure we report.
       if (response.statusCode < 200 || response.statusCode >= 300) {
         try {
-          await response.stream.drain<void>();
+          await response.stream.timeout(_agent.readTimeout).drain<void>();
         } on Object {
           // Discarded deliberately: the throw below is the reported error path.
         }
@@ -281,7 +306,12 @@ final class _CopilotRuntimeTerminal implements AbstractAgent {
         );
       }
 
-      yield* const MultipartGraphQLStreamParser().parse(response.stream);
+      // `readTimeout` bounds inter-byte idle on the response stream — a stall
+      // mid-`@stream` surfaces a `TimeoutException` (→ `transportTimeout`) rather
+      // than hanging the run open after `RUN_STARTED`.
+      yield* const MultipartGraphQLStreamParser().parse(
+        response.stream.timeout(_agent.readTimeout),
+      );
       yield RunFinishedEvent(threadId: input.threadId, runId: input.runId);
     } finally {
       if (injected == null) client.close();

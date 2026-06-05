@@ -1,6 +1,7 @@
 @TestOn('vm')
 library;
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -260,6 +261,64 @@ void main() {
           final error = (events.last as RunErrorEvent).error;
           expect(error, isA<ProtocolError>());
           expect(error.code, KoelErrorCode.protocolMalformed);
+        },
+      );
+    });
+
+    group('timeout (AI-5.3)', () {
+      test(
+        'a stall before headers times out → RUN_ERROR(transportTimeout)',
+        () async {
+          final stall = Completer<http.Response>(); // send never completes
+          final client = MockClient((request) => stall.future);
+          final events = await CopilotRuntimeAgent(
+            graphqlEndpoint: _endpoint,
+            agentName: _agentName,
+            client: client,
+            connectTimeout: const Duration(milliseconds: 30),
+          ).run(_input()).toList();
+          expect(
+            events.first,
+            const RunStartedEvent(threadId: 't1', runId: 'r1'),
+          );
+          expect(
+            (events.last as RunErrorEvent).error.code,
+            KoelErrorCode.transportTimeout,
+          );
+        },
+      );
+
+      test(
+        'a mid-stream stall times out → RUN_ERROR(transportTimeout)',
+        () async {
+          final controller = StreamController<List<int>>();
+          addTearDown(controller.close);
+          // Emit the seed part (no events), then stall — never the rest, never the
+          // terminator: the read-idle bound fires before the truncation guard.
+          controller.add(
+            utf8.encode(multipartString([initialPart()]).split('-----').first),
+          );
+          final client = MockClient.streaming(
+            (request, bodyStream) async => http.StreamedResponse(
+              controller.stream,
+              200,
+              headers: {'content-type': 'multipart/mixed; boundary="-"'},
+            ),
+          );
+          final events = await CopilotRuntimeAgent(
+            graphqlEndpoint: _endpoint,
+            agentName: _agentName,
+            client: client,
+            readTimeout: const Duration(milliseconds: 30),
+          ).run(_input()).toList();
+          expect(
+            events.first,
+            const RunStartedEvent(threadId: 't1', runId: 'r1'),
+          );
+          expect(
+            (events.last as RunErrorEvent).error.code,
+            KoelErrorCode.transportTimeout,
+          );
         },
       );
     });

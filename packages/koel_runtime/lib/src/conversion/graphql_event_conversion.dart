@@ -51,6 +51,15 @@ class _Message {
   /// the terminal status reuse. Empty for state/result/unknown (no streamed id
   /// follows, so no id is reused).
   final String id;
+
+  /// The terminal `@defer status:Success` for this message has been observed, so
+  /// its `END` is owed — but **held** until the message's `@stream` deltas are
+  /// known complete (a later message opens, or the stream finishes). See
+  /// [GraphQLIncrementalConverter._defer].
+  bool statusSeen = false;
+
+  /// Its `END` has already been flushed — guards against a double close.
+  bool ended = false;
 }
 
 /// Where in the document a patch is addressed: the `messages[index]` element and
@@ -107,9 +116,47 @@ final class GraphQLIncrementalConverter {
     }
   }
 
+  /// Flushes the buffered `END` for the final message of one `parse` stream.
+  ///
+  /// Called once when the multipart stream completes cleanly (the parser saw its
+  /// `-----` terminator). Mid-stream closes are flushed by [_flushEnded] as the
+  /// next message opens; this catches the **last** message, whose deltas are only
+  /// known complete at stream end. A message that never saw its `@defer
+  /// status:Success` (an incomplete/truncated stream) is intentionally left
+  /// un-ended — the parser surfaces that truncation as a `ProtocolError`.
+  List<AgUiEvent> finish() {
+    final out = <AgUiEvent>[];
+    _flushEnded(out);
+    return out;
+  }
+
+  /// Emits the held `END` for every status-seen, not-yet-ended message, in
+  /// insertion (== ascending index) order. The wire streams `messages[]`
+  /// sequentially — a message's `@stream` content resolves before the next
+  /// element appends — so flushing here preserves AG-UI `START → …deltas → END`
+  /// bracketing without cross-message interleaving.
+  void _flushEnded(List<AgUiEvent> out) {
+    for (final message in _messages.values) {
+      if (!message.statusSeen || message.ended) continue;
+      message.ended = true;
+      switch (message.kind) {
+        case _Kind.text:
+          out.add(TextMessageEndEvent(messageId: message.id));
+        case _Kind.tool:
+          out.add(ToolCallEndEvent(toolCallId: message.id));
+        default:
+          break; // state/result/unknown carry no end
+      }
+    }
+  }
+
   /// Records `messages[index]`'s identity from its `__typename` and emits the
   /// opening event for the recognized shapes.
   void _open(int index, Map<String, dynamic> item, List<AgUiEvent> out) {
+    // A new message appending means every prior status-seen message's `@stream`
+    // deltas are now complete — flush their held `END`s before this one opens, so
+    // the emitted order stays `START → …deltas → END` per message.
+    _flushEnded(out);
     switch (item['__typename']) {
       case _kText:
         final id = _str(item, 'id');
@@ -191,19 +238,21 @@ final class GraphQLIncrementalConverter {
   }
 
   /// A terminal `@defer` `{status:{code:"Success"}}` at a message path closes
-  /// that message. Non-`Success` codes (`Pending`/`Failed`) are not a clean
-  /// close and emit nothing (the runtime swallows error completions anyway).
+  /// that message — but the live runtime resolves this status **mid-`@stream`**
+  /// (after only the first `content`/`arguments` delta, then streams the rest), so
+  /// emitting `END` here would produce `START → CONTENT → END → CONTENT…`,
+  /// violating AG-UI's `START → …all content… → END` contract. Instead the close
+  /// is **recorded** ([_Message.statusSeen]) and the `END` is held until the
+  /// message's deltas are known complete — flushed by [_flushEnded] when the next
+  /// message opens, or by [finish] at stream end. Non-`Success` codes
+  /// (`Pending`/`Failed`) are not a clean close and record nothing (the runtime
+  /// swallows error completions anyway); a state snapshot has no end.
   void _defer(_Loc loc, Object? data, List<AgUiEvent> out) {
     if (loc.field != null || !_isSuccess(data)) return;
     final message = _messages[loc.index];
     if (message == null) return;
-    switch (message.kind) {
-      case _Kind.text:
-        out.add(TextMessageEndEvent(messageId: message.id));
-      case _Kind.tool:
-        out.add(ToolCallEndEvent(toolCallId: message.id));
-      default:
-        break; // a state snapshot has no end; unknown/result close nothing
+    if (message.kind == _Kind.text || message.kind == _Kind.tool) {
+      message.statusSeen = true;
     }
   }
 }
@@ -263,11 +312,12 @@ List<dynamic> _msgPath(int index) => [_root, 'messages', index];
 /// one `{incremental:[…], hasNext:false}` part). Used to author the test-local
 /// multipart fixture and to prove `reverse → bytes → parse` round-trip symmetry.
 ///
-/// Faithful to the raw-capture shape: terminal `@defer` `status:Success` patches
-/// are placed **after** a message's `content`/`arguments` deltas so the forward
-/// path reconstructs the canonical `START → …deltas → END` order. (The live wire
-/// resolves `@defer` `status` mid-`@stream`; reordering that capture artefact is
-/// Story 5.9's job — recorded in `deferred-work.md`.)
+/// Authors each terminal `@defer` `status:Success` patch **after** its message's
+/// `content`/`arguments` deltas — one valid wire ordering. The forward
+/// [GraphQLIncrementalConverter] no longer depends on this: it holds every `END`
+/// until the message's deltas are known complete (AI-5.1), so it reconstructs the
+/// canonical `START → …deltas → END` order even from the live wire's mid-`@stream`
+/// status resolution. Round-trip symmetry holds either way.
 ///
 /// Throws [ArgumentError] on any event outside the representable subset
 /// (`TEXT_MESSAGE_*`, `TOOL_CALL_START/ARGS/END`, `STATE_SNAPSHOT`) — a fixture

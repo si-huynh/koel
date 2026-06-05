@@ -102,6 +102,27 @@ void main() {
       );
     });
 
+    test('toJson omits timestamp for an epoch-sentinel message so a no-timestamp '
+        'wire message round-trips without fabricating 1970-01-01 (AI-5.2)', () {
+      // Decoding a timestamp-less wire message defaults to the epoch sentinel;
+      // re-encoding must NOT emit a `timestamp` the backend never sent — else a
+      // MESSAGES_SNAPSHOT replay (or a ChatState persisted to Hive in Epic 6)
+      // grows a fabricated 1970-01-01T00:00:00.000Z.
+      final decoded = Message.fromJson(const {
+        'id': 'm-1',
+        'role': 'user',
+        'content': 'hello',
+      });
+      final json = decoded.toJson();
+      expect(json.containsKey('timestamp'), isFalse);
+      // The round-trip is stable: re-decoding the omitted form yields the same.
+      expect(Message.fromJson(json), equals(decoded));
+    });
+
+    test('toJson emits a real instant as an unchanged ISO-8601 string', () {
+      expect(base().toJson()['timestamp'], ts.toIso8601String());
+    });
+
     test('fromJson still parses a present ISO-8601 timestamp', () {
       expect(
         Message.fromJson({

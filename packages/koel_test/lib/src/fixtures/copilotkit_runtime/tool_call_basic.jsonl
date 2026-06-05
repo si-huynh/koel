@@ -1,8 +1,8 @@
-{"_session":{"koelVersion":"0.0.1","adapter":"koel_runtime@0.0.1","captured":"2026-06-03T15:00:36.795551Z","threadId":"t","runId":"r","synthesized":false,"backendVersion":"copilotkit==1.8.14"}}
-{"type":"RUN_STARTED","timestamp":"2026-06-03T15:00:36.796551Z","payload":{"type":"RUN_STARTED","threadId":"t","runId":"r"}}
-{"type":"TOOL_CALL_START","timestamp":"2026-06-03T15:00:36.797551Z","payload":{"type":"TOOL_CALL_START","toolCallId":"tool-0","toolCallName":"get_weather","parentMessageId":"msg-tool-1"}}
-{"type":"STATE_SNAPSHOT","timestamp":"2026-06-03T15:00:36.798551Z","payload":{"type":"STATE_SNAPSHOT","snapshot":{}}}
-{"type":"TOOL_CALL_ARGS","timestamp":"2026-06-03T15:00:36.799551Z","payload":{"type":"TOOL_CALL_ARGS","toolCallId":"tool-0","delta":"{\"city\":"}}
-{"type":"TOOL_CALL_END","timestamp":"2026-06-03T15:00:36.800551Z","payload":{"type":"TOOL_CALL_END","toolCallId":"tool-0"}}
-{"type":"TOOL_CALL_ARGS","timestamp":"2026-06-03T15:00:36.801551Z","payload":{"type":"TOOL_CALL_ARGS","toolCallId":"tool-0","delta":"\"Hanoi\"}"}}
-{"type":"RUN_FINISHED","timestamp":"2026-06-03T15:00:36.802551Z","payload":{"type":"RUN_FINISHED","threadId":"t","runId":"r"}}
+{"_session":{"koelVersion":"0.0.1","adapter":"koel_runtime@0.0.1","captured":"2026-06-05T01:58:49.110620Z","threadId":"t","runId":"r","synthesized":false,"backendVersion":"copilotkit==1.8.14"}}
+{"type":"RUN_STARTED","timestamp":"2026-06-05T01:58:49.111620Z","payload":{"type":"RUN_STARTED","threadId":"t","runId":"r"}}
+{"type":"TOOL_CALL_START","timestamp":"2026-06-05T01:58:49.112620Z","payload":{"type":"TOOL_CALL_START","toolCallId":"tool-0","toolCallName":"get_weather","parentMessageId":"msg-tool-1"}}
+{"type":"STATE_SNAPSHOT","timestamp":"2026-06-05T01:58:49.113620Z","payload":{"type":"STATE_SNAPSHOT","snapshot":{}}}
+{"type":"TOOL_CALL_ARGS","timestamp":"2026-06-05T01:58:49.114620Z","payload":{"type":"TOOL_CALL_ARGS","toolCallId":"tool-0","delta":"{\"city\":"}}
+{"type":"TOOL_CALL_ARGS","timestamp":"2026-06-05T01:58:49.115620Z","payload":{"type":"TOOL_CALL_ARGS","toolCallId":"tool-0","delta":"\"Hanoi\"}"}}
+{"type":"TOOL_CALL_END","timestamp":"2026-06-05T01:58:49.116620Z","payload":{"type":"TOOL_CALL_END","toolCallId":"tool-0"}}
+{"type":"RUN_FINISHED","timestamp":"2026-06-05T01:58:49.117620Z","payload":{"type":"RUN_FINISHED","threadId":"t","runId":"r"}}

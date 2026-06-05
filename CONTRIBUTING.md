@@ -35,6 +35,15 @@ and produced by `build_runner`. After changing any source that feeds codegen,
 run `melos run build` and confirm `git diff` is clean — CI enforces this via the
 `codegen-drift` workflow.
 
+### House patterns
+
+Reusable idioms that recur across packages live in [`docs/patterns/`](docs/patterns/).
+Reach for them before reinventing transport/stream plumbing:
+
+- [Cancel-correct stream teardown](docs/patterns/stream-cancellation.md) — the
+  `StreamController + watchdog Timer + fire-and-forget teardown` shape for any
+  `async*` run a consumer can `cancel()` mid-stream (NFR-8 sub-50 ms budget).
+
 ## Commits & PRs
 
 - Conventional, story-scoped subjects: `chore(story-1.6): …`, `feat(koel_core): …`.

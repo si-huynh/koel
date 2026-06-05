@@ -46,13 +46,41 @@ final class MultipartGraphQLStreamParser {
   ///
   /// Each part is decoded and fed to a fresh [GraphQLIncrementalConverter]; a
   /// single part can yield zero (the initial seed), one, or many events (the
-  /// text run's part yields `START → 4×CONTENT → END`). The terminator
-  /// (`-----`) completes the stream.
+  /// text run's part yields `START → CONTENT…`). The closing terminator
+  /// (`-----`) completes the stream, after which [GraphQLIncrementalConverter.finish]
+  /// flushes the held terminal `END`s (AI-5.1 holds each `END` until its message's
+  /// deltas are known complete).
+  ///
+  /// **Truncation guard (AI-5.5).** A byte stream that delivered **at least one
+  /// part** then ended **cleanly but without the `-----` terminator** — a
+  /// connection dropped mid-`@stream` that still closed the socket gracefully — is
+  /// otherwise indistinguishable from a complete response (the last message's
+  /// `END` simply never arrives). Such a stream surfaces a
+  /// `ProtocolError(protocolMalformed)` instead of completing silently. A
+  /// *source-stream error* still propagates unchanged (it never reaches this
+  /// check), and a genuinely **empty** stream (zero parts) stays a clean close —
+  /// this is a pure framing layer, emptiness is the caller's concern. Only the
+  /// partial-delivery-without-terminator gap is closed here.
   Stream<AgUiEvent> parse(Stream<List<int>> bytes) async* {
     final converter = GraphQLIncrementalConverter();
-    await for (final body in _parts(bytes)) {
+    var terminatorSeen = false;
+    var sawPart = false;
+    await for (final body in _parts(
+      bytes,
+      onTerminator: () => terminatorSeen = true,
+    )) {
+      sawPart = true;
       yield* Stream.fromIterable(converter.ingest(_decode(body)));
     }
+    if (sawPart && !terminatorSeen) {
+      throw ProtocolError(
+        message:
+            'Multipart GraphQL stream delivered parts but ended without its '
+            'closing terminator (-----) — the response was truncated mid-stream',
+        code: KoelErrorCode.protocolMalformed,
+      );
+    }
+    yield* Stream.fromIterable(converter.finish());
   }
 
   /// Splits [bytes] into per-part JSON body strings, driving a three-phase line
@@ -65,14 +93,20 @@ final class MultipartGraphQLStreamParser {
   /// (`SseParser`'s framing-not-length discipline). An optional leading preamble
   /// (a blank line before the first `---`) is ignored; the terminator ends the
   /// stream cleanly.
-  Stream<String> _parts(Stream<List<int>> bytes) async* {
+  Stream<String> _parts(
+    Stream<List<int>> bytes, {
+    required void Function() onTerminator,
+  }) async* {
     var phase = _Phase.boundary;
     await for (final line in _lines(bytes)) {
       switch (phase) {
         case _Phase.boundary:
           // `-----` ends the stream; `---` opens a part; anything else is
           // preamble whitespace before the first part and is ignored.
-          if (line == _terminator) return;
+          if (line == _terminator) {
+            onTerminator();
+            return;
+          }
           if (line == _delimiter) phase = _Phase.headers;
         case _Phase.headers:
           // The blank line closes the header block; Content-Type/Content-Length

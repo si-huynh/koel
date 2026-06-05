@@ -274,6 +274,33 @@ void main() {
       expect(parser.parse(boom), emitsError(isA<StateError>()));
     });
 
+    test('a stream that delivers parts but is truncated before its terminator '
+        'surfaces ProtocolError (AI-5.5)', () {
+      final body = jsonEncode(
+        incrementalPart([textStart(0, 'm1'), contentDelta(0, 0, 'Hi')]),
+      );
+      // A valid part, then the socket closes cleanly — no `-----` terminator,
+      // and the message's terminal status (its END) never arrives. Previously
+      // indistinguishable from a complete response; now a loud truncation error.
+      final truncated =
+          '\r\n---\r\nContent-Type: application/json; charset=utf-8\r\n\r\n'
+          '$body\r\n';
+      expect(
+        parser.parse(streamBytes(utf8.encode(truncated))),
+        emitsInOrder([
+          const TextMessageStartEvent(messageId: 'm1', role: 'assistant'),
+          const TextMessageContentEvent(messageId: 'm1', delta: 'Hi'),
+          emitsError(
+            isA<ProtocolError>().having(
+              (e) => e.code,
+              'code',
+              KoelErrorCode.protocolMalformed,
+            ),
+          ),
+        ]),
+      );
+    });
+
     test('AC1: parser file is under the 250 LOC budget (target ~200)', () {
       final lines = File(
         'lib/src/multipart_graphql_stream_parser.dart',
