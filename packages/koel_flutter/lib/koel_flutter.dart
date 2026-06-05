@@ -1,2 +1,11 @@
 /// Flutter glue for koel — controller, scope, session storage, generative UI.
+///
+/// This barrel is the **public 1.x contract** of `koel_flutter`. It surfaces the
+/// Flutter-facing bindings layered over `koel_core`'s framework-free kernel and
+/// deliberately re-exports nothing from `koel_core` itself — `ChatSession`,
+/// `ChatState`, and the event/error types reach consumers through `koel_core`
+/// (or the `koel` meta-package), never duplicated here.
 library;
+
+// ---- Controller: the LCD ChangeNotifier binding (F-D4) --------------------
+export 'src/controller/koel_chat_controller.dart';

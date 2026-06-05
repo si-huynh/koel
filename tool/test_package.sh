@@ -21,7 +21,15 @@ if [ ! -d test ] || [ -z "$(ls -A test 2>/dev/null)" ]; then
   exit 0
 fi
 
-dart test --exclude-tags=perf
+# koel_flutter (and every later Flutter package) pulls the Flutter SDK and its
+# tests bind `flutter_test` — `dart test` cannot load those (no engine binding).
+# Route Flutter packages to `flutter test`; pure-Dart packages stay on
+# `dart test`. Both honor --exclude-tags and the same no-tests exit codes below.
+if grep -q "sdk: flutter" pubspec.yaml; then
+  flutter test --exclude-tags=perf
+else
+  dart test --exclude-tags=perf
+fi
 code=$?
 
 # 0 = passed; 79 = test files present but none matched (e.g. all perf-tagged);

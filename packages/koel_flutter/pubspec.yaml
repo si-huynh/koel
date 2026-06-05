@@ -9,5 +9,25 @@ environment:
 
 resolution: workspace
 
+dependencies:
+  # First Flutter (non-pure-Dart) package in the workspace. `flutter` carries
+  # `ChangeNotifier` (package:flutter/foundation.dart) — KoelChatController's base.
+  flutter:
+    sdk: flutter
+  # koel_core: ChatSession/ChatState/RunPhase appear in the controller's public
+  # signature (A.6), so this is a regular dependency. Bare key — pub workspace.
+  koel_core:
+
 dev_dependencies:
   koel_lints:
+  flutter_test:
+    sdk: flutter
+  # MockAgent.fromFixture + bundled dojo fixtures drive the widget tests (A.9).
+  koel_test:
+  # Test-only — proof that an unmodified ChangeNotifier slots into every
+  # state-management framework with zero adapter code (FR-D4 / AC4). These must
+  # NEVER move to `dependencies`: the package ships no framework dependency.
+  provider: ^6.1.2
+  flutter_bloc: ^9.1.0
+  flutter_riverpod: ^2.6.1
+  get: ^4.7.2
