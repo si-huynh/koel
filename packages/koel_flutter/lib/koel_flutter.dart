@@ -17,3 +17,8 @@ export 'src/scope/koel_client_scope.dart';
 export 'src/session_storage/hive_session_storage.dart' show HiveSessionStorage;
 export 'src/session_storage/secure_session_storage.dart'
     show SecureSessionStorage;
+
+// ---- Message content: assistant-string → segments (F-E1) ------------------
+export 'src/message/message_content_parser.dart';
+export 'src/message/message_segment.dart'
+    show MessageSegment, TextSegment, CodeBlockSegment;
