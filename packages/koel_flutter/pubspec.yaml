@@ -24,6 +24,15 @@ dependencies:
   # consumer adds hive_ce_flutter and calls `Hive.initFlutter()` in their own
   # app bootstrap (D5/D7) — koel never owns Hive's storage-path init.
   hive_ce: ^2.19.3
+  # flutter_secure_storage: the encrypted-at-rest sibling of hive_ce. SecureSessionStorage
+  # stores `jsonEncode(state.toJson())` as a String value under a koel-namespaced key —
+  # runtime API only (write/read/readAll/delete; never deleteAll, D4). `FlutterSecureStorage`
+  # appears in SecureSessionStorage's public A.6 constructor, so this is a regular dependency
+  # (same reasoning as koel_core/hive_ce). koel performs NO init; the consumer owns platform
+  # setup — iOS/macOS Keychain entitlement, Android min-API/backup, Windows VC++, Linux
+  # keyring (D5, documented per-platform in README per N-11). Canonical, maintained by
+  # steenbakker.dev (160/160 pub points, BSD-3); v10 default constructor is `const` (D2).
+  flutter_secure_storage: ^10.3.1
 
 dev_dependencies:
   koel_lints:

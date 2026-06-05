@@ -35,8 +35,35 @@ await Hive.initFlutter();                       // once, at app startup
 final storage = HiveSessionStorage(boxName: 'koel_sessions');
 ```
 
-Pure-Dart callers use `Hive.init(path)` instead. (Deeper per-platform storage
-caveats and a secure alternative arrive with `SecureSessionStorage`.)
+Pure-Dart callers use `Hive.init(path)` instead.
+
+### Secure persistence
+
+`SecureSessionStorage` is a drop-in, **encrypted-at-rest** alternative with the
+*same API* and the *same JSON wire-shape* as `HiveSessionStorage` — back it with
+`flutter_secure_storage` when conversations may carry PII. Keys are namespaced
+under a reserved `koel_session.` prefix, so if you inject a `FlutterSecureStorage`
+that also holds your app's secrets, koel enumerates and deletes **only its own**
+(*reserved* cuts both ways — don't store your own keys under that prefix):
+
+```dart
+final storage = SecureSessionStorage();        // or inject a tuned instance
+```
+
+Unlike Hive there is no koel-side init. What secure storage needs is **platform**
+setup, and that is your responsibility:
+
+| Platform      | Backing store | You must                                                                                         |
+| ------------- | ------------- | ------------------------------------------------------------------------------------------------ |
+| iOS / macOS   | Keychain      | Add the Keychain Sharing entitlement; mind data accessibility before first unlock (cold start). On older iOS, Keychain entries can survive app uninstall. |
+| Android       | KeyStore      | `minSdkVersion 23`; disable auto-backup for the keys (else restore fails to decrypt). Data is cleared on factory reset / "clear app data". |
+| Web           | WebCrypto over `localStorage` | HTTPS or `localhost` only. **Not hardware-backed** — weaker than the native stores. |
+| Windows       | DPAPI         | Ship with the VC++ build tools available at build time.                                          |
+| Linux         | `libsecret`   | Requires an active keyring (GNOME Keyring, KDE Wallet, …) running on the target.                  |
+
+See the [`flutter_secure_storage`](https://pub.dev/packages/flutter_secure_storage)
+docs for per-platform options. Six-platform CI verification lands in a later Epic 6
+story.
 
 ## Documentation
 
