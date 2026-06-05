@@ -9,3 +9,6 @@ library;
 
 // ---- Controller: the LCD ChangeNotifier binding (F-D4) --------------------
 export 'src/controller/koel_chat_controller.dart';
+
+// ---- Scope: InheritedWidget client publication (F-D5) ---------------------
+export 'src/scope/koel_client_scope.dart';
