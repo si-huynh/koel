@@ -1,5 +1,5 @@
 name: koel_runtime
-description: AG-UI adapter for the CopilotKit Next.js runtime — multipart GraphQL streaming.
+description: AG-UI adapter for a CopilotKit ≥1.52 (v2) runtime — native AG-UI over SSE.
 version: 0.0.1
 publish_to: none
 
@@ -9,31 +9,23 @@ environment:
 resolution: workspace
 
 dependencies:
-  # The koel runtime edge: koel_core's value+contract types. koel_runtime is
-  # independent of koel_http (D5/AR-10) and carries ZERO GraphQL-client
-  # dependency — the multipart/@defer body is hand-rolled from dart:convert
-  # alone. AbstractAgent/InterceptorChain/DefaultErrorClassifier, AgUiEvent + the
-  # event leaves, TransportError/KoelErrorCode all come through the koel_core.dart
-  # barrel (AR-20).
+  # koel_runtime's runtime edges (bare workspace keys, mirroring koel_agno/
+  # koel_langgraph). koel_core: the `Message`/`RunAgentInput`/`Interceptor`
+  # value+contract types the adapter normalizes and forwards. koel_http:
+  # `HttpAgent` — `CopilotRuntimeAgent` extends it and overrides only the
+  # body-encoding + error-classifier seams (D5 REVERSED, SCP-2026-06-05: a v2
+  # runtime is native AG-UI over SSE, the same wire koel_http parses). `http.Client`
+  # is the injectable transport seam the Addendum-A.5 constructor exposes (tests
+  # pass `MockClient`, backends a pooled client).
   koel_core:
-  # The agent's POST transport (Story 5.8): `CopilotRuntimeAgent` POSTs the
-  # `generateCopilotResponse` GraphQL mutation over `http.Request`/`Client.send`,
-  # whose `StreamedResponse.stream` is the live, unbuffered `Stream<List<int>>`
-  # the 5.7 `MultipartGraphQLStreamParser` consumes. `http.Client` is also the
-  # injectable seam the constructor exposes for tests (`MockClient`). This is the
-  # ONE non-koel runtime edge (D5 still forbids koel_http + any GraphQL client).
-  # Pin matches the workspace (koel_http/pubspec.yaml).
+  koel_http:
   http: ^1.6.0
-  # `@protected` on the `errorClassifier()` swap seam (the Story 5.9 override
-  # point — `CopilotRuntimeErrorClassifier` replaces the default without touching
-  # `run`). Direct dep so the import resolves under `depend_on_referenced_packages`.
-  meta: ^1.16.0
 
 dev_dependencies:
   koel_lints:
   test: ^1.25.0
   # ConformanceRunner drives CopilotRuntimeAgent over the synthesized
-  # all_event_types corpus (the 7/28 representable partition); FixtureLoader
-  # replays the captured copilotkit_runtime fixtures through the agent. Workspace
-  # dev-only dep — does not widen the lib/ surface (D5 stays clean).
+  # all_event_types corpus replayed as SSE; FixtureLoader replays committed wire
+  # fixtures so the inherited SSE parse path is asserted against real captured
+  # events, not hand-rolled JSON. Workspace dev-only dep.
   koel_test:

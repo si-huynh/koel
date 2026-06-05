@@ -5,7 +5,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:koel_core/koel_core.dart';
-import 'package:koel_runtime/koel_runtime.dart';
+// The parser is no longer barrel-exported (Story 5.10 dropped the export; the
+// file is orphaned and removed in 5.11) — import it directly from src until then.
+import 'package:koel_runtime/src/multipart_graphql_stream_parser.dart';
 import 'package:test/test.dart';
 
 import '_support.dart';

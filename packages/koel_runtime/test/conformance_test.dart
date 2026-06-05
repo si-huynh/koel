@@ -2,147 +2,70 @@
 @Tags(['conformance'])
 library;
 
-import 'package:http/http.dart' as http;
-import 'package:http/testing.dart';
-import 'package:koel_core/koel_core.dart';
 import 'package:koel_runtime/koel_runtime.dart';
-import 'package:koel_runtime/src/conversion/graphql_event_conversion.dart';
 import 'package:koel_test/koel_test.dart';
 import 'package:test/test.dart';
 
 import '_support.dart';
 
-/// The full GraphQL endpoint a configured agent POSTs to (used verbatim).
-final _endpoint = Uri.parse('http://localhost:8004/api/copilotkit');
-
-/// The registered runtime agent the conformance drive dispatches to.
-const _agentName = 'koel_scripted';
-
-/// A `MockClient` replaying [events] as the multipart-GraphQL response a
-/// successful run receives — authored via the 5.7 reverse path
-/// ([eventsToGraphQLParts]) so the wire is an independent oracle, not the agent's
-/// own output.
-http.Client _replay(List<AgUiEvent> events) => MockClient(
-  (request) async => http.Response.bytes(
-    multipartBytes(eventsToGraphQLParts(events)),
-    200,
-    headers: {'content-type': 'multipart/mixed; boundary="-"'},
-  ),
-);
-
 void main() {
-  group('CopilotRuntimeAgent conformance (FR-G4)', () {
-    // The exactly-7 GraphQL-representable AG-UI types. `CopilotRuntimeAgent` is a
-    // LOSSY GraphQL bridge, not a native-AG-UI passthrough like AgnoAgent/
-    // LangGraphAgent (25/28): `graphql_event_conversion.dart` frames ONLY the
-    // four GraphQL message-output shapes the runtime emits, so only these 7 of
-    // the corpus's 28 types can ride the multipart wire. The other 19 have no
-    // GraphQL representation (eventsToGraphQLParts ArgumentErrors on them) — the
-    // dojo captures + synthesized corpus carry the full 25/28 matrix instead.
-    const representable = <String>{
-      'TEXT_MESSAGE_START',
-      'TEXT_MESSAGE_CONTENT',
-      'TEXT_MESSAGE_END',
-      'TOOL_CALL_START',
-      'TOOL_CALL_ARGS',
-      'TOOL_CALL_END',
-      'STATE_SNAPSHOT',
-    };
+  group('CopilotRuntimeAgent conformance (FR-G4) — full matrix, no 7/28', () {
+    // One entry per AG-UI type in all_event_types.jsonl (RUN_STARTED … CUSTOM).
+    const typeCount = 28;
 
-    // The remaining 21 of the 28 corpus types. The 19 non-representable types are
-    // never served → `actual: null` failures; RUN_STARTED/RUN_FINISHED ARE
-    // emitted (the agent's envelope, 5.8 AC3) but with the runner's
-    // `conformance-thread`/`conformance-run` ids, which freezed-`==`-diverge from
-    // the corpus's `t`/`r` → divergent failures. Named exactly (RESOLVED #5),
-    // the copilotkit analog of agno's "25/28, the 3 *_CHUNK named exactly".
-    const nonRepresentable = <String>{
-      'RUN_STARTED',
-      'RUN_FINISHED',
-      'RUN_ERROR',
-      'STEP_STARTED',
-      'STEP_FINISHED',
+    // The 3 `*_CHUNK` convenience shapes are NOT reproduced verbatim by ANY
+    // HTTP adapter: koel_http's default-on `synthesizeChunks` (Story 4.8)
+    // normalizes them into their START/CONTENT/END triplets *at the transport*,
+    // so the Epic-5 backends always see long form. `CopilotRuntimeAgent` (like
+    // `AgnoAgent`) does not expose `synthesizeChunks`, so 25/28 is its fixed
+    // contract — the SAME full canonical surface agno/langgraph prove, versus the
+    // legacy GraphQL bridge's lossy 7/28 (the headline of SCP-2026-06-05). The
+    // 25 reproduced types include exactly the ones the GraphQL bridge dropped:
+    // STATE_DELTA, RUN_ERROR, STEP_STARTED/FINISHED, CUSTOM, MESSAGES_SNAPSHOT,
+    // REASONING_*.
+    const synthesizedChunkTypes = {
       'TEXT_MESSAGE_CHUNK',
-      'TOOL_CALL_RESULT',
       'TOOL_CALL_CHUNK',
-      'STATE_DELTA',
-      'MESSAGES_SNAPSHOT',
-      'ACTIVITY_SNAPSHOT',
-      'ACTIVITY_DELTA',
-      'REASONING_START',
-      'REASONING_END',
-      'REASONING_MESSAGE_START',
-      'REASONING_MESSAGE_CONTENT',
-      'REASONING_MESSAGE_END',
       'REASONING_MESSAGE_CHUNK',
-      'REASONING_ENCRYPTED_VALUE',
-      'RAW',
-      'CUSTOM',
     };
 
-    /// Filters [corpus] to the events whose AG-UI type is GraphQL-representable —
-    /// the subset `eventsToGraphQLParts` can frame (it ArgumentErrors on the
-    /// rest). Order-preserving, so each START precedes its CONTENT/END.
-    List<AgUiEvent> representableSubset(List<AgUiEvent> corpus) => corpus
-        .where(
-          (e) =>
-              e is TextMessageStartEvent ||
-              e is TextMessageContentEvent ||
-              e is TextMessageEndEvent ||
-              e is ToolCallStartEvent ||
-              e is ToolCallArgsEvent ||
-              e is ToolCallEndEvent ||
-              e is StateSnapshotEvent,
-        )
-        .toList();
-
-    test('reports the exact 7/28 representable partition — the 7 message types '
-        'pass, the other 21 fail (RESOLVED #5)', () async {
-      final corpus = await FixtureLoader.loadSynthesized('all_event_types');
-      final client = _replay(representableSubset(corpus));
+    test('ConformanceRunner reproduces the 25 canonical AG-UI types verbatim '
+        'through the inherited HttpAgent SSE parse; the 3 *_CHUNK shapes are '
+        'transport-synthesized into long form (AC3)', () async {
+      // The synthesized corpus replayed as SSE — the full-matrix proof needs no
+      // live backend: CopilotRuntimeAgent is a transparent HttpAgent passthrough.
+      // RUN_ERROR rides the wire verbatim (the agent's "terminal RunErrorEvent"
+      // classifies only transport/parser *throws*, not a parsed event), so every
+      // non-chunk type reaches the runner. (Real captured v2 fixtures + the
+      // conformance.yml lane swap are Story 5.11.)
+      final client = sseClient(
+        sseBody(await fixturePayloads('synthesized', 'all_event_types')),
+      );
 
       final report = await const ConformanceRunner().runAgainst(
         CopilotRuntimeAgent(
-          graphqlEndpoint: _endpoint,
-          agentName: _agentName,
+          endpoint: Uri.parse('http://host:8005/api/copilotkit'),
+          agentName: 'koel_scripted',
           client: client,
         ),
       );
 
-      // The 7 GraphQL-representable types reproduce verbatim through the
-      // reverse→forward round-trip.
-      expect(report.passed.toSet(), representable);
-      // The other 21 fail — the 19 unserved (actual: null) + the two divergent
-      // lifecycle events.
-      expect(report.failed.map((f) => f.eventType).toSet(), nonRepresentable);
-      expect(report.agentName, contains('CopilotRuntimeAgent'));
-    });
-
-    test('Test B — replays the REAL captured copilotkit_runtime text_only_run '
-        'through CopilotRuntimeAgent (AC4 + FR-G1)', () async {
-      // The fixture is a committed live capture (`make up-copilotkit` →
-      // `dart run tool/capture_fixtures.dart --backend=copilotkit_runtime`);
-      // `fixtures_test.dart` hard-asserts its presence, so this loads and
-      // asserts unconditionally (the transient capture-presence guard is gone).
-      final fixture = await FixtureLoader.loadCopilotkitRuntime(
-        'text_only_run',
+      // The 25 canonical types reproduce verbatim — zero failures among them.
+      expect(
+        report.passed,
+        hasLength(typeCount - synthesizedChunkTypes.length),
       );
-
-      // The fixture is the agent's full run incl. its RUN_STARTED/RUN_FINISHED
-      // envelope; only the parser-derived middle is GraphQL-representable, so
-      // strip the lifecycle pair before re-framing (eventsToGraphQLParts
-      // ArgumentErrors on them) — the agent re-synthesizes them from the input.
-      final inner = fixture
-          .where((e) => e is! RunStartedEvent && e is! RunFinishedEvent)
-          .toList();
-      final client = _replay(inner);
-
-      final events = await CopilotRuntimeAgent(
-        graphqlEndpoint: _endpoint,
-        agentName: _agentName,
-        client: client,
-      ).run(const RunAgentInput(threadId: 't', runId: 'r')).toList();
-
-      expect(events, fixture);
+      expect(
+        report.passed.toSet().intersection(synthesizedChunkTypes),
+        isEmpty,
+      );
+      // The ONLY unmatched types are exactly the 3 synthesized chunk shapes —
+      // proves they were normalized, not silently dropped, and no 26th regressed.
+      expect(
+        report.failed.map((f) => f.eventType).toSet(),
+        synthesizedChunkTypes,
+      );
+      expect(report.agentName, contains('CopilotRuntimeAgent'));
     });
   });
 }
