@@ -1,0 +1,3 @@
+{"_session":{"koelVersion":"0.0.1","adapter":"koel_runtime@0.0.1","captured":"2026-06-05T04:57:34.774765Z","threadId":"t","runId":"r","synthesized":false,"backendVersion":"copilotkit==1.59.4"}}
+{"type":"RUN_STARTED","timestamp":"2026-06-05T04:57:34.775765Z","payload":{"type":"RUN_STARTED","threadId":"t","runId":"r","input":{"threadId":"t","runId":"r","state":{},"messages":[],"tools":[],"context":[],"forwardedProps":{}}}}
+{"type":"RUN_ERROR","timestamp":"2026-06-05T04:57:34.776765Z","payload":{"type":"RUN_ERROR","message":"scripted error scenario"}}

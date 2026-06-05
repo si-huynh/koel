@@ -1,0 +1,9 @@
+{"_session":{"koelVersion":"0.0.1","adapter":"koel_runtime@0.0.1","captured":"2026-06-05T04:57:34.758038Z","threadId":"t","runId":"r","synthesized":false,"backendVersion":"copilotkit==1.59.4"}}
+{"type":"RUN_STARTED","timestamp":"2026-06-05T04:57:34.759038Z","payload":{"type":"RUN_STARTED","threadId":"t","runId":"r","input":{"threadId":"t","runId":"r","state":{},"messages":[],"tools":[],"context":[],"forwardedProps":{}}}}
+{"type":"TEXT_MESSAGE_START","timestamp":"2026-06-05T04:57:34.760038Z","payload":{"type":"TEXT_MESSAGE_START","messageId":"msg-text-1","role":"assistant"}}
+{"type":"TEXT_MESSAGE_CONTENT","timestamp":"2026-06-05T04:57:34.761038Z","payload":{"type":"TEXT_MESSAGE_CONTENT","messageId":"msg-text-1","delta":"Hello"}}
+{"type":"TEXT_MESSAGE_CONTENT","timestamp":"2026-06-05T04:57:34.762038Z","payload":{"type":"TEXT_MESSAGE_CONTENT","messageId":"msg-text-1","delta":", "}}
+{"type":"TEXT_MESSAGE_CONTENT","timestamp":"2026-06-05T04:57:34.763038Z","payload":{"type":"TEXT_MESSAGE_CONTENT","messageId":"msg-text-1","delta":"world"}}
+{"type":"TEXT_MESSAGE_CONTENT","timestamp":"2026-06-05T04:57:34.764038Z","payload":{"type":"TEXT_MESSAGE_CONTENT","messageId":"msg-text-1","delta":"."}}
+{"type":"TEXT_MESSAGE_END","timestamp":"2026-06-05T04:57:34.765038Z","payload":{"type":"TEXT_MESSAGE_END","messageId":"msg-text-1"}}
+{"type":"RUN_FINISHED","timestamp":"2026-06-05T04:57:34.766038Z","payload":{"type":"RUN_FINISHED","threadId":"t","runId":"r"}}

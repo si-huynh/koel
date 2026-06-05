@@ -21,7 +21,7 @@ analyzer:
 linter:
   rules:
     # Every exported public symbol (CopilotRuntimeAgent,
-    # MultipartGraphQLStreamParser, CopilotRuntimeErrorClassifier) carries a doc —
+    # CopilotRuntimeAuthInterceptor, CopilotRuntimeErrorClassifier) carries a doc —
     # the member-doc gate turns on as the package finalizes.
     public_member_api_docs: true
     # Keeps `[Type]` references in dartdoc resolvable so `dart doc` stays at

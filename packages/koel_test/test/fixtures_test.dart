@@ -59,27 +59,24 @@ void main() {
     'cancellation',
   };
 
-  /// The three representable copilotkit-runtime scenarios captured in Story 5.9
-  /// (the AG-UI events `CopilotRuntimeAgent` emits against the live multipart
-  /// wire; no `error` — the runtime swallows `RUN_ERROR`, RESOLVED #4).
+  /// The four CopilotKit **v2** scenarios captured in Story 5.11 (the AG-UI
+  /// events `CopilotRuntimeAgent` emits against the live native-SSE wire). Unlike
+  /// the removed GraphQL set (3, no `error`), v2 carries `error_path` (a wire
+  /// `RUN_ERROR`) — the GraphQL bridge swallowed it.
   const copilotkitCaptures = <String>{
     'text_only_run',
     'tool_call_basic',
     'state_delta_basic',
+    'error_path',
   };
 
   /// The four backend fixture dirs (all exist from Story 3.2).
-  const backendDirs = <String>{
-    'dojo',
-    'agno',
-    'langgraph',
-    'copilotkit_runtime',
-  };
+  const backendDirs = <String>{'dojo', 'agno', 'langgraph', 'copilotkit'};
 
   /// Backend dirs still awaiting their Epic-5 capture — they hold only a
-  /// `.placeholder` and no `.jsonl`. Empty after Story 5.9: `agno` graduated in
-  /// 5.3, `langgraph` in 5.6, and `dojo` + `copilotkit_runtime` in 5.9 — all four
-  /// backends now carry real captures.
+  /// `.placeholder` and no `.jsonl`. Empty after Story 5.11: `agno` graduated in
+  /// 5.3, `langgraph` in 5.6, `dojo` in 5.9, and `copilotkit` (v2) in 5.11 — all
+  /// four backends now carry real captures.
   const pendingCaptureDirs = <String>{};
 
   /// The `_session` header fields AC2 names.
@@ -258,28 +255,23 @@ void main() {
       expect(session['backendVersion'], startsWith('dojo=='));
     });
 
-    test('copilotkit_runtime/ graduated (Story 5.9) — real captures, no '
+    test('copilotkit/ graduated (Story 5.11) — real v2 captures, no '
         'placeholder', () {
       expect(
-        File(
-          '$fixturesDir/copilotkit_runtime/text_only_run.jsonl',
-        ).existsSync(),
+        File('$fixturesDir/copilotkit/text_only_run.jsonl').existsSync(),
         isTrue,
-        reason:
-            'copilotkit_runtime/ must hold the captured text_only_run.jsonl',
+        reason: 'copilotkit/ must hold the captured text_only_run.jsonl',
       );
       expect(
-        File('$fixturesDir/copilotkit_runtime/.placeholder').existsSync(),
+        File('$fixturesDir/copilotkit/.placeholder').existsSync(),
         isFalse,
-        reason:
-            'copilotkit_runtime/ .placeholder must be removed once a capture '
-            'lands',
+        reason: 'copilotkit/ .placeholder must be removed once a capture lands',
       );
-      // The capture is real (live CopilotKit runtime), stamped by koel_runtime.
+      // The capture is real (live CopilotKit v2 backend), stamped by koel_runtime.
       final session =
           (jsonDecode(
                     linesOf(
-                      '$fixturesDir/copilotkit_runtime/text_only_run.jsonl',
+                      '$fixturesDir/copilotkit/text_only_run.jsonl',
                     ).first,
                   )
                   as Map<String, dynamic>)['_session']
@@ -315,7 +307,7 @@ void main() {
     }
   });
 
-  group('captured fixture decode (Story 5.9 — dojo + copilotkit_runtime)', () {
+  group('captured fixture decode (Story 5.9 dojo + Story 5.11 copilotkit v2)', () {
     // Same purpose as the langgraph sweep: decode every captured dojo +
     // copilotkit line through the public `FixtureLoader` so a truncated line, a
     // missing file, or a `fromWire`/`Message.fromJson` regression in ANY capture
@@ -335,14 +327,13 @@ void main() {
     }
     for (final scenario in copilotkitCaptures) {
       test(
-        'copilotkit_runtime/$scenario.jsonl decodes to a non-empty typed event '
-        'run',
+        'copilotkit/$scenario.jsonl decodes to a non-empty typed event run',
         () async {
-          final events = await FixtureLoader.loadCopilotkitRuntime(scenario);
+          final events = await FixtureLoader.loadCopilotkit(scenario);
           expect(
             events,
             isNotEmpty,
-            reason: 'copilotkit_runtime/$scenario.jsonl decoded to zero events',
+            reason: 'copilotkit/$scenario.jsonl decoded to zero events',
           );
         },
       );

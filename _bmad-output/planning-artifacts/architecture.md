@@ -882,10 +882,13 @@ lib/src/
 ├── <name>_auth_interceptor.dart       # adapter-specific (e.g., AgnoAuthInterceptor)
 ├── conversion/
 │   └── message_conversion.dart        # backend-shape ↔ AG-UI conversion
-├── error/
-│   └── <name>_error_classifier.dart   # extends DefaultErrorClassifier
-└── (koel_runtime only) multipart_graphql_stream_parser.dart   # D5 hand-roll
+└── error/
+    └── <name>_error_classifier.dart   # extends DefaultErrorClassifier
 ```
+After Story 5.11 `koel_runtime` is a plain `HttpAgent`-subclass adapter identical
+in shape to agno/langgraph (the ≤1.8.14 GraphQL `multipart_graphql_stream_parser.dart`
+was removed when CopilotKit v2 went native-SSE — SCP-2026-06-05; preserved at the
+`archive/koel-runtime-graphql` tag).
 
 **`koel_flutter`**:
 ```

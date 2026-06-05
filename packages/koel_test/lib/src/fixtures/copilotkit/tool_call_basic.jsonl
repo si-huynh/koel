@@ -1,0 +1,7 @@
+{"_session":{"koelVersion":"0.0.1","adapter":"koel_runtime@0.0.1","captured":"2026-06-05T04:57:34.768371Z","threadId":"t","runId":"r","synthesized":false,"backendVersion":"copilotkit==1.59.4"}}
+{"type":"RUN_STARTED","timestamp":"2026-06-05T04:57:34.769371Z","payload":{"type":"RUN_STARTED","threadId":"t","runId":"r","input":{"threadId":"t","runId":"r","state":{},"messages":[],"tools":[],"context":[],"forwardedProps":{}}}}
+{"type":"TOOL_CALL_START","timestamp":"2026-06-05T04:57:34.770371Z","payload":{"type":"TOOL_CALL_START","toolCallId":"tool-1","toolCallName":"get_weather","parentMessageId":"msg-tool-1"}}
+{"type":"TOOL_CALL_ARGS","timestamp":"2026-06-05T04:57:34.771371Z","payload":{"type":"TOOL_CALL_ARGS","toolCallId":"tool-1","delta":"{\"city\":"}}
+{"type":"TOOL_CALL_ARGS","timestamp":"2026-06-05T04:57:34.772371Z","payload":{"type":"TOOL_CALL_ARGS","toolCallId":"tool-1","delta":"\"Hanoi\"}"}}
+{"type":"TOOL_CALL_END","timestamp":"2026-06-05T04:57:34.773371Z","payload":{"type":"TOOL_CALL_END","toolCallId":"tool-1"}}
+{"type":"RUN_FINISHED","timestamp":"2026-06-05T04:57:34.774371Z","payload":{"type":"RUN_FINISHED","threadId":"t","runId":"r"}}

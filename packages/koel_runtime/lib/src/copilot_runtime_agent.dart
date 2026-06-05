@@ -16,8 +16,9 @@ import 'error/copilot_runtime_error_classifier.dart';
 /// joins `AgnoAgent`/`LangGraphAgent` as a thin `HttpAgent` subclass: no GraphQL
 /// parser, no stateful converter, no run-lifecycle synthesis (the wire carries
 /// `RUN_STARTED`/`RUN_FINISHED`), **no 7/28 partition**. The legacy
-/// `implements AbstractAgent` GraphQL agent it replaces is gone (5.11 deletes the
-/// orphaned parser). `LangGraphAgent` is the closest sibling — its structure is
+/// `implements AbstractAgent` GraphQL agent it replaces is gone (Story 5.11
+/// deleted the orphaned parser). `LangGraphAgent` is the closest sibling —
+/// its structure is
 /// cloned here verbatim-of-shape.
 ///
 /// **Request side.** [run] POSTs the **complete** `RunAgentInput` to

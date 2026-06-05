@@ -2,10 +2,12 @@
 
 CopilotKit runtime backend bridge for [koel](https://github.com/si-huynh/koel),
 the premium Dart/Flutter SDK for the AG-UI protocol. `koel_runtime` adapts the
-[CopilotKit](https://www.copilotkit.ai) Next.js runtime to koel's typed AG-UI
-event stream — POSTing the `generateCopilotResponse` GraphQL mutation and
-reconstructing AG-UI events from the runtime's `multipart/mixed` GraphQL
-Incremental Delivery response.
+[CopilotKit](https://www.copilotkit.ai) runtime to koel's typed AG-UI event
+stream over **native SSE** — `CopilotRuntimeAgent extends HttpAgent`, POSTing the
+complete `RunAgentInput` to `{endpoint}/agent/{agentName}/run` and parsing the
+`text/event-stream` response the runtime emits. It is the **same wire**
+agno/langgraph speak, so it rides koel_http's `SseParser`/`HttpAgent` directly —
+no GraphQL parser, no stateful converter.
 
 ## Getting started
 
@@ -14,10 +16,12 @@ Incremental Delivery response.
 import 'package:koel_runtime/koel_runtime.dart';
 
 final agent = CopilotRuntimeAgent(
-  // The FULL GraphQL endpoint, used verbatim — nothing is appended.
-  graphqlEndpoint: Uri.parse('https://your-app.example/api/copilotkit'),
+  // The runtime BASE path; the run route `/agent/{agentName}/run` is appended.
+  endpoint: Uri.parse('https://your-app.example/api/copilotkit'),
   // REQUIRED: the name of the registered runtime agent this run dispatches to.
   agentName: 'your_agent',
+  // OPTIONAL: a Bearer token (the v2 runtime is open by default — null no-ops).
+  authToken: null,
 );
 
 await for (final event in agent.run(input)) {
@@ -25,72 +29,54 @@ await for (final event in agent.run(input)) {
 }
 ```
 
-`CopilotRuntimeAgent` `implements AbstractAgent` directly (it is independent of
-`koel_http` — no SSE transport stack); it hand-rolls its POST + multipart parse
-over `package:http`. Failures never throw from `run`: a connection error, a
-non-2xx status, or a malformed body reaches the consumer as a single terminal
-`RunErrorEvent` carrying a typed `KoelError` (refined by
-`CopilotRuntimeErrorClassifier`).
+`CopilotRuntimeAgent extends HttpAgent` — it inherits koel_http's full transport
+stack (SSE parse, timeouts, cancellation, retry/auth interceptors) and overrides
+only two seams: `encodeBody` (normalizes koel's `Message` superset down to
+canonical AG-UI for the `messages` array) and `errorClassifier`. Failures never
+throw from `run`: a connection error, a non-2xx status, or a malformed body
+reaches the consumer as a single terminal `RunErrorEvent` carrying a typed
+`KoelError` (refined by `CopilotRuntimeErrorClassifier`).
 
 ### `agentName` is required
 
-There is no safe default: without `agentName` the runtime falls through to its
-service adapter and `ExperimentalEmptyAdapter` throws. It names *your* registered
-agent — knowable only at construction — so a hard-coded default would silently
-mis-target every real deployment.
+There is no safe default: the v2 run route is `/agent/{agentName}/run`, naming
+*your* registered agent — knowable only at construction — so a hard-coded default
+would silently mis-target every real deployment.
 
-### Runtime version pin: `@copilotkit/runtime@1.8.14`
+### Runtime version pin: `@copilotkit/runtime ≥1.52` (reference-verified `1.59.4`)
 
-This bridge targets the **multipart/`@defer` GraphQL** transport of the CopilotKit
-App Router runtime. `1.8.14` is the last stable release that speaks it: every
-version `>= 1.52.0` switches the App Router to the v2 protocol (Hono JSON
-method-call, no multipart GraphQL), which is **out of scope** for this adapter. A
-stable 2.x does not yet exist (only a `2.0.0-next.1` prerelease). Pin your runtime
-to `<= 1.8.14` to use `koel_runtime`.
+CopilotKit v2 (`>= 1.52`) is **native AG-UI over SSE**: `POST
+{basePath}/agent/{agentName}/run` returns a `text/event-stream` of canonical
+AG-UI events (`data: {type,...}`). The reference backend is verified at
+`@copilotkit/runtime@1.59.4` (`SPIKE-CK-V2`). The legacy multipart/`@defer`
+**GraphQL** transport of `<= 1.8.14` reached EOL and is **removed** — koel_runtime
+no longer bridges it (Story 5.11, SCP-2026-06-05). The runtime's `parseRunRequest`
+requires the **complete** `RunAgentInput` (`threadId`/`runId`/`state`/`messages`/
+`tools`/`context`/`forwardedProps` all present); `HttpAgent.encodeBody` already
+serializes all of them, so this is free.
 
-### Divergence: the runtime swallows `RUN_ERROR`
+### Event surface: the full AG-UI matrix (25/28, no 7/28 partition)
 
-When an agent-side failure raises an AG-UI `RUN_ERROR` *inside* the runtime, the
-runtime ends the stream with `status:{code:Success}` and drops the remaining
-output — it emits no GraphQL `errors` (`SPIKE-CK-FRAMING`). So an in-agent
-`RUN_ERROR` is **unobservable** on the copilotkit wire: `koel_runtime` is a
-**transport-conformance target**, not an AG-UI-event-matrix source. The full
-AG-UI event-type matrix (including `RUN_ERROR`) is carried by the AG-UI dojo
-captures + the synthesized conformance corpus. `CopilotRuntimeErrorClassifier`
-classifies the genuinely observable surfaces — transport/parser throws and HTTP
-statuses (401/403/429 → business codes, the documented internal 500 →
-`agentInternal`).
+v2 is a **transparent AG-UI passthrough** — every `data:` frame is a canonical
+AG-UI event the inherited `SseParser` yields verbatim. So koel_runtime surfaces
+the same full matrix agno/langgraph do, with **no lossy partition**:
+`STATE_SNAPSHOT` **+ `STATE_DELTA`**, `RUN_ERROR` on the wire, `STEP_*`,
+`MESSAGES_SNAPSHOT`, reasoning, `ACTIVITY`, `RAW`, `CUSTOM` — all pass through.
 
-### Representable event surface: a lossy 7-of-28 bridge
+The only types not reproduced verbatim are the 3 `*_CHUNK` convenience shapes
+(`TEXT_MESSAGE_CHUNK`, `TOOL_CALL_CHUNK`, `REASONING_MESSAGE_CHUNK`): koel_http's
+default-on `synthesizeChunks` (Story 4.8) normalizes them into their
+`START`/`CONTENT`/`END` triplets *at the transport*, so an HTTP adapter sees long
+form — the fixed **25/28** contract shared with every native-AG-UI adapter, not a
+bridge limitation. A real runtime never emits chunk shapes anyway.
 
-CopilotKit's `generateCopilotResponse` GraphQL schema carries only **four
-message-output shapes** (the selection set is verbatim from
-`@copilotkit/runtime-client-gql@1.8.14`), so `koel_runtime` can reconstruct only
-the AG-UI events those shapes encode:
-
-| GraphQL message output | AG-UI event(s) emitted |
-|---|---|
-| `TextMessageOutput` | `TEXT_MESSAGE_START` · `TEXT_MESSAGE_CONTENT` · `TEXT_MESSAGE_END` |
-| `ActionExecutionMessageOutput` | `TOOL_CALL_START` · `TOOL_CALL_ARGS` · `TOOL_CALL_END` |
-| `AgentStateMessageOutput` | `STATE_SNAPSHOT` |
-| `ResultMessageOutput` | `TOOL_CALL_RESULT` (when the runtime emits one) |
-
-The agent synthesizes the `RUN_STARTED`/`RUN_FINISHED` envelope itself (the wire's
-initial part carries `runId:null`, which the events forbid). Every **other** AG-UI
-type — run-lifecycle errors, `STEP_*`, `THINKING_*`/reasoning, `MESSAGES_SNAPSHOT`,
-`STATE_DELTA`, `ACTIVITY`, `RAW`, `CUSTOM`, the `*_CHUNK` variants — has **no
-representation in CopilotKit's GraphQL protocol** and is therefore never produced
-here. This is a property of the upstream transport, not a koel limitation: koel is
-a faithful port, so it surfaces exactly what the protocol carries rather than
-fabricating events the runtime never sends. Conformance reflects this honestly —
-the copilotkit lane asserts an exact **7-of-28** representable partition (vs the
-native-AG-UI passthrough adapters' 25/28). The full AG-UI matrix is carried by the
-dojo captures + the synthesized corpus.
-
-> The runtime resolves each message's terminal `@defer status` *mid-`@stream`*
-> (before its remaining `content`/`arguments` deltas). `koel_runtime` holds each
-> message's `END` until its deltas are observed complete, so consumers always see
-> canonical `START → …all content… → END` order regardless of the wire artefact.
+> **Historical note.** Through `<= 1.8.14` koel_runtime bridged CopilotKit's
+> multipart/`@defer` GraphQL transport, which represented only **7 of 28** AG-UI
+> types — it collapsed `STATE_DELTA` into the preceding snapshot and **swallowed**
+> in-agent `RUN_ERROR` (ending the stream `status:Success`). v2's native SSE
+> delivers both on the wire; the `state_delta_basic` + `error_path` conformance
+> fixtures are the verbatim proof. The GraphQL parser/converter are preserved at
+> the `archive/koel-runtime-graphql` git tag.
 
 ## Documentation
 

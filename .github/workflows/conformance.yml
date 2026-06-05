@@ -5,8 +5,9 @@
 # Offline by design: the conformance tests replay captured/synthesized fixtures
 # through a MockClient, so NO backend container runs in CI — live capture is a
 # one-time operator step (`make up-agno` → tool/capture_fixtures.dart). Stories
-# 5.6 (langgraph) and 5.9 (copilotkit) extend the lane by adding their own
-# `@Tags(['conformance'])` tests; `melos run conformance` picks them up.
+# 5.6 (langgraph), 5.9 (dojo), and 5.11 (copilotkit v2 — replacing the removed 5.9
+# GraphQL copilotkit lane with native-SSE replay) extend the lane by adding their
+# own `@Tags(['conformance'])` tests; `melos run conformance` picks them up.
 name: Conformance
 permissions:
   contents: read

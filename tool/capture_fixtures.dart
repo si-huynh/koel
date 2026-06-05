@@ -16,16 +16,19 @@
 // #2). The dojo has no `/status`, so its version is operator-supplied via
 // `--backend-version` (default `0.1.18`, RESOLVED #1). Still zero-dep SSE.
 //
-// `--backend=copilotkit_runtime` (Story 5.9) is the ASYMMETRIC branch: the
-// CopilotKit Next.js runtime (`make up-copilotkit`, port 8004,
-// `POST /api/copilotkit`) speaks multipart/mixed GraphQL Incremental Delivery,
-// where a part means an AG-UI event only after the stateful Story-5.7 converter
-// reconstruction. So this branch is NOT zero-dep `dart:io` SSE — it imports
-// `package:koel_runtime` (a workspace package) + `package:http` (a transitive
-// workspace dep) and drives the real `CopilotRuntimeAgent`, recording exactly the
-// events an SDK consumer's agent emits (RESOLVED #3). Version is read live from
-// the `x-copilotkit-runtime-version` response header. This is the one documented
-// exception to the tool's otherwise-`dart:io`-only, no-`package:http` contract.
+// `--backend=copilotkit` (Story 5.11) captures the four scenarios the CopilotKit
+// **v2** runtime (`make up-copilotkit-v2`, port 8005,
+// `POST /api/copilotkit/agent/{agentName}/run`) natively emits over SSE — text,
+// tool, state (`STATE_SNAPSHOT` + `STATE_DELTA`), and error (a wire `RUN_ERROR`),
+// keyed by the last user-message content (`copilotkit_v2/agent.mjs scenarioFor`).
+// v2 (≥1.52) dropped GraphQL for native AG-UI/SSE — the SAME wire agno/langgraph
+// emit — so this branch is plain zero-dep `dart:io` SSE via `_postSseRun`, exactly
+// like agno/langgraph/dojo; the lossy multipart-GraphQL bridge (and its
+// `koel_runtime`/`package:http` capture path) is removed. NOTE the deliberate
+// name asymmetry: the koel-side fixture lane/flag is `--backend=copilotkit` (one
+// CopilotKit adapter remains after the GraphQL removal), while the sibling
+// koel_backend reference dir stays `copilotkit_v2/` (the SCP names it); the flag
+// names the adapter, the operator points `--base-url` at the v2 backend (:8005).
 //
 // Invoke via `dart run tool/capture_fixtures.dart --backend=<name>
 // [--base-url=…] [--token=…] [--backend-version=…] [--agent-name=…]` or
@@ -54,18 +57,14 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:http/http.dart' as http;
-import 'package:koel_core/koel_core.dart';
-import 'package:koel_runtime/koel_runtime.dart';
-
 /// The four AG-UI backends Epic 5 captures, mapped to the story that wires each.
-/// `agno` (5.3), `langgraph` (5.6), and — this story — `dojo` + `copilotkit`
-/// (5.9) are all live.
+/// `agno` (5.3), `langgraph` (5.6), `dojo` (5.9), and — this story — `copilotkit`
+/// v2 (5.11) are all live native-SSE captures.
 const Map<String, String> _backends = {
   'agno': '5.3',
   'langgraph': '5.6',
   'dojo': '5.9',
-  'copilotkit_runtime': '5.9',
+  'copilotkit': '5.11',
 };
 
 /// koel's version stamped into a fixture's `_session.koelVersion` (mirrors the
@@ -92,10 +91,12 @@ const String _koelRuntimeVersion = '0.0.1';
 /// (`ag-ui-protocol==0.1.18`, SPIKE-DOJO-COVERAGE).
 const String _dojoDefaultVersion = '0.1.18';
 
-/// The copilotkit runtime version stamped when the live
-/// `x-copilotkit-runtime-version` response header is somehow absent (it should
-/// always be present on 1.8.14; this is the pinned fallback, SPIKE-CK-FRAMING).
-const String _copilotkitDefaultVersion = '1.8.14';
+/// The CopilotKit v2 runtime version stamped into a copilotkit fixture's
+/// `_session.backendVersion` when the live `x-copilotkit-runtime-version`
+/// response header is absent (the v2 runtime may not send it). The pinned
+/// reference backend is `@copilotkit/runtime@1.59.4` (SPIKE-CK-V2,
+/// `copilotkit_v2/package.json`); overridable via `--backend-version`.
+const String _copilotkitDefaultVersion = '1.59.4';
 
 /// The canonical text-run `RunAgentInput` POSTed to capture agno's
 /// `text_only_run` (the exact shape from CONTRACT.md's probe — camelCase, parsed
@@ -226,10 +227,13 @@ Future<void> main(List<String> args) async {
         // dojo has no `/status`; the version is operator-supplied (RESOLVED #1).
         backendVersion: _option(args, '--backend-version'),
       );
-    case 'copilotkit_runtime':
+    case 'copilotkit':
       await _captureCopilotkit(
-        baseUrl: _option(args, '--base-url') ?? 'http://localhost:8004',
+        baseUrl:
+            _option(args, '--base-url') ??
+            'http://localhost:8005/api/copilotkit',
         agentName: _option(args, '--agent-name') ?? 'koel_scripted',
+        backendVersion: _option(args, '--backend-version'),
       );
     default:
       // Unreachable: `backend` was validated against `_backends` above.
@@ -517,91 +521,83 @@ Map<String, dynamic> _dojoInput(String content) => <String, dynamic>{
   'forwardedProps': <String, dynamic>{},
 };
 
-/// One captured copilotkit scenario: the fixture [file] it lands in and the
-/// last-user-message [content] the scripted runtime agent keys its scenario off
-/// (`text`|`tool`|`state`; no `error` — the runtime swallows `RUN_ERROR`,
-/// RESOLVED #4).
+/// One captured copilotkit v2 scenario: the fixture [file] it lands in and the
+/// last-user-message [content] the scripted v2 agent keys its scenario off
+/// (`text`|`tool`|`state`|`error` — `copilotkit_v2/agent.mjs scenarioFor`).
 typedef _CopilotkitScenario = ({String file, String content});
 
-/// The three representable, deterministic copilotkit scenarios (CONTRACT
-/// `## Event-type coverage`). No `error` fixture — the runtime ends an in-agent
-/// failure with `status:Success` and emits no GraphQL `errors`, so `RUN_ERROR`
-/// is unobservable on the copilotkit wire (the dojo `/error` route + synthesized
-/// `error_path` carry it instead).
+/// The four scenarios the CopilotKit **v2** backend natively emits over SSE
+/// (`copilotkit_v2/agent.mjs`), each captured as its own `synthesized: false`
+/// fixture. File names mirror langgraph's overlapping vocabulary. Unlike the
+/// removed GraphQL set (3 scenarios, no `error` — the bridge swallowed
+/// `RUN_ERROR`), v2 delivers `error_path` (a wire `RUN_ERROR`) and a
+/// `state_delta_basic` carrying `STATE_SNAPSHOT` **+ `STATE_DELTA`** — the two
+/// headline proofs that v2 is full-fidelity, not 7/28 (SCP-2026-06-05).
 const List<_CopilotkitScenario> _copilotkitScenarios = [
   (file: 'text_only_run', content: 'text'),
   (file: 'tool_call_basic', content: 'tool'),
   (file: 'state_delta_basic', content: 'state'),
+  (file: 'error_path', content: 'error'),
 ];
 
-/// Captures each copilotkit scenario into
-/// `packages/koel_test/lib/src/fixtures/copilotkit_runtime/` by driving the REAL
-/// [CopilotRuntimeAgent] over the live multipart-GraphQL wire (RESOLVED #3).
+/// Captures every CopilotKit v2 scenario ([_copilotkitScenarios]) into
+/// `packages/koel_test/lib/src/fixtures/copilotkit/` over **native SSE** — the
+/// same zero-dep `dart:io` `_postSseRun` path agno/langgraph/dojo use, NOT the
+/// removed GraphQL `koel_runtime`/`package:http` bridge.
 ///
-/// **Why this branch is NOT zero-dep `dart:io` SSE.** A copilotkit multipart
-/// part means an AG-UI event only after the stateful `GraphQLIncrementalConverter`
-/// reconstruction (Story 5.7) inside `koel_runtime` — it cannot be hand-rolled in
-/// the tool without duplicating ~200 LOC of reviewed logic. So this branch
-/// imports `package:koel_runtime` (a workspace package, same kind as
-/// `package:koel_core`) and `package:http` (a koel_runtime-transitive workspace
-/// dep), the one documented exception to the tool's no-`package:http` rule. The
-/// captured fixture is exactly what an SDK consumer's `CopilotRuntimeAgent`
-/// emits — the most honest "real capture". A [_HeaderCapturingClient] wraps the
-/// transport to read the live `x-copilotkit-runtime-version` header without a
-/// second request or duplicating the agent's GraphQL request shape.
+/// v2 (≥1.52) is a transparent AG-UI passthrough: each `data:` frame already IS
+/// a canonical AG-UI event (`SPIKE-CK-V2`), so the capture POSTs a complete
+/// `RunAgentInput` to `{base}/agent/{agentName}/run` and writes the frames
+/// verbatim. The scripted v2 agent fixes every message/tool id and reuses the
+/// input's `threadId`/`runId`, so the wire is byte-deterministic with **no**
+/// id normalization (unlike agno's UUID4 `messageId` or the dojo's minted ids).
 ///
-/// The driven agent's typed events already drop the GraphQL-layer nondeterminism
-/// (`createdAt`, the `ck-<uuid>` AgentState id are converter-stripped), so only
-/// `messageId`/`toolCallId` need normalizing; `runId` is the input's fixed `r`
-/// and is left intact (conformance Test B replays the run against it).
+/// [backendVersion] (operator `--backend-version`) wins when set; otherwise the
+/// live `x-copilotkit-runtime-version` response header is read if the runtime
+/// sends one; otherwise [_copilotkitDefaultVersion] (the pinned `1.59.4`).
 Future<void> _captureCopilotkit({
   required String baseUrl,
   required String agentName,
+  String? backendVersion,
 }) async {
-  // The runtime endpoint is `<base>/api/copilotkit` — two path segments (a
-  // single 'api/copilotkit' segment would percent-encode the slash → 404).
-  final root = Uri.parse(baseUrl);
-  final endpoint = root.replace(
+  // [baseUrl] already includes the runtime base path (default
+  // `…/api/copilotkit`); the run route appends `agent/{agentName}/run`, the same
+  // join `CopilotRuntimeAgent` POSTs to.
+  final base = Uri.parse(baseUrl);
+  final endpoint = base.replace(
     pathSegments: [
-      ...root.pathSegments.where((s) => s.isNotEmpty),
-      'api',
-      'copilotkit',
+      ...base.pathSegments.where((s) => s.isNotEmpty),
+      'agent',
+      agentName,
+      'run',
     ],
   );
-  final client = http.Client();
-  final tracker = _HeaderCapturingClient(client);
+  // Operator override wins; else the live header (set below); else the default.
+  final operatorVersion = backendVersion?.trim();
+  final hasOverride = operatorVersion != null && operatorVersion.isNotEmpty;
+  var version = hasOverride ? operatorVersion : _copilotkitDefaultVersion;
+  final client = HttpClient();
   String? failure;
   try {
     var captured = 0;
-    String? version;
     for (final scenario in _copilotkitScenarios) {
-      final events = await CopilotRuntimeAgent(
-        graphqlEndpoint: endpoint,
-        agentName: agentName,
-        client: tracker,
-      ).run(_copilotkitInput(scenario.content)).toList();
-
-      // The agent never throws (adapter-never-throw): a backend-unreachable or
-      // non-2xx run surfaces as a terminal RUN_ERROR, not a SocketException — so
-      // detect it here rather than relying on the catch below.
-      final errors = events.whereType<RunErrorEvent>().toList();
-      if (errors.isNotEmpty) {
-        final error = errors.first.error;
-        throw _CaptureFailure(
-          'copilotkit ${scenario.file} terminated with RUN_ERROR '
-          '(${error.code}: ${error.message}) — is `make up-copilotkit` running '
-          'on $baseUrl with agentName "$agentName"?',
-        );
-      }
-
-      version = tracker.runtimeVersion ?? _copilotkitDefaultVersion;
-      final payloads = _normalizeIds(
-        [for (final event in events) _copilotkitEventWire(event)],
-        const {'messageId': 'msg', 'toolCallId': 'tool'},
+      final payloads = await _postSseRun(
+        client,
+        endpoint,
+        _copilotkitInput(scenario.content),
+        const {}, // the v2 runtime is open by design (no auth header)
+        'POST /agent/$agentName/run (${scenario.content})',
+        onResponseHeaders: hasOverride
+            ? null
+            : (headers) {
+                final live = headers.value('x-copilotkit-runtime-version');
+                if (live != null && live.trim().isNotEmpty) {
+                  version = live.trim();
+                }
+              },
       );
       final out = File(
-        'packages/koel_test/lib/src/fixtures/copilotkit_runtime/'
-        '${scenario.file}.jsonl',
+        'packages/koel_test/lib/src/fixtures/copilotkit/${scenario.file}.jsonl',
       );
       await out.writeAsString(
         _renderFixture(
@@ -618,22 +614,20 @@ Future<void> _captureCopilotkit({
       captured++;
     }
     stdout.writeln(
-      'captured $captured copilotkit fixtures '
-      '(copilotkit==${version ?? _copilotkitDefaultVersion})',
+      'captured $captured copilotkit fixtures (copilotkit==$version)',
     );
   } on SocketException catch (error) {
     failure =
-        'cannot reach copilotkit at $baseUrl — run `make up-copilotkit` in '
-        '../koel_backend first. ($error)';
+        'cannot reach copilotkit v2 at $baseUrl — run `make up-copilotkit-v2` '
+        'in ../koel_backend first. ($error)';
   } on _CaptureFailure catch (e) {
     failure = e.message;
   } catch (error) {
     failure =
         'unexpected failure capturing from $baseUrl — check --base-url and '
-        'that copilotkit is healthy. ($error)';
+        'that copilotkit_v2 is healthy. ($error)';
   } finally {
-    // The tool owns this client (the agent never closes an injected client).
-    client.close();
+    client.close(force: true);
   }
   if (failure != null) {
     stderr.writeln('capture_fixtures: $failure');
@@ -641,70 +635,23 @@ Future<void> _captureCopilotkit({
   }
 }
 
-/// The `RunAgentInput` for a copilotkit scenario: one user message whose
-/// [content] (`text`|`tool`|`state`) selects the scripted runtime agent's
-/// branch. The fixed thread/run ids (`t`/`r`) are what the agent stamps onto its
-/// synthesized `RUN_STARTED`/`RUN_FINISHED`, so they stay deterministic.
-RunAgentInput _copilotkitInput(String content) => RunAgentInput(
-  threadId: 't',
-  runId: 'r',
-  messages: [
-    Message(
-      id: 'm-1',
-      role: MessageRole.user,
-      content: content,
-      timestamp: DateTime.utc(2026, 6, 3),
-    ),
+/// The `RunAgentInput` body for a copilotkit v2 scenario: one user message whose
+/// [content] (`text`|`tool`|`state`|`error`) the v2 agent's `scenarioFor` reads
+/// to branch. The complete input (`tools`/`context`/`forwardedProps` all present)
+/// is required — the runtime's `parseRunRequest` 500s on a partial body. The
+/// fixed thread/run ids (`t`/`r`) are reused verbatim onto the wire's
+/// `RUN_STARTED`/`RUN_FINISHED`, so they stay deterministic. camelCase wire shape.
+Map<String, dynamic> _copilotkitInput(String content) => <String, dynamic>{
+  'threadId': 't',
+  'runId': 'r',
+  'state': <String, dynamic>{},
+  'messages': [
+    {'id': 'm-1', 'role': 'user', 'content': content},
   ],
-);
-
-/// Serializes one AG-UI event the copilotkit run emits back to its wire payload.
-///
-/// The sealed [AgUiEvent] base deliberately exposes only `fromWire`; each
-/// concrete subtype carries `toJson`. The copilotkit bridge emits a known small
-/// set (the run envelope + the four representable message families), so this
-/// switches over exactly those and fails loud on anything else — an unexpected
-/// type is a real signal worth investigating against the live wire, not a silent
-/// drop.
-Map<String, dynamic> _copilotkitEventWire(AgUiEvent event) => switch (event) {
-  RunStartedEvent() => event.toJson(),
-  RunFinishedEvent() => event.toJson(),
-  TextMessageStartEvent() => event.toJson(),
-  TextMessageContentEvent() => event.toJson(),
-  TextMessageEndEvent() => event.toJson(),
-  ToolCallStartEvent() => event.toJson(),
-  ToolCallArgsEvent() => event.toJson(),
-  ToolCallEndEvent() => event.toJson(),
-  ToolCallResultEvent() => event.toJson(),
-  StateSnapshotEvent() => event.toJson(),
-  _ => throw _CaptureFailure(
-    'copilotkit run emitted an unexpected ${event.runtimeType}; extend '
-    '_copilotkitEventWire after checking the live wire shape',
-  ),
+  'tools': <dynamic>[],
+  'context': <dynamic>[],
+  'forwardedProps': <String, dynamic>{},
 };
-
-/// An `http.Client` decorator that records the `x-copilotkit-runtime-version`
-/// response header as responses pass through, so the copilotkit capture can stamp
-/// the live backend version WITHOUT a second request or duplicating the agent's
-/// GraphQL request shape (RESOLVED #3). Delegates every send to [_inner]; the
-/// tool owns [_inner]'s lifecycle (the agent never closes an injected client).
-class _HeaderCapturingClient extends http.BaseClient {
-  _HeaderCapturingClient(this._inner);
-
-  final http.Client _inner;
-
-  /// The last observed `x-copilotkit-runtime-version` value, or `null` if the
-  /// header was absent on every response.
-  String? runtimeVersion;
-
-  @override
-  Future<http.StreamedResponse> send(http.BaseRequest request) async {
-    final response = await _inner.send(request);
-    runtimeVersion =
-        response.headers['x-copilotkit-runtime-version'] ?? runtimeVersion;
-    return response;
-  }
-}
 
 /// Reads `GET <base>/status` for the backend version stamp (e.g. `agno==2.6.10`
 /// or `langgraph==0.0.37`). The status route is always open (no auth) on every
@@ -729,14 +676,18 @@ Future<List<Map<String, dynamic>>> _postSseRun(
   Uri endpoint,
   Map<String, dynamic> body,
   Map<String, String> extraHeaders,
-  String routeLabel,
-) async {
+  String routeLabel, {
+  void Function(HttpHeaders headers)? onResponseHeaders,
+}) async {
   final request = await client.postUrl(endpoint);
   request.headers.contentType = ContentType.json;
   request.headers.set(HttpHeaders.acceptHeader, 'text/event-stream');
   extraHeaders.forEach(request.headers.set);
   request.write(jsonEncode(body));
   final response = await request.close();
+  // The copilotkit v2 lane reads `x-copilotkit-runtime-version` off the live
+  // response to stamp `_session.backendVersion`; agno/langgraph/dojo pass null.
+  onResponseHeaders?.call(response.headers);
   if (response.statusCode != 200) {
     final errorBody = await response.transform(utf8.decoder).join();
     throw _CaptureFailure(
