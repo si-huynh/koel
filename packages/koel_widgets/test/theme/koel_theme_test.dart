@@ -40,6 +40,7 @@ void main() {
     spacing: KoelSpacing(
       bubblePadding: EdgeInsets.zero,
       inputPadding: EdgeInsets.all(4),
+      followUpGap: 0,
     ),
   );
   const b = KoelTheme(
@@ -60,6 +61,7 @@ void main() {
     spacing: KoelSpacing(
       bubblePadding: EdgeInsets.all(10),
       inputPadding: EdgeInsets.all(8),
+      followUpGap: 10,
     ),
   );
 
@@ -84,12 +86,13 @@ void main() {
       expect(swapped.onFollowUpPill, a.colors.onFollowUpPill);
     });
 
-    test('nested KoelSpacing: one token swapped, other preserved', () {
+    test('nested KoelSpacing: one token swapped, others preserved', () {
       final swapped = a.spacing.copyWith(
         bubblePadding: const EdgeInsets.all(99),
       );
       expect(swapped.bubblePadding, const EdgeInsets.all(99));
       expect(swapped.inputPadding, a.spacing.inputPadding);
+      expect(swapped.followUpGap, a.spacing.followUpGap);
     });
 
     test('nested KoelTextStyles: one style swapped, other preserved', () {
@@ -121,9 +124,10 @@ void main() {
       expect(mid.colors.codeBlockBackground, const Color(0xFF909090));
       expect(mid.colors.followUpPillBackground, const Color(0xFFA0A0A0));
       expect(mid.colors.onFollowUpPill, const Color(0xFFB0B0B0));
-      // Both spacing tokens.
+      // All three spacing tokens (followUpGap 0→10 ⇒ 5).
       expect(mid.spacing.bubblePadding, const EdgeInsets.all(5));
       expect(mid.spacing.inputPadding, const EdgeInsets.all(6));
+      expect(mid.spacing.followUpGap, 5);
       // Both text styles (fontSize 10→20 ⇒ 15, 12→24 ⇒ 18).
       expect(mid.textStyles.bodyText.fontSize, 15);
       expect(mid.textStyles.codeText.fontSize, 18);

@@ -179,12 +179,16 @@ class KoelTextStyles {
 
 /// Spacing tokens every koel widget lays out with (F-E4).
 ///
-/// Padding-only for 7.1 — a follow-up-row gap (`double`) joins in 7.3 when
-/// `FollowUpList` needs it. Immutable + `const`.
+/// Two `EdgeInsets` paddings (bubble + input) plus the follow-up-row gap
+/// `FollowUpList` separates its pills by (7.3). Immutable + `const`.
 @immutable
 class KoelSpacing {
   /// Creates a fully-specified spacing token set.
-  const KoelSpacing({required this.bubblePadding, required this.inputPadding});
+  const KoelSpacing({
+    required this.bubblePadding,
+    required this.inputPadding,
+    required this.followUpGap,
+  });
 
   /// Inner padding of a message bubble (7.2).
   final EdgeInsets bubblePadding;
@@ -192,17 +196,26 @@ class KoelSpacing {
   /// Inner padding of the chat input field (7.3 `ChatInput`).
   final EdgeInsets inputPadding;
 
-  /// Returns a copy with the named tokens replaced and all others preserved.
-  KoelSpacing copyWith({EdgeInsets? bubblePadding, EdgeInsets? inputPadding}) =>
-      KoelSpacing(
-        bubblePadding: bubblePadding ?? this.bubblePadding,
-        inputPadding: inputPadding ?? this.inputPadding,
-      );
+  /// Horizontal gap between adjacent `FollowUpList` pills (7.3).
+  final double followUpGap;
 
-  /// Interpolates each token toward [other] by [t] via [EdgeInsets.lerp].
+  /// Returns a copy with the named tokens replaced and all others preserved.
+  KoelSpacing copyWith({
+    EdgeInsets? bubblePadding,
+    EdgeInsets? inputPadding,
+    double? followUpGap,
+  }) => KoelSpacing(
+    bubblePadding: bubblePadding ?? this.bubblePadding,
+    inputPadding: inputPadding ?? this.inputPadding,
+    followUpGap: followUpGap ?? this.followUpGap,
+  );
+
+  /// Interpolates each token toward [other] by [t] — the `EdgeInsets` via
+  /// [EdgeInsets.lerp], the scalar [followUpGap] by plain arithmetic.
   KoelSpacing lerp(KoelSpacing other, double t) => KoelSpacing(
     bubblePadding: EdgeInsets.lerp(bubblePadding, other.bubblePadding, t)!,
     inputPadding: EdgeInsets.lerp(inputPadding, other.inputPadding, t)!,
+    followUpGap: followUpGap + (other.followUpGap - followUpGap) * t,
   );
 
   @override
@@ -210,10 +223,11 @@ class KoelSpacing {
       identical(this, other) ||
       other is KoelSpacing &&
           other.bubblePadding == bubblePadding &&
-          other.inputPadding == inputPadding;
+          other.inputPadding == inputPadding &&
+          other.followUpGap == followUpGap;
 
   @override
-  int get hashCode => Object.hash(bubblePadding, inputPadding);
+  int get hashCode => Object.hash(bubblePadding, inputPadding, followUpGap);
 }
 
 // Shared, palette-agnostic geometry — light()/dark() differ only in colours, so
@@ -235,6 +249,7 @@ const KoelTextStyles _defaultTextStyles = KoelTextStyles(
 const KoelSpacing _defaultSpacing = KoelSpacing(
   bubblePadding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
   inputPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+  followUpGap: 8,
 );
 
 /// koel's theming hook: a [ThemeExtension] carrying every colour, text style,

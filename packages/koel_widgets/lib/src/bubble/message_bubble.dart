@@ -1,10 +1,10 @@
-import 'package:flutter/cupertino.dart' show CupertinoTheme;
 import 'package:flutter/material.dart';
 import 'package:koel_core/koel_core.dart' show Message, MessageRole;
 import 'package:koel_flutter/koel_flutter.dart'
     show CodeBlockSegment, MessageContentParser, MessageSegment, TextSegment;
 
 import '../theme/koel_theme.dart';
+import '../theme/theme_resolve.dart';
 import 'cupertino_bubble.dart';
 import 'material_bubble.dart';
 
@@ -52,8 +52,7 @@ class MessageBubble extends StatelessWidget {
     // case) ⇒ no segments. Render nothing rather than an empty padded surface.
     if (segments.isEmpty) return const SizedBox.shrink();
 
-    final koel =
-        Theme.of(context).extension<KoelTheme>() ?? _fallbackTheme(context);
+    final koel = resolveKoelTheme(context);
     final isUser = message.role == MessageRole.user;
     final colors = koel.colors;
     final fill = isUser
@@ -91,16 +90,6 @@ class MessageBubble extends StatelessWidget {
 /// `{iOS, macOS}` are the Apple platforms that get the Cupertino variant.
 bool _isApple(TargetPlatform platform) =>
     platform == TargetPlatform.iOS || platform == TargetPlatform.macOS;
-
-/// The brightness-appropriate default used when no [KoelTheme] is in scope.
-///
-/// Prefers the Cupertino brightness (present under a bare `CupertinoApp`, where
-/// `Theme.of` only yields a fallback `ThemeData`), else the Material brightness.
-KoelTheme _fallbackTheme(BuildContext context) {
-  final brightness =
-      CupertinoTheme.maybeBrightnessOf(context) ?? Theme.of(context).brightness;
-  return brightness == Brightness.dark ? KoelTheme.dark() : KoelTheme.light();
-}
 
 /// Renders one [MessageSegment]: prose in `bodyText` tinted by the role's
 /// [onColor], a fenced block in `codeText` on the `codeBlockBackground` surface.
