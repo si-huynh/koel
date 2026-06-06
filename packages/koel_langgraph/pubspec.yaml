@@ -1,6 +1,6 @@
 name: koel_langgraph
 description: AG-UI adapter for LangGraph backends.
-version: 0.0.1
+version: 1.0.0
 publish_to: none
 
 environment:
@@ -14,14 +14,14 @@ dependencies:
   # the adapter normalizes and forwards. koel_http: `HttpAgent` —
   # `LangGraphAgent` extends it and overrides only the body-encoding seam.
   # `http.Client` is the injectable transport seam the Addendum-A.4 constructor
-  # exposes (tests pass `MockClient`, backends a pooled client).
-  koel_core:
-  koel_http:
+  # exposes (tests pass `MockClient`, backends a pooled client). Ranged ^1.0.0 (FR-H2).
+  koel_core: ^1.0.0
+  koel_http: ^1.0.0
   http: ^1.6.0
 
 dev_dependencies:
-  koel_lints:
+  koel_lints: ^1.0.0
   test: ^1.25.0
   # FixtureLoader replays the Epic 3 synthesized wire fixtures so the inherited
   # SSE parse path is asserted against real captured events, not hand-rolled JSON.
-  koel_test:
+  koel_test: ^1.0.0

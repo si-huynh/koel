@@ -1,6 +1,6 @@
 name: koel_core
 description: AG-UI protocol kernel for Dart — events, errors, pipeline, reducer, JSON Patch.
-version: 0.0.1
+version: 1.0.0
 publish_to: none
 
 environment:
@@ -15,7 +15,7 @@ dependencies:
   json_annotation: ^4.12.0
 
 dev_dependencies:
-  koel_lints:
+  koel_lints: ^1.0.0
   build_runner: ^2.4.0
   freezed: 3.2.6-dev.1
   json_serializable: ^6.8.0

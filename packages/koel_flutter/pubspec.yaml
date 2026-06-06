@@ -1,6 +1,6 @@
 name: koel_flutter
 description: Flutter glue for koel — controller, scope, session storage, generative UI.
-version: 0.0.1
+version: 1.0.0
 publish_to: none
 
 environment:
@@ -15,8 +15,8 @@ dependencies:
   flutter:
     sdk: flutter
   # koel_core: ChatSession/ChatState/RunPhase appear in the controller's public
-  # signature (A.6), so this is a regular dependency. Bare key — pub workspace.
-  koel_core:
+  # signature (A.6), so this is a regular dependency. Ranged ^1.0.0 (FR-H2).
+  koel_core: ^1.0.0
   # hive_ce ("Hive Community Edition"): the maintained successor to the abandoned
   # `hive` (2.2.3). HiveSessionStorage stores `jsonEncode(state.toJson())` as a
   # String in a Box<String> — runtime API only (openBox/get/put/delete/keys), so
@@ -35,11 +35,11 @@ dependencies:
   flutter_secure_storage: ^10.3.1
 
 dev_dependencies:
-  koel_lints:
+  koel_lints: ^1.0.0
   flutter_test:
     sdk: flutter
   # MockAgent.fromFixture + bundled dojo fixtures drive the widget tests (A.9).
-  koel_test:
+  koel_test: ^1.0.0
   # Test-only — proof that an unmodified ChangeNotifier slots into every
   # state-management framework with zero adapter code (FR-D4 / AC4). These must
   # NEVER move to `dependencies`: the package ships no framework dependency.

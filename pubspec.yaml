@@ -62,3 +62,6 @@ melos:
     conformance:
       description: "AG-UI conformance lane (FR-G4) — runs the `conformance`-tagged tests (ConformanceRunner vs each backend adapter, offline MockClient replay) per package; tolerates packages with none yet. koel_agno now (5.3); langgraph 5.6, copilotkit 5.9 extend it. See tool/conformance.sh."
       exec: bash "$MELOS_ROOT_PATH/tool/conformance.sh"
+    verify:versioning:
+      description: "Hybrid-versioning convention gate (Story 9.1, FR-H2 / R-2..R-3) — the ten v1.0.0 release pubspecs carry lock-step foundation versions, ranged (^X.Y.Z) intra-repo deps, and koel_lints dev-only; koel_devtools + koel_widgets/example excluded. bash+awk, zero new dep. See tool/verify_versioning.sh."
+      run: bash "$MELOS_ROOT_PATH/tool/verify_versioning.sh"

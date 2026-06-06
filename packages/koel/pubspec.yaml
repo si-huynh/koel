@@ -1,12 +1,31 @@
 name: koel
 description: Meta-package re-exporting koel_core + koel_http + koel_flutter (the quickstart path).
-version: 0.0.1
+version: 1.0.0
 publish_to: none
 
 environment:
   sdk: ">=3.11.0 <4.0.0"
+  # The barrel re-exports koel_flutter ⇒ koel transitively pulls the Flutter SDK,
+  # so it is a Flutter package (honest classification + pub.dev detection). No
+  # direct `flutter: sdk: flutter` dep — koel's own lib/koel.dart imports zero
+  # Flutter symbols; the SDK arrives via koel_flutter (D4).
+  flutter: ">=3.38.0"
 
 resolution: workspace
 
+dependencies:
+  # The three quickstart re-exports — ranged (hybrid versioning, FR-H2). The
+  # ^1.0.0 edge forces each sibling ≥1.0.0 in workspace resolution (D2), and the
+  # whole release set carries a uniform 1.0.0.
+  koel_core: ^1.0.0
+  koel_http: ^1.0.0
+  koel_flutter: ^1.0.0
+
 dev_dependencies:
-  koel_lints:
+  # koel_lints is an analyzer profile consumed via analysis_options.yaml — NEVER
+  # a runtime dependency (AC2 / FR-H3). Ranged like every intra-repo edge.
+  koel_lints: ^1.0.0
+  # Barrel-resolve test (test/koel_barrel_test.dart) references KoelChatController,
+  # a framework ChangeNotifier, so it runs under flutter test (D4).
+  flutter_test:
+    sdk: flutter

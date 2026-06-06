@@ -35,6 +35,10 @@ jobs:
       - run: melos run build
       - run: melos run analyze
       - run: melos run format:check
+      # Hybrid-versioning convention (Story 9.1, FR-H2 / R-2..R-3): lock-step
+      # foundations + ranged intra-repo deps + koel_lints dev-only. Always-on
+      # per-PR gate ⇒ green main is a publish precondition (R-5).
+      - run: melos run verify:versioning
       - run: melos run test
 
   # koel_http's web transport (Story 4.10) is `@TestOn('browser')` and is

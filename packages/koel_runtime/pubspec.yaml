@@ -1,6 +1,6 @@
 name: koel_runtime
 description: AG-UI adapter for a CopilotKit ≥1.52 (v2) runtime — native AG-UI over SSE.
-version: 0.0.1
+version: 1.0.0
 publish_to: none
 
 environment:
@@ -16,16 +16,16 @@ dependencies:
   # body-encoding + error-classifier seams (D5 REVERSED, SCP-2026-06-05: a v2
   # runtime is native AG-UI over SSE, the same wire koel_http parses). `http.Client`
   # is the injectable transport seam the Addendum-A.5 constructor exposes (tests
-  # pass `MockClient`, backends a pooled client).
-  koel_core:
-  koel_http:
+  # pass `MockClient`, backends a pooled client). Ranged ^1.0.0 — hybrid versioning (FR-H2).
+  koel_core: ^1.0.0
+  koel_http: ^1.0.0
   http: ^1.6.0
 
 dev_dependencies:
-  koel_lints:
+  koel_lints: ^1.0.0
   test: ^1.25.0
   # ConformanceRunner drives CopilotRuntimeAgent over the synthesized
   # all_event_types corpus replayed as SSE; FixtureLoader replays committed wire
   # fixtures so the inherited SSE parse path is asserted against real captured
   # events, not hand-rolled JSON. Workspace dev-only dep.
-  koel_test:
+  koel_test: ^1.0.0

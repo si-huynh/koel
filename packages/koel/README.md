@@ -17,8 +17,6 @@ final client = KoelClient(
 );
 ```
 
-The re-export barrel is finalized in Epic 9 once the underlying packages ship.
-
 ## Documentation
 
 See the repo-root [README](../../README.md) and the koel docs site (framework
