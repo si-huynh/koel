@@ -5,6 +5,7 @@ Items deferred during BMAD workflows. Each entry records why the work was postpo
 ## Deferred from: code review of 7-2-message-bubble (2026-06-06)
 
 - **Bubble max-width cap + long-code horizontal handling → Story 7.4.** `MessageBubble` (and both `MaterialBubble`/`CupertinoBubble` variants) impose no `ConstrainedBox(maxWidth)`, so long prose stretches edge-to-edge (the role `Align` becomes a no-op) and a single long unbreakable code token clips (`Text` default `overflow: clip`, no horizontal scroll). No exception — a visual/UX gap, not a crash. **Why deferred:** the epic scopes no max-width into 7.2; Story 7.4 is the koel_widgets SEALER that owns layout polish + goldens on the deterministic Linux lane, where a width cap is both visible (golden diffs) and testable. Decided with Si (2026-06-06).
+  - **⤷ RE-HOMED 2026-06-06 (Epic-7 retro AI-7.1) → Story 9.2 (repo-root sample app).** NOT done at 7.4 — the SEALER's heavy harness-less-goldens scope crowded out the layout polish it was meant to own (a real retro finding: "defer-to-the-SEALER" is risky when the SEALER carries an independent heavy lift). Re-homed to 9.2, where the sample app is `MessageBubble`'s first real six-platform consumer and the cap is both visible (sample-app demo + goldens) and the natural place to land it. Folded into 9.2's ACs (SCP-2026-06-06-B).
 
 ## Deferred from: dev-story of 6-7-six-platform-ci-verification (2026-06-05)
 
@@ -425,7 +426,9 @@ Story 5.11 **deleted** the orphaned GraphQL bridge (`multipart_graphql_stream_pa
 ## Deferred from: code review of 7-1-koel-theme (2026-06-06)
 
 - `codeText` uses `fontFamily: 'monospace'` (koel_theme.dart:223) — not a guaranteed cross-platform family; falls back to the proportional default on iOS/macOS/web. Revisit at 7.2 (code-block widget render) / 7.4 (goldens) where actual rendering validates the monospace choice and the real platform-specific monospace handling can be picked.
+  - **⤷ CLOSED 2026-06-06 (Epic-7 retro AI-7.3 hygiene).** Hardened in Story 7.2: `codeText` gained `fontFamilyFallback: ['Menlo', 'Courier']` so Apple/web render a real monospace family (recorded in the 7-2 dev notes, "resolved 7.1-deferred review"). The fix landed at 7.2 as planned; this ledger entry was simply never marked. No further action.
 - `TextStyle.lerp` throws a FlutterError on `inherit`-mismatch when a consumer-built `KoelTextStyles` (inherit:false) is lerped against a default (inherit:true) (koel_theme.dart:164-167). Shipped light()/dark() are both inherit:true so never trip it. Add a one-line doc note on the inherit-parity contract at the 7.4 finalize (consumer-facing theming guidance).
+  - **⤷ CARRIED 2026-06-06 (Epic-7 retro AI-7.2) → Story 9.6 (docs-final).** Not done at 7.4 — the SEALER's harness-less goldens crowded out the doc-polish punts. Re-homed to 9.6 (consumer-facing theming guidance), where the per-package README + docs-site theming page is the natural place for the inherit-parity note.
 
 ## Deferred from: code review of 7-3-chat-input-follow-up-list (2026-06-06)
 

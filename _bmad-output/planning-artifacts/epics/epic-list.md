@@ -44,6 +44,11 @@
 
 ## Epic 8: DevTools Extension — `koel_devtools`
 
+> **RESEQUENCED post-1.0 (SCP-2026-06-06-B, Epic-7 retro):** runs **after** Epic 9 (v1.0.0
+> release) and is renumbered **Epic 10** at kickoff. `koel_devtools` ships as a `^1.0.0`-ranged
+> dependent in a 1.1 release — it is not part of the v1.0.0 lock-step. Story keys stay `8-x`
+> until the devtools work starts.
+
 **Goal:** Developer opens Flutter DevTools and sees a live `AgUiEvent` stream, time-travel replay through a configurable ring buffer (default 1000), tool-call inspector, network panel, and JSON Lines trace export/import. `DevToolsObserver implements AgentSubscriber`, never mutates `KoelClient` state. Replay re-folds the reducer; tool handlers no-op via `ToolReplayContext.isReplaying`. Flutter web extension UI under `tool/extension_ui/` builds via `melos run build:devtools` and ships in the package. Coverage ≥ 80%.
 
 **FRs covered:** F-F1, F-F2, F-F3, F-F4, F-F5, F-F6, F-F7
