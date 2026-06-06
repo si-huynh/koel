@@ -1,0 +1,42 @@
+name: koel_example
+description: Repo-root quickstart demo — a koel chat surface over the koel meta-package.
+publish_to: none
+version: 0.0.1
+
+environment:
+  sdk: ">=3.11.0 <4.0.0"
+  flutter: ">=3.38.0"
+
+# Pub-workspace member: shares the single root lockfile, so the AI-5.9 pins
+# (analyzer 12.1.0 / freezed 3.2.6-dev.1) govern this app and cannot drift. It
+# adds only koel_* path members + flutter/flutter_test (already in the lock) —
+# no new hosted dependency.
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # The quickstart path: re-exports koel_core + koel_http + koel_flutter
+  # (KoelClient, KoelChatController, KoelClientScope, HttpAgent, …). A consumer
+  # would pin `koel: ^1.0.0` post-publish; the bare workspace key resolves by
+  # path during dev.
+  koel:
+  # Widgets are NOT re-exported by the meta-barrel (architecture §2:512-514) —
+  # the opinionated UI layer is a direct, opt-in dependency (`koel_widgets: ^1.0.0`
+  # post-publish).
+  koel_widgets:
+  # MockAgent.programmatic — the deterministic, flutter_tester-safe demo agent
+  # (the fromFixture loader is dart:io/VM-only; see main.dart's _demoAgent). It
+  # is a RUNTIME dependency here because lib/main.dart constructs the mock — the
+  # `flutter run` entrypoint lives in lib/, so `depend_on_referenced_packages`
+  # requires it under `dependencies`, matching packages/koel_widgets/example. A
+  # real consumer deletes it once they swap in a backend transport (see README).
+  koel_test:
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  koel_lints:
+
+flutter:
+  uses-material-design: true

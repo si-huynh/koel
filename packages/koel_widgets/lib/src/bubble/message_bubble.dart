@@ -76,16 +76,26 @@ class MessageBubble extends StatelessWidget {
             fill: fill,
             padding: koel.spacing.bubblePadding,
             alignEnd: isUser,
+            maxWidth: _maxBubbleWidth,
             child: body,
           )
         : MaterialBubble(
             fill: fill,
             padding: koel.spacing.bubblePadding,
             alignEnd: isUser,
+            maxWidth: _maxBubbleWidth,
             child: body,
           );
   }
 }
+
+/// The reading-width cap for a bubble surface (logical px). Below the cap a
+/// bubble fills its width (the no-op phone case); above it the surface stays
+/// capped so the role [Align] (left/right) keeps meaning on a wide desktop/web
+/// window (Epic-7 retro AI-7.1). Kept a private const, not a `KoelSpacing`
+/// token, deliberately: AI-7.1 is layout polish, not a public theming contract,
+/// and the frozen `koel_widgets` barrel / `.api-baseline` must not churn (D5).
+const double _maxBubbleWidth = 560;
 
 /// `{iOS, macOS}` are the Apple platforms that get the Cupertino variant.
 bool _isApple(TargetPlatform platform) =>
@@ -130,9 +140,16 @@ Widget _codeBlock(String code, KoelTheme koel) {
       ),
       child: Padding(
         padding: const EdgeInsets.all(10),
-        child: Text(
-          code,
-          style: koel.textStyles.codeText.copyWith(color: foreground),
+        // A long unbreakable token (e.g. a base64 blob or minified line) is wider
+        // than the bubble; the horizontal scroll view shrink-wraps short code so
+        // the surface still hugs it (existing goldens unchanged), and lets a wide
+        // token scroll into view instead of clipping (`Text` defaults to clip).
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Text(
+            code,
+            style: koel.textStyles.codeText.copyWith(color: foreground),
+          ),
         ),
       ),
     ),

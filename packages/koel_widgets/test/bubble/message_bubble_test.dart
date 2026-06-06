@@ -224,6 +224,78 @@ void main() {
     });
   });
 
+  group('AI-7.1 layout — max-width cap + long-code no-clip', () {
+    // A wide surface so the cap actually bites; on a phone (< cap) it is a no-op.
+    setUp(() {
+      final view = TestWidgetsFlutterBinding.ensureInitialized()
+          .platformDispatcher
+          .views
+          .first;
+      // Wide so the cap bites; tall so capped long prose never overflows the
+      // surface vertically (a test artifact, not a layout bug).
+      view.physicalSize = const Size(1200, 2000);
+      view.devicePixelRatio = 1;
+    });
+    tearDown(() {
+      final view = TestWidgetsFlutterBinding.ensureInitialized()
+          .platformDispatcher
+          .views
+          .first;
+      view.resetPhysicalSize();
+      view.resetDevicePixelRatio();
+    });
+
+    testWidgets('long prose is width-capped on a wide surface', (tester) async {
+      await tester.pumpWidget(
+        _host(
+          platform: TargetPlatform.android,
+          theme: KoelTheme.light(),
+          // Long enough to fill far past the cap on a 1200px surface.
+          child: MessageBubble(
+            _msg(MessageRole.assistant, 'lorem ipsum dolor sit amet ' * 40),
+          ),
+        ),
+      );
+      final width = tester
+          .getSize(
+            find.descendant(
+              of: find.byType(MaterialBubble),
+              matching: find.byType(Material),
+            ),
+          )
+          .width;
+      // The bubble surface stays within the reading-width cap, so the role
+      // `Align` (left/right) keeps its meaning on a wide window.
+      expect(width, lessThanOrEqualTo(560));
+    });
+
+    testWidgets('a long unbreakable code token scrolls, never clips', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _host(
+          platform: TargetPlatform.android,
+          theme: KoelTheme.light(),
+          child: MessageBubble(
+            _msg(MessageRole.assistant, '```\n${'x' * 400}\n```'),
+          ),
+        ),
+      );
+      expect(tester.takeException(), isNull);
+      // The fenced block lives in a horizontally-scrolling viewport, so a token
+      // wider than the bubble is reachable by scroll instead of being clipped.
+      final scroller = find.descendant(
+        of: find.byType(MaterialBubble),
+        matching: find.byType(SingleChildScrollView),
+      );
+      expect(scroller, findsOneWidget);
+      expect(
+        tester.widget<SingleChildScrollView>(scroller).scrollDirection,
+        Axis.horizontal,
+      );
+    });
+  });
+
   group('empty content', () {
     testWidgets('empty content paints no bubble surface', (tester) async {
       // An assistant-with-tool-calls turn decodes to `content == ''` ⇒ no
