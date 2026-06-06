@@ -9,5 +9,16 @@ environment:
 
 resolution: workspace
 
+dependencies:
+  # First runtime dep of koel_widgets. `KoelTheme` is pure framework data —
+  # `ThemeExtension`, `Color`, `TextStyle`, `EdgeInsets` all come from
+  # `package:flutter` (material library). No `koel_core`/`koel_flutter` dep yet:
+  # 7.1 reads no `Message`/`MessageSegment` (that arrives with `MessageBubble` in
+  # 7.2). Bare `sdk: flutter` key — pub workspace resolves it. (counter-metric CM-3)
+  flutter:
+    sdk: flutter
+
 dev_dependencies:
   koel_lints:
+  flutter_test:
+    sdk: flutter

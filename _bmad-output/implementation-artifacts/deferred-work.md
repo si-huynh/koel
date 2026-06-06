@@ -417,3 +417,8 @@ Story 5.11 **deleted** the orphaned GraphQL bridge (`multipart_graphql_stream_pa
 ## Deferred from: code review of story-6.8 (2026-06-06)
 
 - **Memory-bench RSS baseline is GC-noisy (re-run p99 swings ±88%) → Epic 9 `perf-bench.yml` gate author.** `chat_session_memory_bench.dart:74-79` samples `ProcessInfo.currentRss` delta per run; the resident-set delta is dominated by nondeterministic GC timing (the Debug Log's own re-run logged `delta=+88.3%`). This is harmless today — default mode is log-only (never flakes the per-PR sweep), and `KOEL_PERF_GATE` is the deferred Epic 9 reference-device path (D9). **Follow-up:** when Epic 9 enables `KOEL_PERF_GATE` on the CI reference device, a single-sample p99 over a ±88%-noisy metric will likely false-trip (or mask regressions under) the 10% threshold — consider multi-sample averaging, a wider band, or a forced-GC settle before sampling. Recorded so the gate isn't wired naively against a noisy baseline.
+
+## Deferred from: code review of 7-1-koel-theme (2026-06-06)
+
+- `codeText` uses `fontFamily: 'monospace'` (koel_theme.dart:223) — not a guaranteed cross-platform family; falls back to the proportional default on iOS/macOS/web. Revisit at 7.2 (code-block widget render) / 7.4 (goldens) where actual rendering validates the monospace choice and the real platform-specific monospace handling can be picked.
+- `TextStyle.lerp` throws a FlutterError on `inherit`-mismatch when a consumer-built `KoelTextStyles` (inherit:false) is lerped against a default (inherit:true) (koel_theme.dart:164-167). Shipped light()/dark() are both inherit:true so never trip it. Add a one-line doc note on the inherit-parity contract at the 7.4 finalize (consumer-facing theming guidance).
