@@ -10,13 +10,21 @@ environment:
 resolution: workspace
 
 dependencies:
-  # First runtime dep of koel_widgets. `KoelTheme` is pure framework data —
-  # `ThemeExtension`, `Color`, `TextStyle`, `EdgeInsets` all come from
-  # `package:flutter` (material library). No `koel_core`/`koel_flutter` dep yet:
-  # 7.1 reads no `Message`/`MessageSegment` (that arrives with `MessageBubble` in
-  # 7.2). Bare `sdk: flutter` key — pub workspace resolves it. (counter-metric CM-3)
+  # `KoelTheme` is pure framework data — `ThemeExtension`, `Color`, `TextStyle`,
+  # `EdgeInsets` all come from `package:flutter` (material library). Bare
+  # `sdk: flutter` key — pub workspace resolves it.
   flutter:
     sdk: flutter
+  # koel_core: `MessageBubble` (7.2) renders a `Message`/`MessageRole`. These are
+  # NOT re-exported by koel_flutter (its barrel deliberately re-exports nothing
+  # from koel_core), so the direct dep is mandatory — `depend_on_referenced_packages`
+  # fires otherwise. Bare key — pub workspace.
+  koel_core:
+  # koel_flutter: `MessageBubble` parses content via `MessageContentParser` and
+  # renders the sealed `MessageSegment`/`TextSegment`/`CodeBlockSegment` (Story 6.5).
+  # koel_widgets' first UI-layer cross-package dep. (counter-metric CM-3 — exactly
+  # these two intra-repo deps, no koel_test: widget tests build `Message` literals.)
+  koel_flutter:
 
 dev_dependencies:
   koel_lints:

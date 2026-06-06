@@ -8,3 +8,9 @@ library;
 // ---- Theming hook: ThemeExtension carrying colours, text, spacing (F-E4) --
 export 'src/theme/koel_theme.dart'
     show KoelTheme, KoelColors, KoelTextStyles, KoelSpacing;
+
+// ---- MessageBubble: Material 3 + Cupertino chat bubble (F-E3) -------------
+// `BubbleStyle` rides along — it is part of `MessageBubble`'s public ctor, so
+// the 7.4 seal set is these 8 symbols, not the epic's literal 7. The internal
+// `MaterialBubble`/`CupertinoBubble` variants are deliberately NOT exported.
+export 'src/bubble/message_bubble.dart' show MessageBubble, BubbleStyle;

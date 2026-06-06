@@ -220,7 +220,16 @@ class KoelSpacing {
 // these const instances are reused across both factories (no per-call alloc).
 const KoelTextStyles _defaultTextStyles = KoelTextStyles(
   bodyText: TextStyle(fontSize: 14, height: 1.4),
-  codeText: TextStyle(fontFamily: 'monospace', fontSize: 13, height: 1.45),
+  // `'monospace'` is a real family on Android/Linux/web but resolves to nothing
+  // on iOS/macOS, where the renderer would silently fall back to the proportional
+  // default. The fallback list names the Apple system monospace families so a
+  // fenced code block actually renders monospace on every platform.
+  codeText: TextStyle(
+    fontFamily: 'monospace',
+    fontFamilyFallback: ['Menlo', 'Courier'],
+    fontSize: 13,
+    height: 1.45,
+  ),
 );
 
 const KoelSpacing _defaultSpacing = KoelSpacing(
