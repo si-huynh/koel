@@ -118,15 +118,15 @@ List<AgUiEvent> _buildFixedRun() {
   const threadId = 'mem-thread';
   const runId = 'mem-run';
   return List<AgUiEvent>.unmodifiable(<AgUiEvent>[
-    RunStartedEvent(threadId: threadId, runId: runId),
-    TextMessageStartEvent(messageId: 'm1', role: 'assistant'),
+    const RunStartedEvent(threadId: threadId, runId: runId),
+    const TextMessageStartEvent(messageId: 'm1', role: 'assistant'),
     for (var i = 0; i < _deltaCount; i++)
       TextMessageContentEvent(messageId: 'm1', delta: 'token$i '),
-    TextMessageEndEvent(messageId: 'm1'),
-    ToolCallStartEvent(toolCallId: 't1', toolCallName: 'search'),
+    const TextMessageEndEvent(messageId: 'm1'),
+    const ToolCallStartEvent(toolCallId: 't1', toolCallName: 'search'),
     for (var i = 0; i < _argDeltas; i++)
       ToolCallArgsEvent(toolCallId: 't1', delta: '{"q":"$i"}'),
-    ToolCallEndEvent(toolCallId: 't1'),
-    RunFinishedEvent(threadId: threadId, runId: runId),
+    const ToolCallEndEvent(toolCallId: 't1'),
+    const RunFinishedEvent(threadId: threadId, runId: runId),
   ]);
 }

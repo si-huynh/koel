@@ -90,8 +90,12 @@ void main() {
       final w = wire(
         MockAgent.programmatic()
             .runStarted()
-            .event(TextMessageStartEvent(messageId: 'm1', role: 'assistant'))
-            .event(TextMessageContentEvent(messageId: 'm1', delta: 'partial'))
+            .event(
+              const TextMessageStartEvent(messageId: 'm1', role: 'assistant'),
+            )
+            .event(
+              const TextMessageContentEvent(messageId: 'm1', delta: 'partial'),
+            )
             .build(), // never finishes — a run to cancel mid-flight
       );
       var notified = false;
@@ -116,7 +120,7 @@ void main() {
       final w = wire(
         MockAgent.programmatic()
             .runStarted()
-            .event(StepStartedEvent(stepName: 'think'))
+            .event(const StepStartedEvent(stepName: 'think'))
             .build(), // pauses inside the step — never finishes
       );
 

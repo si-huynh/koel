@@ -1,0 +1,39 @@
+# koel_lints — curated Flutter lint profile (AI-6.1, Epic-6 retro).
+#
+# The Flutter-only delta of `package:flutter_lints/flutter.yaml` (flutter_lints
+# 6.x), verbatim minus its `include: package:lints/recommended.yaml` line —
+# the workspace-root `analysis_options.yaml` already chains `recommended.yaml`,
+# so this file carries ONLY the 13 Flutter-specific rules layered on top.
+#
+# AR-1 (one lint baseline) holds: koel_lints owns ALL lint policy — the
+# `exhaustive_switch_must_have_default` analysis_server_plugin rule (root) plus
+# this Flutter rule set. The `flutter_lints` PACKAGE is still NOT a dependency
+# (the rules below are SDK-bundled linter rules, enabled by name) — re-adding
+# the package is the AR-1 anti-pattern; enabling the rules it would have is not.
+#
+# Carries NO `plugins:` key (the analyzer rejects it outside the workspace root,
+# `plugins_in_inner_options`) and NO `include:` (consumers compose it via a
+# list-include alongside the root). Flutter packages opt in from their member
+# `analysis_options.yaml`:
+#
+#   include:
+#     - ../../analysis_options.yaml          # root: recommended + koel_lints plugin
+#     - package:koel_lints/koel_flutter.yaml # this file: the 13 Flutter rules
+#
+# Verified to fire under analysis_server_plugin in the native pub-workspace
+# (AI-6.1 spike, 2026-06-06) — see epic-6-retro-2026-06-06.md.
+linter:
+  rules:
+    - avoid_print
+    - avoid_unnecessary_containers
+    - avoid_web_libraries_in_flutter
+    - no_logic_in_create_state
+    - prefer_const_constructors
+    - prefer_const_constructors_in_immutables
+    - prefer_const_declarations
+    - prefer_const_literals_to_create_immutables
+    - sized_box_for_whitespace
+    - sort_child_properties_last
+    - use_build_context_synchronously
+    - use_full_hex_values_for_flutter_colors
+    - use_key_in_widget_constructors

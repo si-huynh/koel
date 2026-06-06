@@ -4,10 +4,13 @@
 # design is "no member options" *so that `plugins:` lives only at the workspace
 # root* (the analyzer rejects `plugins:` in any inner file, `plugins_in_inner_
 # options`). This file declares NO `plugins:` — it only `include:`s the root
-# (inheriting `recommended.yaml` + the koel_lints plugin) and layers the
-# package-contract doc lints on top. Plugin-free → not a 1.7 reversal; scoped to
-# koel_flutter so each package gates its own public surface at its finalize story.
-include: ../../analysis_options.yaml
+# (inheriting `recommended.yaml` + the koel_lints plugin) and the curated Flutter
+# rule profile (AI-6.1), then layers the package-contract doc lints on top.
+# Plugin-free → not a 1.7 reversal; scoped to koel_flutter so each package gates
+# its own public surface at its finalize story.
+include:
+  - ../../analysis_options.yaml
+  - package:koel_lints/koel_flutter.yaml
 
 analyzer:
   # Generated code is not part of the documented public contract; excluding it

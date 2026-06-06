@@ -1,0 +1,16 @@
+# koel_widgets analyzer config — curated Flutter lint profile (AI-6.1, Epic-6 retro).
+#
+# koel_widgets is a Flutter package (Material/Cupertino widget primitives, Epic 7),
+# so it opts into the curated Flutter rule set on top of the workspace baseline.
+# Story 1.7's design keeps `plugins:` ONLY at the workspace root (the analyzer
+# rejects it in any inner file, `plugins_in_inner_options`); this file declares
+# NO `plugins:` — it composes the root (recommended + the koel_lints plugin) with
+# the shared Flutter profile via a list-include. The `flutter_lints` PACKAGE is
+# NOT a dependency (AR-1) — the rules are SDK-bundled, enabled by name.
+#
+# The package-contract doc gate (`public_member_api_docs`) is deliberately NOT
+# here — it lands at koel_widgets' finalize story (Epic 7), mirroring how
+# koel_core (2.15) / koel_flutter (6.8) gated their own public surface.
+include:
+  - ../../analysis_options.yaml
+  - package:koel_lints/koel_flutter.yaml

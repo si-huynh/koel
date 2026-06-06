@@ -150,13 +150,13 @@ final class _PacedStreamAgent implements AbstractAgent {
 
   @override
   Stream<AgUiEvent> run(RunAgentInput input) async* {
-    yield RunStartedEvent(threadId: 'jank-thread', runId: 'jank-run');
-    yield TextMessageStartEvent(messageId: 'm1', role: 'assistant');
+    yield const RunStartedEvent(threadId: 'jank-thread', runId: 'jank-run');
+    yield const TextMessageStartEvent(messageId: 'm1', role: 'assistant');
     for (var i = 0; i < _warmupEvents + _measuredEvents; i++) {
       await Future<void>.delayed(_frame);
       yield TextMessageContentEvent(messageId: 'm1', delta: 'token$i ');
     }
-    yield TextMessageEndEvent(messageId: 'm1');
-    yield RunFinishedEvent(threadId: 'jank-thread', runId: 'jank-run');
+    yield const TextMessageEndEvent(messageId: 'm1');
+    yield const RunFinishedEvent(threadId: 'jank-thread', runId: 'jank-run');
   }
 }

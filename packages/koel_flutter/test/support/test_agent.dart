@@ -7,10 +7,10 @@ import 'package:koel_test/koel_test.dart';
 /// `RUN_FINISHED`.
 MockAgent streamingHelloAgent() => MockAgent.programmatic()
     .runStarted()
-    .event(TextMessageStartEvent(messageId: 'm1', role: 'assistant'))
-    .event(TextMessageContentEvent(messageId: 'm1', delta: 'Hello'))
-    .event(TextMessageContentEvent(messageId: 'm1', delta: ' world'))
-    .event(TextMessageEndEvent(messageId: 'm1'))
+    .event(const TextMessageStartEvent(messageId: 'm1', role: 'assistant'))
+    .event(const TextMessageContentEvent(messageId: 'm1', delta: 'Hello'))
+    .event(const TextMessageContentEvent(messageId: 'm1', delta: ' world'))
+    .event(const TextMessageEndEvent(messageId: 'm1'))
     .runFinished()
     .build();
 

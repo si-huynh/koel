@@ -35,12 +35,12 @@ final class _HelloAgent implements AbstractAgent {
 
   @override
   Stream<AgUiEvent> run(RunAgentInput input) async* {
-    yield RunStartedEvent(threadId: 'smoke-thread', runId: 'smoke-run');
-    yield TextMessageStartEvent(messageId: 'm1', role: 'assistant');
-    yield TextMessageContentEvent(messageId: 'm1', delta: 'Hello');
-    yield TextMessageContentEvent(messageId: 'm1', delta: ' world');
-    yield TextMessageEndEvent(messageId: 'm1');
-    yield RunFinishedEvent(threadId: 'smoke-thread', runId: 'smoke-run');
+    yield const RunStartedEvent(threadId: 'smoke-thread', runId: 'smoke-run');
+    yield const TextMessageStartEvent(messageId: 'm1', role: 'assistant');
+    yield const TextMessageContentEvent(messageId: 'm1', delta: 'Hello');
+    yield const TextMessageContentEvent(messageId: 'm1', delta: ' world');
+    yield const TextMessageEndEvent(messageId: 'm1');
+    yield const RunFinishedEvent(threadId: 'smoke-thread', runId: 'smoke-run');
   }
 }
 
