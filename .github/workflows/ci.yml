@@ -1,8 +1,12 @@
 # ci.yml — primary per-PR gate: analyze + format-check + test.
 # Epic 1 skeleton was a single Linux job. Story 4.10 grows it to a Linux + macOS
 # native matrix plus a headless-Chrome `web` job, so koel_http's dual transport
-# (native dart:io ⟂ web fetch/ReadableStream) both run on every PR (NFR-11). The
-# full 10 pkgs × 6 platforms expansion is still Epic 9 (AR-17).
+# (native dart:io ⟂ web fetch/ReadableStream) both run on every PR (NFR-11).
+# Story 6.7 adds `flutter-smoke` — the monorepo's FIRST `flutter test` lanes —
+# running koel_flutter's render smoke on macOS/Linux/Windows (host flutter_tester)
+# and web (dart2js + headless Chrome), the NFR-11 dart:io-divergence proof. The
+# full 10 pkgs × 6 platforms expansion — including iOS/Android device lanes — is
+# still Epic 9 (AR-17).
 name: CI
 permissions:
   contents: read
@@ -49,3 +53,43 @@ jobs:
       - run: melos run build
       - run: dart test -p chrome
         working-directory: packages/koel_http
+
+  # flutter-smoke (Story 6.7, NFR-11) — the first `flutter test` lanes in the
+  # monorepo. koel_flutter is a library package with no platform folders, so it
+  # runs a pure-render smoke (test/smoke/six_platform_smoke_test.dart) as a plain
+  # flutter_test widget test — NO integration_test, NO device infra:
+  #   * macOS / Linux / Windows → host flutter_tester (compile + render on each OS)
+  #   * web                     → `--platform chrome` (dart2js + headless Chrome),
+  #                               the NFR-11 dart:io-free proof (web has no dart:io)
+  # The smoke uses a local web-safe AbstractAgent, NOT koel_test's MockAgent —
+  # mock_agent.dart transitively imports dart:io (fixture_loader), which alone
+  # fails the dart2js web compile. iOS/Android device/build verification needs an
+  # example app or emulator/simulator and rides the Epic 9 / AR-17 full 10×6 device
+  # matrix: a no-channel render smoke shares the same Dart frontend as the desktop
+  # lanes, so mobile adds ~no marginal coverage here (storage channel coverage is
+  # already in 6.3/6.4's own tests). subosito/flutter-action bundles a compatible
+  # Dart, so no separate setup-dart. flutter-version pinned to .tool-versions.
+  flutter-smoke:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { platform: linux, os: ubuntu-latest, test: flutter test test/smoke }
+          - { platform: macos, os: macos-latest, test: flutter test test/smoke }
+          - { platform: windows, os: windows-latest, test: flutter test test/smoke }
+          - { platform: web, os: ubuntu-latest, test: flutter test --platform chrome test/smoke }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.44.0
+          cache: true
+      - run: dart pub global activate melos 7.8.0
+      - run: melos bootstrap
+      # Generated *.freezed.dart (koel_core, a transitive dep) is gitignored, so
+      # build it before `flutter test` — same reason analyze-test builds first.
+      - run: melos run build
+      - run: ${{ matrix.test }}
+        working-directory: packages/koel_flutter

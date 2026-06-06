@@ -13,7 +13,7 @@ generative (tool-driven) UI.
 import 'package:koel_flutter/koel_flutter.dart';
 ```
 
-Requires Flutter 3.35.0+ (the release that ships Dart 3.9.0). Most apps use the
+Requires Flutter 3.38.0+ (the release that ships Dart 3.11.0). Most apps use the
 [`koel`](../koel) meta-package. The controller, scope, and storage land across
 Epic 6.
 
@@ -62,8 +62,20 @@ setup, and that is your responsibility:
 | Linux         | `libsecret`   | Requires an active keyring (GNOME Keyring, KDE Wallet, …) running on the target.                  |
 
 See the [`flutter_secure_storage`](https://pub.dev/packages/flutter_secure_storage)
-docs for per-platform options. Six-platform CI verification lands in a later Epic 6
-story.
+docs for per-platform options.
+
+## Platform support
+
+`koel_flutter` targets all six Flutter platforms. The library itself is
+`dart:io`-free, so it compiles and renders on **web** as well as native — the
+[`ci.yml`](../../.github/workflows/ci.yml) `flutter-smoke` matrix proves this on
+every PR (NFR-11) with a render smoke test:
+
+| Platform                | CI lane                                         | Notes |
+| ----------------------- | ----------------------------------------------- | ----- |
+| macOS / Linux / Windows | `flutter test` (host)                           | Build + render on each desktop toolchain. |
+| Web                     | `flutter test --platform chrome` (headless)     | Compiles to JS and runs in Chrome — verifies the **`dart:io`-free** path. On web, `dart:io` is unavailable: use programmatic agents (`MockAgent.programmatic()`), **not** `MockAgent.fromFixture`, which reads fixtures through `dart:io` and is VM/native-only. |
+| iOS / Android           | Epic 9 device matrix                            | Need a booted simulator/emulator; the full 10-package × 6-platform device matrix (AR-17) lives in Epic 9. A no-plugin render smoke shares the desktop lanes' Dart frontend, so it adds no marginal coverage here — plugin-channel divergence for storage is covered by the Hive/secure-storage tests. |
 
 ## Documentation
 
