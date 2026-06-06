@@ -40,6 +40,16 @@ and cheap to compare) and then decides equality by `==`. There is no polymorphic
 is read from the fixture line's `payload['type']` — the spec registry string is
 the source of truth.
 
+## Outbound request body (`RunAgentInput`)
+
+The harness above grades **inbound** events. The one **outbound** payload koel
+posts is `RunAgentInput`, encoded by `koel_http`'s `encodeRunAgentInput`. Its
+seven AG-UI-normative fields are camelCase verbatim; the one type worth pinning
+is `context`, which AG-UI defines as a **`List<Context>`** (each
+`Context = {description, value}`), *not* a map. An empty input serializes
+`"context": []` — a spec-compliant backend (`ag-ui-protocol` 0.1.10) 422-rejects
+`{}`. Fixed in SCP-2026-06-06 (Story 2-16).
+
 ## OQ-Conformance-Equivalence (open until v1.0.0)
 
 The skeleton runner does **exact** structural `==`. Two equivalence questions are

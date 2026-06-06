@@ -58,6 +58,7 @@ export 'src/session/in_memory_session_storage.dart';
 export 'src/session/session_storage.dart';
 
 // ---- Input / message / tool: the value-level protocol types ---------------
+export 'src/context/context.dart';
 export 'src/input/run_agent_input.dart';
 export 'src/message/message.dart';
 export 'src/tool/tool_definition.dart';

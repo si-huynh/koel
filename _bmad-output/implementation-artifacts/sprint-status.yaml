@@ -75,6 +75,7 @@ development_status:
   2-13-session-storage-in-memory: done
   2-14-koel-client-chat-session-api: done
   2-15-perf-baselines-dartdoc-barrel: done
+  2-16-fix-runagentinput-context-list: done
   epic-2-retrospective: done
 
   # Epic 3: Test Harness & Conformance — koel_test

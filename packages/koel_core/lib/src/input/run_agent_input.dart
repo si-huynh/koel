@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../context/context.dart';
 import '../message/message.dart';
 import '../tool/tool_definition.dart';
 
@@ -34,7 +35,7 @@ abstract class RunAgentInput with _$RunAgentInput {
     @Default(<String, dynamic>{}) Map<String, dynamic> state,
     @Default(<Message>[]) List<Message> messages,
     @Default(<ToolDefinition>[]) List<ToolDefinition> tools,
-    @Default(<String, dynamic>{}) Map<String, dynamic> context,
+    @Default(<Context>[]) List<Context> context,
     @Default(<String, dynamic>{}) Map<String, dynamic> forwardedProps,
     Map<String, Uint8List>? reasoningEcho,
   }) = _RunAgentInput;

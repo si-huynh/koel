@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:koel_core/src/context/context.dart';
 import 'package:koel_core/src/input/run_agent_input.dart';
 import 'package:koel_core/src/message/message.dart';
 import 'package:koel_core/src/tool/tool_definition.dart';
@@ -38,7 +39,7 @@ void main() {
             ),
           ],
           tools: const [ToolDefinition(name: 'lookup', description: 'd')],
-          context: const {'c': true},
+          context: const [Context(description: 'page', value: 'home')],
           forwardedProps: const {'f': 'v'},
         );
         expect(build(), equals(build()));
