@@ -1,0 +1,9 @@
+# Declares the test tags koel_flutter uses so `flutter test` stays warning-free.
+#
+# `perf` marks the regression-baseline benches (`test/perf/*_bench.dart`). They
+# are baseline tooling, not unit tests, and are excluded from `melos run test`
+# via `--exclude-tags=perf` (tool/test_package.sh routes koel_flutter to
+# `flutter test --exclude-tags=perf`); run them on demand or in the Epic 9 perf
+# job.
+tags:
+  perf: {} # no special config — the declaration alone suppresses the "undeclared tag" warning

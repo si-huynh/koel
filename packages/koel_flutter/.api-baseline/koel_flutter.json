@@ -1,0 +1,809 @@
+{
+    "version": 3,
+    "packageApi": {
+        "packageName": "koel_flutter",
+        "packageVersion": "0.0.1",
+        "packagePath": "/var/folders/s8/jnjbmckd0v33h5b7nltj5trm0000gn/T/Hk4Uqm",
+        "interfaceDeclarations": [
+            {
+                "name": "KoelChatController",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "ChangeNotifier",
+                    "Object",
+                    "Listenable"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "Future<void>",
+                        "name": "send",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "content",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String",
+                                "relativePath": "lib/src/controller/koel_chat_controller.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/controller/koel_chat_controller.dart"
+                    },
+                    {
+                        "returnTypeName": "void",
+                        "name": "cancel",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/controller/koel_chat_controller.dart"
+                    },
+                    {
+                        "returnTypeName": "Future<void>",
+                        "name": "clear",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/controller/koel_chat_controller.dart"
+                    },
+                    {
+                        "returnTypeName": "KoelChatController",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "session",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "ChatSession",
+                                "relativePath": "lib/src/controller/koel_chat_controller.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/controller/koel_chat_controller.dart"
+                    }
+                ],
+                "fieldDeclarations": [
+                    {
+                        "typeName": "ChatState",
+                        "name": "state",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/controller/koel_chat_controller.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "bool",
+                        "name": "isStreaming",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/controller/koel_chat_controller.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    }
+                ],
+                "entryPoints": [
+                    "koel_flutter.dart"
+                ],
+                "relativePath": "lib/src/controller/koel_chat_controller.dart"
+            },
+            {
+                "name": "KoelClientScope",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "InheritedWidget",
+                    "ProxyWidget",
+                    "Widget",
+                    "DiagnosticableTree",
+                    "Object",
+                    "Diagnosticable"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "KoelClient",
+                        "name": "of",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "context",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "BuildContext",
+                                "relativePath": "lib/src/scope/koel_client_scope.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/scope/koel_client_scope.dart"
+                    },
+                    {
+                        "returnTypeName": "KoelClientScope",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "client",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "KoelClient",
+                                "relativePath": "lib/src/scope/koel_client_scope.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "child",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Widget",
+                                "relativePath": "lib/src/scope/koel_client_scope.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "key",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Key?",
+                                "relativePath": "lib/src/scope/koel_client_scope.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/scope/koel_client_scope.dart"
+                    }
+                ],
+                "fieldDeclarations": [
+                    {
+                        "typeName": "KoelClient",
+                        "name": "client",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/scope/koel_client_scope.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    }
+                ],
+                "entryPoints": [
+                    "koel_flutter.dart"
+                ],
+                "relativePath": "lib/src/scope/koel_client_scope.dart"
+            },
+            {
+                "name": "HiveSessionStorage",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "Object",
+                    "SessionStorage"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "HiveSessionStorage",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "boxName",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String",
+                                "relativePath": "lib/src/session_storage/hive_session_storage.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/session_storage/hive_session_storage.dart"
+                    }
+                ],
+                "fieldDeclarations": [],
+                "entryPoints": [
+                    "koel_flutter.dart"
+                ],
+                "relativePath": "lib/src/session_storage/hive_session_storage.dart"
+            },
+            {
+                "name": "SecureSessionStorage",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "Object",
+                    "SessionStorage"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "SecureSessionStorage",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "storage",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "FlutterSecureStorage?",
+                                "relativePath": "lib/src/session_storage/secure_session_storage.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/session_storage/secure_session_storage.dart"
+                    }
+                ],
+                "fieldDeclarations": [],
+                "entryPoints": [
+                    "koel_flutter.dart"
+                ],
+                "relativePath": "lib/src/session_storage/secure_session_storage.dart"
+            },
+            {
+                "name": "MessageContentParser",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "Object"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "List<MessageSegment>",
+                        "name": "parse",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "content",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String",
+                                "relativePath": "lib/src/message/message_content_parser.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/message/message_content_parser.dart"
+                    },
+                    {
+                        "returnTypeName": "MessageContentParser",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/message/message_content_parser.dart"
+                    }
+                ],
+                "fieldDeclarations": [],
+                "entryPoints": [
+                    "koel_flutter.dart"
+                ],
+                "relativePath": "lib/src/message/message_content_parser.dart"
+            },
+            {
+                "name": "MessageSegment",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "Object"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "MessageSegment",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/message/message_segment.dart"
+                    }
+                ],
+                "fieldDeclarations": [],
+                "entryPoints": [
+                    "koel_flutter.dart"
+                ],
+                "relativePath": "lib/src/message/message_segment.dart"
+            },
+            {
+                "name": "TextSegment",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "MessageSegment",
+                    "Object"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "TextSegment",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "text",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String",
+                                "relativePath": "lib/src/message/message_segment.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/message/message_segment.dart"
+                    }
+                ],
+                "fieldDeclarations": [
+                    {
+                        "typeName": "String",
+                        "name": "text",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/message/message_segment.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "int",
+                        "name": "hashCode",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/message/message_segment.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    }
+                ],
+                "entryPoints": [
+                    "koel_flutter.dart"
+                ],
+                "relativePath": "lib/src/message/message_segment.dart"
+            },
+            {
+                "name": "CodeBlockSegment",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "MessageSegment",
+                    "Object"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "CodeBlockSegment",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "language",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String",
+                                "relativePath": "lib/src/message/message_segment.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "code",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String",
+                                "relativePath": "lib/src/message/message_segment.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/message/message_segment.dart"
+                    }
+                ],
+                "fieldDeclarations": [
+                    {
+                        "typeName": "String",
+                        "name": "language",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/message/message_segment.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "String",
+                        "name": "code",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/message/message_segment.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "int",
+                        "name": "hashCode",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/message/message_segment.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    }
+                ],
+                "entryPoints": [
+                    "koel_flutter.dart"
+                ],
+                "relativePath": "lib/src/message/message_segment.dart"
+            },
+            {
+                "name": "WidgetResolver",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "Object"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "Widget",
+                        "name": "resolve",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "context",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "BuildContext",
+                                "relativePath": "lib/src/generative_ui/widget_resolver.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "toolCall",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "ToolCallStartEvent",
+                                "relativePath": "lib/src/generative_ui/widget_resolver.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/generative_ui/widget_resolver.dart"
+                    },
+                    {
+                        "returnTypeName": "WidgetResolver",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "_registry",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, Widget Function(BuildContext, ToolCallStartEvent)>",
+                                "relativePath": "lib/src/generative_ui/widget_resolver.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "onUnknown",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Widget Function(BuildContext, ToolCallStartEvent)?",
+                                "relativePath": "lib/src/generative_ui/widget_resolver.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/generative_ui/widget_resolver.dart"
+                    }
+                ],
+                "fieldDeclarations": [
+                    {
+                        "typeName": "Widget Function(BuildContext, ToolCallStartEvent)?",
+                        "name": "onUnknown",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/generative_ui/widget_resolver.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    }
+                ],
+                "entryPoints": [
+                    "koel_flutter.dart"
+                ],
+                "relativePath": "lib/src/generative_ui/widget_resolver.dart"
+            },
+            {
+                "name": "UnknownGenerativeUI",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "StatelessWidget",
+                    "Widget",
+                    "DiagnosticableTree",
+                    "Object",
+                    "Diagnosticable"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "UnknownGenerativeUI",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "toolCallName",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String",
+                                "relativePath": "lib/src/generative_ui/widget_resolver.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "key",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Key?",
+                                "relativePath": "lib/src/generative_ui/widget_resolver.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/generative_ui/widget_resolver.dart"
+                    }
+                ],
+                "fieldDeclarations": [
+                    {
+                        "typeName": "String",
+                        "name": "toolCallName",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/generative_ui/widget_resolver.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    }
+                ],
+                "entryPoints": [
+                    "koel_flutter.dart"
+                ],
+                "relativePath": "lib/src/generative_ui/widget_resolver.dart"
+            },
+            {
+                "name": "ToolReplayContext",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "InheritedWidget",
+                    "ProxyWidget",
+                    "Widget",
+                    "DiagnosticableTree",
+                    "Object",
+                    "Diagnosticable"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "ToolReplayContext",
+                        "name": "of",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "context",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "BuildContext",
+                                "relativePath": "lib/src/generative_ui/tool_replay_context.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/generative_ui/tool_replay_context.dart"
+                    },
+                    {
+                        "returnTypeName": "ToolReplayContext",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "isReplaying",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "bool",
+                                "relativePath": "lib/src/generative_ui/tool_replay_context.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "child",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Widget",
+                                "relativePath": "lib/src/generative_ui/tool_replay_context.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "key",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Key?",
+                                "relativePath": "lib/src/generative_ui/tool_replay_context.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/generative_ui/tool_replay_context.dart"
+                    }
+                ],
+                "fieldDeclarations": [
+                    {
+                        "typeName": "bool",
+                        "name": "isReplaying",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/generative_ui/tool_replay_context.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    }
+                ],
+                "entryPoints": [
+                    "koel_flutter.dart"
+                ],
+                "relativePath": "lib/src/generative_ui/tool_replay_context.dart"
+            }
+        ],
+        "executableDeclarations": [],
+        "fieldDeclarations": [],
+        "typeAliasDeclarations": [],
+        "semantics": [
+            "containsPlatformConstraints"
+        ],
+        "iosPlatformConstraints": null,
+        "androidPlatformConstraints": null,
+        "sdkType": "flutter",
+        "minSdkVersion": "3.11.0",
+        "packageDependencies": [
+            {
+                "packageName": "koel_core",
+                "packageVersion": "any"
+            },
+            {
+                "packageName": "hive_ce",
+                "packageVersion": "^2.19.3"
+            },
+            {
+                "packageName": "flutter_secure_storage",
+                "packageVersion": "^10.3.1"
+            }
+        ]
+    },
+    "missingEntryPoints": []
+}

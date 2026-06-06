@@ -1,0 +1,27 @@
+# koel_flutter package-finalization analyzer config (Story 6.8).
+#
+# The koel_flutter twin of koel_core's member options (Story 2.15). Story 1.7's
+# design is "no member options" *so that `plugins:` lives only at the workspace
+# root* (the analyzer rejects `plugins:` in any inner file, `plugins_in_inner_
+# options`). This file declares NO `plugins:` — it only `include:`s the root
+# (inheriting `recommended.yaml` + the koel_lints plugin) and layers the
+# package-contract doc lints on top. Plugin-free → not a 1.7 reversal; scoped to
+# koel_flutter so each package gates its own public surface at its finalize story.
+include: ../../analysis_options.yaml
+
+analyzer:
+  # Generated code is not part of the documented public contract; excluding it
+  # keeps `public_member_api_docs` from firing on freezed/json_serializable output.
+  # Inert for koel_flutter (no generated lib files — hand-rolled sealed
+  # MessageSegment, no freezed/g.dart) but kept verbatim for sibling-parity.
+  exclude:
+    - "**/*.freezed.dart"
+    - "**/*.g.dart"
+
+linter:
+  rules:
+    # The machine enforcer of NFR-16: every exported public symbol carries a doc.
+    public_member_api_docs: true
+    # Keeps `[Type]` references in dartdoc resolvable so `dart doc` stays at
+    # exit 0 with no broken-reference warnings.
+    comment_references: true

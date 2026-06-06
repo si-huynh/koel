@@ -8,7 +8,7 @@ import 'package:koel_core/koel_core.dart';
 /// Riverpod, GetX, `provider`, or plain `setState` — consumes through its
 /// standard `Listenable` bridge with **one line and no adapter**.
 ///
-/// It owns nothing but its own subscription. The [session] is injected, so its
+/// It owns nothing but its own subscription. The `session` is injected, so its
 /// owner (typically the [KoelClient] that created it via `newSession`) keeps the
 /// lifecycle — [dispose] cancels only this controller's listener and never
 /// disposes the session (the client's own `dispose` cancels every session it
@@ -58,7 +58,7 @@ class KoelChatController extends ChangeNotifier {
   Future<void> clear() => _session.clear();
 
   /// Cancels this controller's subscription and releases its [ChangeNotifier]
-  /// listeners. Does **not** dispose the injected [session] — its owner does.
+  /// listeners. Does **not** dispose the injected `session` — its owner does.
   ///
   /// Idempotent: a second call is a no-op. Stock [ChangeNotifier.dispose]
   /// asserts on a double-dispose, but a controller can have two plausible

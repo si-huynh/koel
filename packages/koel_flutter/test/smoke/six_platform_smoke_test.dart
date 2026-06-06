@@ -29,7 +29,7 @@ import 'package:koel_flutter/koel_flutter.dart';
 /// `TEXT_MESSAGE_CONTENT` deltas — the same `RUN_STARTED → TEXT_MESSAGE_* →
 /// RUN_FINISHED` shape as `test/support/test_agent.dart`'s `streamingHelloAgent`,
 /// reproduced locally (no koel_test import) so the test compiles for web. Replay
-/// is verbatim and ignores [input], exactly like the blessed `MockAgent`.
+/// is verbatim and ignores `input`, exactly like the blessed `MockAgent`.
 final class _HelloAgent implements AbstractAgent {
   const _HelloAgent();
 

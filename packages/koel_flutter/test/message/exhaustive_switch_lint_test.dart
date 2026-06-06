@@ -7,7 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 /// AC1 (Story 6.5) integration check: the `koel_lints`
 /// `exhaustive_switch_must_have_default` rule fires on a `switch` over
-/// [MessageSegment] that lacks `default:`, under the production `dart analyze`.
+/// `MessageSegment` that lacks `default:`, under the production `dart analyze`.
 ///
 /// Mirrors `koel_lints/test/integration/dart_analyze_fires_test.dart` (D4): a
 /// self-contained consumer package is built in a temp dir **outside** the koel

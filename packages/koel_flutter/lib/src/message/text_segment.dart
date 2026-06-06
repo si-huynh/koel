@@ -8,6 +8,7 @@ part of 'message_segment.dart';
 /// package). The parser never emits a [TextSegment] with empty [text], so a
 /// renderer can treat one as always-printable.
 final class TextSegment extends MessageSegment {
+  /// Wraps a verbatim prose run [text].
   const TextSegment(this.text);
 
   /// The verbatim prose run.

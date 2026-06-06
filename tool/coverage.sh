@@ -39,8 +39,17 @@ with_chrome="${4:-}"
 
 cd "$pkg"
 rm -rf coverage coverage_chrome
-dart test --exclude-tags=perf --coverage=coverage --branch-coverage
-format_coverage --lcov --in=coverage --out=coverage/lcov.info --report-on=lib --check-ignore
+# Flutter packages (koel_flutter, Story 6.8) pull the Flutter SDK, so `dart test`
+# cannot load them. `flutter test --coverage` writes coverage/lcov.info NATIVELY
+# (no format_coverage step) and has no --branch-coverage flag; with no BRDA rows
+# the awk gate's `branch=(brf>0)?…:100` defaults branch to 100, so LINE is the
+# real gate (D4). Pure-Dart packages stay on the dart-test path byte-for-byte.
+if grep -q "sdk: flutter" pubspec.yaml; then
+  flutter test --coverage --exclude-tags=perf
+else
+  dart test --exclude-tags=perf --coverage=coverage --branch-coverage
+  format_coverage --lcov --in=coverage --out=coverage/lcov.info --report-on=lib --check-ignore
+fi
 
 # `line_lcov` holds the records the LINE gate dedups over; `branch_lcov` is always
 # the VM pass (the only one with BRDA rows). Without with_chrome they are the same

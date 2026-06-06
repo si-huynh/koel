@@ -407,3 +407,11 @@ Story 5.11 **deleted** the orphaned GraphQL bridge (`multipart_graphql_stream_pa
 **AUTO-SATISFIED** (resolved structurally by the v2 rewrite, no code owed):
 
 - **AI-5.3** — connect/read timeouts (line 324). The v2 `CopilotRuntimeAgent extends HttpAgent` inherits `HttpAgent.connectTimeout`/`readTimeout` for free; the standalone-GraphQL-agent timeout plumbing AI-5.3 added is gone with that agent. The capability is now structural, not agent-level code. Auto-satisfied.
+
+## Deferred from: Story 6.8 — Memory + streaming-jank perf baselines (2026-06-06)
+
+- **Real-device frame-raster jank (GPU raster timings on the CI reference device) → Epic 9 / AR-17 device matrix.** `streaming_jank_bench.dart` measures the **synchronous per-event UI-thread work** (reduce → `notifyListeners` → widget rebuild) under `flutter_tester`, because `flutter_tester` has **no real GPU raster** — literal "frame raster over 16 ms" / `FrameTiming` raster numbers are synthetic there (D3). The host proxy proves koel does no heavy synchronous work per streamed event (v1.0.0 baseline: p99 ≈ 3 ms, 0/500 events over the 16 ms budget). **Follow-up:** real-device GPU raster-timing jank during continuous streaming belongs to the Epic 9 / AR-17 device matrix, where the BENCHMARKS.md reference-device profile (AR-21) is published — same "host proxy now, device matrix in Epic 9" split as 6.7's iOS/Android device lanes.
+
+## Deferred from: code review of story-6.8 (2026-06-06)
+
+- **Memory-bench RSS baseline is GC-noisy (re-run p99 swings ±88%) → Epic 9 `perf-bench.yml` gate author.** `chat_session_memory_bench.dart:74-79` samples `ProcessInfo.currentRss` delta per run; the resident-set delta is dominated by nondeterministic GC timing (the Debug Log's own re-run logged `delta=+88.3%`). This is harmless today — default mode is log-only (never flakes the per-PR sweep), and `KOEL_PERF_GATE` is the deferred Epic 9 reference-device path (D9). **Follow-up:** when Epic 9 enables `KOEL_PERF_GATE` on the CI reference device, a single-sample p99 over a ±88%-noisy metric will likely false-trip (or mask regressions under) the 10% threshold — consider multi-sample averaging, a wider band, or a forced-GC settle before sampling. Recorded so the gate isn't wired naively against a noisy baseline.

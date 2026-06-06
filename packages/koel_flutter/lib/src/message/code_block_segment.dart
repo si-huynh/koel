@@ -12,6 +12,7 @@ part of 'message_segment.dart';
 /// `dart title=x` is preserved as-is for the consumer to split); the parser
 /// does not split on whitespace.
 final class CodeBlockSegment extends MessageSegment {
+  /// Wraps a code block's [code] body and its fence [language] info string.
   const CodeBlockSegment({required this.language, required this.code});
 
   /// The fence's trimmed info string, or `''` when the fence carried none.
