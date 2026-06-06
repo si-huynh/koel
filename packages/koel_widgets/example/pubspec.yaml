@@ -1,0 +1,34 @@
+name: koel_widgets_example
+description: Runnable demo composing koel_widgets over a fixture-driven KoelChatController.
+publish_to: none
+version: 0.0.1
+
+environment:
+  sdk: ">=3.11.0 <4.0.0"
+  flutter: ">=3.38.0"
+
+# Pub-workspace member: shares the single root lockfile, so the AI-5.9 pins
+# (analyzer 12.1.0 / freezed 3.2.6-dev.1) govern the example too and cannot drift.
+# It adds only koel_* path members + flutter/flutter_test (already in the lock) —
+# no new hosted dependency.
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # The widget primitives this example demonstrates.
+  koel_widgets:
+  # KoelChatController (the ChangeNotifier binding driven below).
+  koel_flutter:
+  # KoelClient — koel_flutter re-exports nothing from koel_core, so the direct
+  # dep is mandatory.
+  koel_core:
+  # MockAgent.programmatic — drives the demo conversation with a deterministic,
+  # flutter_tester-safe agent (the fromFixture loader is dart:io/VM-only; see
+  # main.dart's demoAgent).
+  koel_test:
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  koel_lints:

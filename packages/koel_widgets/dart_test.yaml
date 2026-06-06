@@ -1,0 +1,13 @@
+# Declares the test tags koel_widgets uses so `flutter test` stays warning-free.
+#
+# `golden` marks the `matchesGoldenFile` tests (`test/goldens/*_golden_test.dart`).
+# Flutter goldens are platform-specific (rounded-corner anti-aliasing, font
+# hinting, shadow rasterization differ per OS), so the committed PNGs are
+# Linux-rendered (the canonical platform). They are excluded from the
+# cross-platform default `melos run test` + the macOS `melos run test:coverage`
+# via `--exclude-tags=perf,golden` (tool/test_package.sh / tool/coverage.sh route
+# koel_widgets to `flutter test --exclude-tags=perf,golden`) so a non-Linux dev
+# never false-fails against the Linux bytes. They run only on the Linux `goldens`
+# CI lane (and on an explicit Linux `--update-goldens` regeneration).
+tags:
+  golden: {} # no special config — the declaration alone suppresses the "undeclared tag" warning

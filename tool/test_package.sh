@@ -36,7 +36,11 @@ fi
 # contains the line; koel_widgets/koel_devtools gain it the moment they add the
 # `flutter_test` dev-dep their first widget test requires.)
 if grep -qE '^[[:space:]]*sdk:[[:space:]]+flutter[[:space:]]*$' pubspec.yaml; then
-  flutter test --exclude-tags=perf
+  # `golden` (koel_widgets, Story 7.4) joins `perf` in the exclusion: golden PNGs
+  # are Linux-canonical and run only on the dedicated Linux `goldens` CI lane, so
+  # a macOS/Windows dev never compares against the Linux bytes here. Inert for
+  # every other package (no `golden`-tagged tests elsewhere).
+  flutter test --exclude-tags=perf,golden
 else
   dart test --exclude-tags=perf
 fi

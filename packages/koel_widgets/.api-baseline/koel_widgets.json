@@ -1,0 +1,1144 @@
+{
+    "version": 3,
+    "packageApi": {
+        "packageName": "koel_widgets",
+        "packageVersion": "0.0.1",
+        "packagePath": "/var/folders/s8/jnjbmckd0v33h5b7nltj5trm0000gn/T/ygNee8",
+        "interfaceDeclarations": [
+            {
+                "name": "KoelColors",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "Object"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "KoelColors",
+                        "name": "copyWith",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "messageBubbleUser",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Color?",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "messageBubbleAssistant",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Color?",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "onMessageBubbleUser",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Color?",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "onMessageBubbleAssistant",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Color?",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "inputBackground",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Color?",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "codeBlockBackground",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Color?",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "followUpPillBackground",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Color?",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "onFollowUpPill",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Color?",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/theme/koel_theme.dart"
+                    },
+                    {
+                        "returnTypeName": "KoelColors",
+                        "name": "lerp",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "other",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "KoelColors",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "t",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "double",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/theme/koel_theme.dart"
+                    },
+                    {
+                        "returnTypeName": "KoelColors",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "messageBubbleUser",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Color",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "messageBubbleAssistant",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Color",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "onMessageBubbleUser",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Color",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "onMessageBubbleAssistant",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Color",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "inputBackground",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Color",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "codeBlockBackground",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Color",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "followUpPillBackground",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Color",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "onFollowUpPill",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Color",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/theme/koel_theme.dart"
+                    }
+                ],
+                "fieldDeclarations": [
+                    {
+                        "typeName": "Color",
+                        "name": "messageBubbleUser",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/theme/koel_theme.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "Color",
+                        "name": "messageBubbleAssistant",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/theme/koel_theme.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "Color",
+                        "name": "onMessageBubbleUser",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/theme/koel_theme.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "Color",
+                        "name": "onMessageBubbleAssistant",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/theme/koel_theme.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "Color",
+                        "name": "inputBackground",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/theme/koel_theme.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "Color",
+                        "name": "codeBlockBackground",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/theme/koel_theme.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "Color",
+                        "name": "followUpPillBackground",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/theme/koel_theme.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "Color",
+                        "name": "onFollowUpPill",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/theme/koel_theme.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "int",
+                        "name": "hashCode",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/theme/koel_theme.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    }
+                ],
+                "entryPoints": [
+                    "koel_widgets.dart"
+                ],
+                "relativePath": "lib/src/theme/koel_theme.dart"
+            },
+            {
+                "name": "KoelTextStyles",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "Object"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "KoelTextStyles",
+                        "name": "copyWith",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "bodyText",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TextStyle?",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "codeText",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TextStyle?",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/theme/koel_theme.dart"
+                    },
+                    {
+                        "returnTypeName": "KoelTextStyles",
+                        "name": "lerp",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "other",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "KoelTextStyles",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "t",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "double",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/theme/koel_theme.dart"
+                    },
+                    {
+                        "returnTypeName": "KoelTextStyles",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "bodyText",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TextStyle",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "codeText",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TextStyle",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/theme/koel_theme.dart"
+                    }
+                ],
+                "fieldDeclarations": [
+                    {
+                        "typeName": "TextStyle",
+                        "name": "bodyText",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/theme/koel_theme.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "TextStyle",
+                        "name": "codeText",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/theme/koel_theme.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "int",
+                        "name": "hashCode",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/theme/koel_theme.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    }
+                ],
+                "entryPoints": [
+                    "koel_widgets.dart"
+                ],
+                "relativePath": "lib/src/theme/koel_theme.dart"
+            },
+            {
+                "name": "KoelSpacing",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "Object"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "KoelSpacing",
+                        "name": "copyWith",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "bubblePadding",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "EdgeInsets?",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "inputPadding",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "EdgeInsets?",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "followUpGap",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "double?",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/theme/koel_theme.dart"
+                    },
+                    {
+                        "returnTypeName": "KoelSpacing",
+                        "name": "lerp",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "other",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "KoelSpacing",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "t",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "double",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/theme/koel_theme.dart"
+                    },
+                    {
+                        "returnTypeName": "KoelSpacing",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "bubblePadding",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "EdgeInsets",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "inputPadding",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "EdgeInsets",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "followUpGap",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "double",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/theme/koel_theme.dart"
+                    }
+                ],
+                "fieldDeclarations": [
+                    {
+                        "typeName": "EdgeInsets",
+                        "name": "bubblePadding",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/theme/koel_theme.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "EdgeInsets",
+                        "name": "inputPadding",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/theme/koel_theme.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "double",
+                        "name": "followUpGap",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/theme/koel_theme.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "int",
+                        "name": "hashCode",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/theme/koel_theme.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    }
+                ],
+                "entryPoints": [
+                    "koel_widgets.dart"
+                ],
+                "relativePath": "lib/src/theme/koel_theme.dart"
+            },
+            {
+                "name": "KoelTheme",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "ThemeExtension<KoelTheme>",
+                    "Object"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "KoelTheme",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "colors",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "KoelColors",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "textStyles",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "KoelTextStyles",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "spacing",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "KoelSpacing",
+                                "relativePath": "lib/src/theme/koel_theme.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/theme/koel_theme.dart"
+                    },
+                    {
+                        "returnTypeName": "KoelTheme",
+                        "name": "light",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/theme/koel_theme.dart"
+                    },
+                    {
+                        "returnTypeName": "KoelTheme",
+                        "name": "dark",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/theme/koel_theme.dart"
+                    }
+                ],
+                "fieldDeclarations": [
+                    {
+                        "typeName": "KoelColors",
+                        "name": "colors",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/theme/koel_theme.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "KoelTextStyles",
+                        "name": "textStyles",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/theme/koel_theme.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "KoelSpacing",
+                        "name": "spacing",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/theme/koel_theme.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "int",
+                        "name": "hashCode",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/theme/koel_theme.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    }
+                ],
+                "entryPoints": [
+                    "koel_widgets.dart"
+                ],
+                "relativePath": "lib/src/theme/koel_theme.dart"
+            },
+            {
+                "name": "MessageBubble",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "StatelessWidget",
+                    "Widget",
+                    "DiagnosticableTree",
+                    "Object",
+                    "Diagnosticable"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "MessageBubble",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "message",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Message",
+                                "relativePath": "lib/src/bubble/message_bubble.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "style",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "BubbleStyle?",
+                                "relativePath": "lib/src/bubble/message_bubble.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "key",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Key?",
+                                "relativePath": "lib/src/bubble/message_bubble.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/bubble/message_bubble.dart"
+                    }
+                ],
+                "fieldDeclarations": [
+                    {
+                        "typeName": "Message",
+                        "name": "message",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/bubble/message_bubble.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "BubbleStyle?",
+                        "name": "style",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/bubble/message_bubble.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    }
+                ],
+                "entryPoints": [
+                    "koel_widgets.dart"
+                ],
+                "relativePath": "lib/src/bubble/message_bubble.dart"
+            },
+            {
+                "name": "BubbleStyle",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "Enum",
+                    "Object"
+                ],
+                "executableDeclarations": [],
+                "fieldDeclarations": [
+                    {
+                        "typeName": "BubbleStyle",
+                        "name": "material",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": true,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/bubble/message_bubble.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "BubbleStyle",
+                        "name": "cupertino",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": true,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/bubble/message_bubble.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "List<BubbleStyle>",
+                        "name": "values",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": true,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/bubble/message_bubble.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    }
+                ],
+                "entryPoints": [
+                    "koel_widgets.dart"
+                ],
+                "relativePath": "lib/src/bubble/message_bubble.dart"
+            },
+            {
+                "name": "ChatInput",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "StatefulWidget",
+                    "Widget",
+                    "DiagnosticableTree",
+                    "Object",
+                    "Diagnosticable"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "ChatInput",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "onSubmit",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "void Function(String)",
+                                "relativePath": "lib/src/input/chat_input.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "attachmentSlot",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Widget?",
+                                "relativePath": "lib/src/input/chat_input.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "placeholder",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String?",
+                                "relativePath": "lib/src/input/chat_input.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "maxLines",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "int",
+                                "relativePath": "lib/src/input/chat_input.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "key",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Key?",
+                                "relativePath": "lib/src/input/chat_input.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/input/chat_input.dart"
+                    }
+                ],
+                "fieldDeclarations": [
+                    {
+                        "typeName": "void Function(String)",
+                        "name": "onSubmit",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/input/chat_input.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "Widget?",
+                        "name": "attachmentSlot",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/input/chat_input.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "String?",
+                        "name": "placeholder",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/input/chat_input.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "int",
+                        "name": "maxLines",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/input/chat_input.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    }
+                ],
+                "entryPoints": [
+                    "koel_widgets.dart"
+                ],
+                "relativePath": "lib/src/input/chat_input.dart"
+            },
+            {
+                "name": "FollowUpList",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "StatelessWidget",
+                    "Widget",
+                    "DiagnosticableTree",
+                    "Object",
+                    "Diagnosticable"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "FollowUpList",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "suggestions",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "List<String>",
+                                "relativePath": "lib/src/follow_up/follow_up_list.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "onSelected",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "void Function(String)",
+                                "relativePath": "lib/src/follow_up/follow_up_list.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "key",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Key?",
+                                "relativePath": "lib/src/follow_up/follow_up_list.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/follow_up/follow_up_list.dart"
+                    }
+                ],
+                "fieldDeclarations": [
+                    {
+                        "typeName": "List<String>",
+                        "name": "suggestions",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/follow_up/follow_up_list.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "void Function(String)",
+                        "name": "onSelected",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/follow_up/follow_up_list.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    }
+                ],
+                "entryPoints": [
+                    "koel_widgets.dart"
+                ],
+                "relativePath": "lib/src/follow_up/follow_up_list.dart"
+            }
+        ],
+        "executableDeclarations": [],
+        "fieldDeclarations": [],
+        "typeAliasDeclarations": [],
+        "semantics": [
+            "containsPlatformConstraints"
+        ],
+        "iosPlatformConstraints": null,
+        "androidPlatformConstraints": null,
+        "sdkType": "flutter",
+        "minSdkVersion": "3.11.0",
+        "packageDependencies": [
+            {
+                "packageName": "koel_core",
+                "packageVersion": "any"
+            },
+            {
+                "packageName": "koel_flutter",
+                "packageVersion": "any"
+            }
+        ]
+    },
+    "missingEntryPoints": []
+}

@@ -15,6 +15,7 @@ workspace:
   - packages/koel_runtime
   - packages/koel_flutter
   - packages/koel_widgets
+  - packages/koel_widgets/example
   - packages/koel_devtools
   - packages/koel_test
 
@@ -30,7 +31,7 @@ melos:
       description: Run `dart test` per package (CWD = package root for fixture reads, deferred-work.md :158), excluding the perf benches. Scaffold packages with no test files yet (exit 79) are tolerated; real failures propagate. See tool/test_package.sh.
       exec: bash "$MELOS_ROOT_PATH/tool/test_package.sh"
     test:coverage:
-      description: Per-package line + branch coverage gates (NFR-12) — koel_core & koel_http ≥90% (kernel tier), koel_flutter ≥90% (foundation tier, VM via flutter_tester, no with_chrome), koel_test, koel_agno, koel_langgraph & koel_runtime ≥80% (tooling/adapter tier). koel_http merges a headless-Chrome pass (with_chrome) so its web transport is covered for real. koel_flutter runs `flutter test --coverage` (native lcov.info, branch defaults 100 → line is the gate). Generated files excluded via each package's coverage_options.yaml (none for koel_flutter — no generated lib files); perf benches excluded by tag. See tool/coverage.sh.
+      description: Per-package line + branch coverage gates (NFR-12) — koel_core & koel_http ≥90% (kernel tier), koel_flutter ≥90% (foundation tier, VM via flutter_tester, no with_chrome), koel_test, koel_agno, koel_langgraph, koel_runtime & koel_widgets ≥80% (tooling/adapter/UI tier). koel_http merges a headless-Chrome pass (with_chrome) so its web transport is covered for real. koel_flutter & koel_widgets run `flutter test --coverage` (native lcov.info, branch defaults 100 → line is the gate; koel_widgets excludes the Linux-canonical golden tests by tag). Generated files excluded via each package's coverage_options.yaml (none for koel_flutter/koel_widgets — no generated lib files); perf/golden tests excluded by tag. See tool/coverage.sh.
       run: |
         set -e
         bash "$MELOS_ROOT_PATH/tool/coverage.sh" packages/koel_core 90 90
@@ -40,6 +41,7 @@ melos:
         bash "$MELOS_ROOT_PATH/tool/coverage.sh" packages/koel_langgraph 80 80
         bash "$MELOS_ROOT_PATH/tool/coverage.sh" packages/koel_runtime 80 80
         bash "$MELOS_ROOT_PATH/tool/coverage.sh" packages/koel_flutter 90 90
+        bash "$MELOS_ROOT_PATH/tool/coverage.sh" packages/koel_widgets 80 80
     build:
       description: Run `build_runner build` in packages that declare build_runner (codegen-drift gate).
       exec: dart run build_runner build

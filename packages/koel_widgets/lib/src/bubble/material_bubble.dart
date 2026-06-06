@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Material 3 chrome for a [MessageBubble] — a tonally-elevated, rounded surface
+/// Material 3 chrome for a `MessageBubble` — a tonally-elevated, rounded surface
 /// painted in the role-selected [fill] (F-E3).
 ///
 /// Internal to `koel_widgets`: not exported from the barrel. The bubble's

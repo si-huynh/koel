@@ -93,3 +93,49 @@ jobs:
       - run: melos run build
       - run: ${{ matrix.test }}
         working-directory: packages/koel_flutter
+
+  # goldens (Story 7.4) — the deterministic golden gate. Flutter goldens are
+  # platform-specific (rounded-corner anti-aliasing differs per OS), so the
+  # committed PNGs (packages/koel_widgets/test/goldens/) are Linux-rendered and
+  # this Linux-only lane is the SOLE place the `golden`-tagged tests run (the
+  # cross-platform `melos run test` excludes them via --exclude-tags=perf,golden).
+  # To regenerate after an intentional visual change: re-run with --update-goldens
+  # here (or in a Flutter 3.44.0 Linux container) and commit the new bytes.
+  goldens:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.44.0
+          cache: true
+      - run: dart pub global activate melos 7.8.0
+      - run: melos bootstrap
+      - run: melos run build
+      - run: flutter test --tags golden
+        working-directory: packages/koel_widgets
+
+  # example-smoke (Story 7.4, architecture §6) — the koel_widgets example app
+  # builds and runs its fixture turn to completion without throwing. The example
+  # is a pub-workspace member but NOT a melos package, so it is exercised only
+  # here, not by `melos run test`.
+  example-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.44.0
+          cache: true
+      - run: dart pub global activate melos 7.8.0
+      - run: melos bootstrap
+      - run: melos run build
+      # The example is not a melos package, so `melos run analyze` skips it —
+      # enforce its own curated lint profile here so a lint/doc regression in the
+      # consumer-facing reference cannot ship undetected.
+      - run: dart analyze
+        working-directory: packages/koel_widgets/example
+      - run: flutter test
+        working-directory: packages/koel_widgets/example

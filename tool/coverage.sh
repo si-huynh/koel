@@ -44,8 +44,11 @@ rm -rf coverage coverage_chrome
 # (no format_coverage step) and has no --branch-coverage flag; with no BRDA rows
 # the awk gate's `branch=(brf>0)?…:100` defaults branch to 100, so LINE is the
 # real gate (D4). Pure-Dart packages stay on the dart-test path byte-for-byte.
+# `golden` (koel_widgets, Story 7.4) joins `perf` in the exclusion: golden tests
+# are Linux-canonical (the macOS coverage run would false-fail against the Linux
+# bytes) and add no lib/ line coverage the widget tests don't already exercise.
 if grep -q "sdk: flutter" pubspec.yaml; then
-  flutter test --coverage --exclude-tags=perf
+  flutter test --coverage --exclude-tags=perf,golden
 else
   dart test --exclude-tags=perf --coverage=coverage --branch-coverage
   format_coverage --lcov --in=coverage --out=coverage/lcov.info --report-on=lib --check-ignore

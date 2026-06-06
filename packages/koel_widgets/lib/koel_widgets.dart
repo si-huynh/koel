@@ -1,8 +1,8 @@
 /// Material 3 + Cupertino chat UI primitives (theme, bubble, input, follow-up list).
 ///
-/// This barrel is the **public 1.x contract** of `koel_widgets`. It grows
-/// incrementally per story and seals at 7.4 to exactly the widget primitives
-/// (`MessageBubble`, `ChatInput`, `FollowUpList`) plus the theming hook below.
+/// This barrel is the **public 1.x contract** of `koel_widgets`. It is **sealed**
+/// (Story 7.4) to exactly the widget primitives (`MessageBubble`, `ChatInput`,
+/// `FollowUpList`) plus the theming hook below — 8 symbols, frozen for 1.x.
 library;
 
 // ---- Theming hook: ThemeExtension carrying colours, text, spacing (F-E4) --

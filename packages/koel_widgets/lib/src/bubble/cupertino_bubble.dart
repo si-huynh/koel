@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 
-/// Cupertino (iOS) chrome for a [MessageBubble] — a flat, rounded bubble painted
+/// Cupertino (iOS) chrome for a `MessageBubble` — a flat, rounded bubble painted
 /// in the role-selected [fill] (F-E3).
 ///
 /// Internal to `koel_widgets`: not exported from the barrel. Unlike the Material
