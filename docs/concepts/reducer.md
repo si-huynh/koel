@@ -39,7 +39,7 @@ testing possible: feed the same events, get the same state.
 
 ## STATE_DELTA conflicts
 
-A `STATE_DELTA` is a JSON Patch against the current `state.data`. If a patch
+A `STATE_DELTA` is a JSON Patch against the current `state.state`. If a patch
 cannot apply cleanly (a `test` op fails, or a path is missing), the reducer does
 **not** silently drop it — it surfaces a `StateConflict` carrying the incoming
 patches, so the conflict reaches a surface rather than corrupting state.

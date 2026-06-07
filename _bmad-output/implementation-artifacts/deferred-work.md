@@ -2,6 +2,10 @@
 
 Items deferred during BMAD workflows. Each entry records why the work was postponed.
 
+## Deferred from: code review of 9-6-docs-site-scaffold-readmes-final (2026-06-07)
+
+- **CI `docs` lane never builds the Docusaurus site → no automated guard against broken internal links → Story 9.9.** The site's `onBrokenLinks: 'throw'` is the sole link-integrity check across the 22 authored pages, but it only fires on a manual `npm run build`; the CI `docs` lane ([.github/workflows/ci.yml:18-33]) runs `dart doc` only (no Node/npm step). A future doc PR that introduces a dangling relative `.md` link passes every CI gate. **Why deferred:** by design for 9.6 — D6 scopes docs-site deployment/hosting to Story 9.9, which will build + deploy the Docusaurus site in CI and is the natural home for a site-build lane that also enforces link integrity. 9.6 only proves the site builds locally (proven, Dev Agent Record). Surfaced by both the Blind Hunter and the Edge Case Hunter.
+
 ## Deferred from: code review of 7-2-message-bubble (2026-06-06)
 
 - **Bubble max-width cap + long-code horizontal handling → Story 7.4.** `MessageBubble` (and both `MaterialBubble`/`CupertinoBubble` variants) impose no `ConstrainedBox(maxWidth)`, so long prose stretches edge-to-edge (the role `Align` becomes a no-op) and a single long unbreakable code token clips (`Text` default `overflow: clip`, no horizontal scroll). No exception — a visual/UX gap, not a crash. **Why deferred:** the epic scopes no max-width into 7.2; Story 7.4 is the koel_widgets SEALER that owns layout polish + goldens on the deterministic Linux lane, where a width cap is both visible (golden diffs) and testable. Decided with Si (2026-06-06).

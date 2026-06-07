@@ -4,7 +4,7 @@ baseline_commit: 7c22a0c1233cdf92b59bb492ba890b6aad0461d1
 
 # Story 9.6: Docs site scaffold + per-package READMEs final
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -73,6 +73,22 @@ This is the **documentation-finalization story** of Epic 9. The six release-gate
   - [x] `git diff pubspec.lock` (root) → **0 drift**. No pub-workspace dependency added (the docs toolchain is JS, outside the workspace; `docs/node_modules` git-ignored). **AI-5.9 pins MUST NOT move** (`analyzer 12.1.0` / `freezed 3.2.6-dev.1` / `analysis_server_plugin: 0.3.14`). The only `pubspec.yaml` edit is the `docs` melos-script line.
   - [x] `melos run analyze` clean; `melos run format:check` 0-changed (markdown/yaml/Node are outside `dart format`; if any `///` comment was edited for a broken ref, re-run `dart format` on that Dart file); `melos run test` SUCCESS-unchanged (this story adds no unit test — the deliverable is verified by the `dart doc` build + the CI doc lane, not a new suite).
   - [x] `melos run verify:versioning` (9.1) + `melos run api-diff` (9.3) + `melos run conformance` + `melos run publish-dry` (9.5) all still **green** — 9.6 touches no `lib/src/**`, no public symbol, no version/range, no pubspec metadata that the publish-dry gate validates beyond what 9.5 already cleared. (README text is not validated by `pub publish --dry-run`; confirm the dry-run stays green.)
+
+### Review Findings
+
+_Code review 2026-06-07 (baseline `7c22a0c`..`c827522`); Blind Hunter + Edge Case Hunter + Acceptance Auditor. 0 decision-needed · 1 patch · 1 defer · 7 dismissed._
+
+- [x] [Review][Patch] `reducer.md` references non-existent `state.data` — should be `state.state` [docs/concepts/reducer.md:42] — FIXED 2026-06-07 — the "STATE_DELTA conflicts" paragraph says "a JSON Patch against the current `state.data`", but the real `ChatState` member is `state` (accessed `state.state`, as the same page uses at :18 and :30). `state.data` does not exist → would mislead a reader copying it.
+- [x] [Review][Defer] CI `docs` lane never builds the Docusaurus site → no automated guard against broken internal links [.github/workflows/ci.yml:18-33] — deferred to Story 9.9. The site's `onBrokenLinks: 'throw'` (the sole link-integrity check across 22 pages) runs only on a manual `npm run build`; the CI lane runs `dart doc` only. By design for 9.6 (D6: docs-site deployment/hosting is 9.9's scope, which will build the site in CI); flagged so 9.9 adds the site-build lane.
+
+#### Dismissed (verified false-positive / by-design)
+- Blind: `tool/docs.sh` false-FAILs on a clean build — Edge Case Hunter empirically ran `dart doc` on `koel_core`: the `Found 0 warnings and 0 errors.` summary line **is** emitted, the gate passes clean and bites on injection. False positive (Blind reasoned from diff alone).
+- Blind: ADR's `npm ci` is broken / no lockfile committed — `docs/package-lock.json` **is** committed (verified blob in HEAD); it was excluded from the Blind diff copy as auto-generated. False positive.
+- Blind: per-package `LICENSE` badge links dangle — every release package ships its own `LICENSE` file (verified). False positive.
+- Blind: four agents spell the URL ctor param differently — verified all real and correct (`HttpAgent(url:)` / `AgnoAgent(baseURL:)` / `CopilotRuntimeAgent(endpoint:)` / `LangGraphAgent(deploymentUrl:)`); the variance reflects genuine per-adapter semantics, not a defect.
+- Blind: latent bare `[name]` param ref in `tool_handler_test_harness.dart` — gate passed 10/10 clean; dartdoc resolves in-scope param refs. False positive.
+- Blind: ADR/PRD say `api-reference/` (dir) but file is `api-reference.md` — cosmetic; D-3 uses the slash form as a generic section name. Noise.
+- Edge: recipes attribute `clear()` to the storage API (real method is `delete()`) — verified `ChatSession.clear()` is real and its doc states it "deletes any persisted copy"; the recipe prose is accurate (no code block calls `storage.clear()`). False positive.
 
 ## Dev Notes
 
