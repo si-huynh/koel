@@ -1,5 +1,26 @@
-# publish-dry-run.yml — placeholder. Real body wired in Epic 9.
-# `dart pub publish --dry-run` per package.
+# publish-dry-run.yml — publish-readiness gate (Story 9.5, FR-I1 / PRD §12 R-5).
+# Built from the Story-1.5 placeholder into a real gate: runs `dart pub publish
+# --dry-run` (via melos run publish-dry → tool/publish_dry_run.sh) once per
+# v1.0.0 release package, CWD = the package root, across the ten release packages
+# (koel, koel_core, koel_http, koel_lints, koel_test, koel_agno, koel_langgraph,
+# koel_runtime, koel_flutter, koel_widgets). koel_devtools is deferred post-1.0
+# (SCP-2026-06-06-B) and the repo-root example/ is not a release package — both
+# excluded.
+#
+# The gate runs STRICT: `dart pub publish --dry-run` treats warnings as fatal
+# (exit 65), so any publishability warning fails the job → blocks merge. koel_lints
+# is the single documented exception (D4): its two MANDATED warnings — the
+# asp-required lib/main.dart entrypoint name + the deliberate analysis_server_plugin
+# 0.3.14 analyzer-12 pin (architecture D3 / SCP-2026-05-29-B / AI-5.9) — are
+# allowlisted (real errors still block; a new koel_lints warning still trips it).
+#
+# subosito/flutter-action provides both `flutter` and a compatible `dart`: the gate
+# is dart-only, but `melos bootstrap` runs `flutter pub get` for the Flutter
+# workspace members (koel_flutter, koel_widgets), so flutter must be on PATH (the
+# 9.4-documented bootstrap fix). `melos run build` is kept for parity with
+# api-diff.yml / conformance.yml; dry-run validates metadata (it does not compile,
+# and gitignored *.freezed.dart are excluded from the archive), so build is inert
+# for this gate but harmless — kept so every gate boots the workspace identically.
 name: Publish dry-run
 permissions:
   contents: read
@@ -9,7 +30,19 @@ on:
   push:
     branches: [main]
 jobs:
-  placeholder:
+  publish-dry-run:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Wired in Epic 9"
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.44.0
+          cache: true
+      - run: dart pub global activate melos 7.8.0
+      - run: melos bootstrap
+      - run: melos run build
+      # The gate: `dart pub publish --dry-run` per release package. A warning
+      # (outside the koel_lints D4 allowlist) or any error → non-zero exit blocks
+      # the PR; the per-package PASS/FAIL verdict is in this job log.
+      - run: melos run publish-dry

@@ -61,7 +61,7 @@ melos:
       description: "Fixture-capture pipeline (4 backends → JSONL); agno live (5.3), langgraph 5.6, dojo+copilotkit 5.9. Pass --backend=<name> [--base-url=<url>] [--token=<t>]."
       run: dart run "$MELOS_ROOT_PATH/tool/capture_fixtures.dart"
     conformance:
-      description: "AG-UI conformance lane (FR-G4) — runs the `conformance`-tagged tests (ConformanceRunner vs each backend adapter, offline MockClient replay) per package; tolerates packages with none yet. koel_agno now (5.3); langgraph 5.6, copilotkit 5.9 extend it. See tool/conformance.sh."
+      description: "AG-UI conformance lane (FR-G4) — runs the `conformance`-tagged tests (ConformanceRunner vs each backend adapter, offline MockClient replay) per package; tolerates packages with none yet. COMPLETE: agno (5.3), langgraph (5.6), copilotkit v2 native-SSE (5.11 — the removed 5.9 GraphQL lane is superseded, SCP-2026-06-05). See tool/conformance.sh."
       exec: bash "$MELOS_ROOT_PATH/tool/conformance.sh"
     verify:versioning:
       description: "Hybrid-versioning convention gate (Story 9.1, FR-H2 / R-2..R-3) — the ten v1.0.0 release pubspecs carry lock-step foundation versions, ranged (^X.Y.Z) intra-repo deps, and koel_lints dev-only; koel_devtools + koel_widgets/example excluded. bash+awk, zero new dep. See tool/verify_versioning.sh."
@@ -72,3 +72,6 @@ melos:
     perf:
       description: "Regression-relative perf SLO gate (Story 9.4, NFR-1..NFR-5) — runs the five test/perf/*_bench.dart harnesses (sse_parse/reducer/chat_session_memory/cold_start/streaming_jank) per package under KOEL_PERF_GATE; any metric past its band (>10%, N-3 wider — see BENCHMARKS.md) fails the job. Pass `-- --update` to recapture the committed baselines on the reference device (reviewed-PR flow). Pure dart:io orchestrator, never a workspace dep. See tool/perf/run_benchmarks.dart."
       run: dart run "$MELOS_ROOT_PATH/tool/perf/run_benchmarks.dart"
+    publish-dry:
+      description: "Publish-readiness gate (Story 9.5, FR-I1 / PRD §12 R-5) — runs `dart pub publish --dry-run` per v1.0.0 release package across the ten (koel, koel_core, koel_http, koel_lints, koel_test, koel_agno, koel_langgraph, koel_runtime, koel_flutter, koel_widgets; koel_devtools deferred post-1.0). Strict: any warning fails the gate, except koel_lints's two MANDATED warnings (asp lib/main.dart entrypoint + the analyzer-12 0.3.14 pin — D4) which are allowlisted (errors still block, a new warning still trips). Zero new dep. See tool/publish_dry_run.sh."
+      run: bash "$MELOS_ROOT_PATH/tool/publish_dry_run.sh"

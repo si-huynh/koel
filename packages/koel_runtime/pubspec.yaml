@@ -2,6 +2,8 @@ name: koel_runtime
 description: AG-UI adapter for a CopilotKit ≥1.52 (v2) runtime — native AG-UI over SSE.
 version: 1.0.0
 publish_to: none
+repository: https://github.com/si-huynh/koel
+homepage: https://github.com/si-huynh/koel#readme
 
 environment:
   sdk: ">=3.11.0 <4.0.0"

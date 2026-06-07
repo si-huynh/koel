@@ -1,0 +1,182 @@
+---
+baseline_commit: 19c92295180d9a05a6d9c85d8db32185662487fa
+---
+
+# Story 9.5: `conformance.yml` + `publish-dry-run.yml` complete green
+
+Status: in-progress
+
+<!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
+
+## Story
+
+As a release manager,
+I want `conformance.yml` proven to run `ConformanceRunner` against all three backends (`AgnoAgent`, `LangGraphAgent`, the **v2 native-SSE** `CopilotRuntimeAgent`) failing on any conformance failure, and `publish-dry-run.yml` built from its Story-1.5 placeholder into a real gate that runs `dart pub publish --dry-run` per package across the ten v1.0.0 release packages,
+so that conformance + publish-readiness are continuously CI-enforced and the full six-workflow matrix is green ahead of the v1.0.0 publish per FR-I1 + PRD §12 R-5.
+
+## Context — fifth story of Epic 9 (the last two release-gate workflows)
+
+This is the **third and final gate-completion story** of Epic 9. Story 9.3 stood up `api-diff.yml` (NFR-14), Story 9.4 stood up `perf-bench.yml` (NFR-1..NFR-5). **9.5 completes the last two of the six release-gate workflows** — `conformance.yml` and `publish-dry-run.yml` — leaving the six-workflow matrix complete and green, which is the PRD §12 R-5 precondition for the v1.0.0 publish (Story 9.9).
+
+**Critical scope discovery (verified, read before planning):** the two halves of this story are *not* symmetric.
+
+- **`conformance.yml` is already complete and live — this story VERIFIES it, it does not build it.** Stories 5.3 (agno), 5.6 (langgraph), and 5.11 (copilotkit **v2 native-SSE**) already wired the real conformance lane. `conformance.yml` already runs `melos run conformance` → `tool/conformance.sh` → `dart test --tags conformance` per package, and `koel_agno`, `koel_langgraph`, `koel_runtime` each ship a `@Tags(['conformance'])` `conformance_test.dart` that drives `ConformanceRunner.runAgainst(...)` over the synthesized 28-type corpus + real captured fixtures. **9.4 already converted `conformance.yml`'s bootstrap to `subosito/flutter-action@v2`** (the pre-existing-CI-breakage fix). So 9.5's conformance work is: (a) **prove** all three backends actually execute and that a real conformance failure fails the job (not silently tolerated), and (b) **refresh the stale banner + melos-script description** (they still reference the removed `5.9` dojo/copilotkit-GraphQL lane — superseded by 5.11 v2 per SCP-2026-06-05). **No conformance behavior change.**
+
+- **`publish-dry-run.yml` is still the Epic-1 placeholder (`echo "Wired in Epic 9"`) — this is the real net-new build.** It must become a per-package `dart pub publish --dry-run` gate over the ten release packages, and — the substance of the story — **the ten packages must actually pass that gate**, which today they do not (every package emits fatal warnings).
+
+**Scope frame:** this is **CI + tooling + pubspec/CHANGELOG metadata + banner docs** — mirroring 9.3/9.4's shape. It adds **no new public symbol**, **no `lib/src/**` change**, and **no new workspace dependency** (the gate is a `dart:io`-free bash loop over the `dart`/`melos` CLIs already present). `api-diff.yml` (9.3) and `verify:versioning` (9.1) stay green by construction. `pubspec.lock` must show **0 drift** and the **AI-5.9 pins** (`analyzer 12.1.0` / `freezed 3.2.6-dev.1`, and the deliberate `analysis_server_plugin: 0.3.14` exact pin) **must not move** (SCP-2026-05-29-B / architecture D3).
+
+## Acceptance Criteria
+
+**AC1 — `conformance.yml` proven to run `ConformanceRunner` against all three backends, failing on any conformance failure; stale banner/description refreshed.**
+**Given** `.github/workflows/conformance.yml` + `tool/conformance.sh` + the three `conformance_test.dart` files, **when** I inspect and run the lane, **then** the conformance run exercises **all three** adapters — `AgnoAgent` (`koel_agno`), `LangGraphAgent` (`koel_langgraph`), and the **v2 native-SSE** `CopilotRuntimeAgent` (`koel_runtime`, NOT the removed GraphQL bridge) — each driving `ConformanceRunner.runAgainst(...)` over the synthesized `all_event_types.jsonl` corpus + its real captured Epic-5 fixtures, **and** a real conformance failure (a non-matching event → a failed `expect`) makes `dart test` exit non-zero → `tool/conformance.sh` propagates it (the 0/79/65 tolerance covers only *no-conformance-tests-in-this-package*, never a real failure) → the job fails → blocks merge, **and** the `conformance.yml` banner + the `conformance` melos-script `description:` are corrected to describe the now-complete lane (the stale `5.9` dojo / copilotkit-GraphQL references → the 5.11 v2 native-SSE reality per SCP-2026-06-05). **No change to the conformance run behavior itself.**
+
+**AC2 — `publish-dry-run.yml` runs `dart pub publish --dry-run` per package across the ten release packages; any error or non-allowlisted warning blocks merge.**
+**Given** `.github/workflows/publish-dry-run.yml` (built from the Story-1.5 placeholder), **when** the workflow runs on every PR + push to main, **then** it sets up the pinned toolchain (Flutter `3.44.0` via `subosito/flutter-action@v2`; `melos 7.8.0`; `melos bootstrap`; `melos run build`), and runs `dart pub publish --dry-run` (via `melos run publish-dry` → `tool/publish_dry_run.sh`, architecture.md:1130) **once per package** with CWD = that package's root, across the **ten** release packages (`koel`, `koel_core`, `koel_http`, `koel_lints`, `koel_test`, `koel_agno`, `koel_langgraph`, `koel_runtime`, `koel_flutter`, `koel_widgets` — `koel_devtools` deferred post-1.0 per SCP-2026-06-06-B; the repo-root `example/` is not a release package), **and** any package that emits a publish **error**, or a **warning outside the documented `koel_lints`-only allowlist** (see **D4**), makes the orchestrator exit non-zero → blocks merge, with the per-package verdict visible in the job log.
+
+**AC3 — the ten packages actually pass the dry-run gate (warnings cleared); the gate is green on introduction and proven to bite.**
+**Given** the gate from AC2, **when** this story runs, **then** the genuinely-fixable dry-run warnings are **eliminated** on all ten packages — `repository:` (+ `homepage:`) added to every release pubspec, and every release `CHANGELOG.md` carries a `## 1.0.0` stanza so it "mentions the current version" — leaving **only** `koel_lints`'s two framework/pin-mandated warnings (the asp `lib/main.dart` entrypoint name + the deliberate `analysis_server_plugin: 0.3.14` pin — **D4**), which the gate explicitly allowlists, **and** on the introducing PR the `publish-dry-run` job is **green** for all ten, **and** a negative bite-check proves the gate fails on a real publishability defect (e.g. temporarily blank a package `description:` → dry-run errors → job fails; revert), recorded in the Dev Agent Record (the 9.3/9.4 "prove the gate bites" precedent).
+
+**AC4 — the full six-workflow matrix is green on the PR (PRD §12 R-5 precondition).**
+**Given** all six release-gate workflows (`ci.yml`, `conformance.yml`, `perf-bench.yml`, `api-diff.yml`, `codegen-drift.yml`, `publish-dry-run.yml`), **when** I check the latest commit on the story PR, **then** **every** workflow is green — including the now-real `publish-dry-run.yml` (previously a trivially-green placeholder) and the verified `conformance.yml` — and `melos run verify:versioning` + `melos run api-diff` remain green (this story touches no `lib/src/**`, adds no public symbol, and moves no version/range), **and** the green six-workflow state is recorded as the PRD §12 R-5 publish-readiness anchor for Story 9.9.
+
+## Tasks / Subtasks
+
+> Run all Flutter/Dart work under the `/agent-flutter-engineer` persona (CLAUDE.md mandate). This story is CI + tooling + pubspec/CHANGELOG metadata + banner docs; the persona governs the bash gate, the pubspec edits, and the publishability reasoning.
+
+- [ ] **Task 0 — Verify the as-is state of both halves before changing anything** (AC1, AC2) — *do this first; conformance is already live, publish-dry-run is a placeholder, and the dry-run warnings must be reproduced, not assumed.*
+  - [ ] **Conformance (already-live half):** read `.github/workflows/conformance.yml`, `tool/conformance.sh`, and the three `conformance_test.dart` (`packages/koel_agno/test/`, `packages/koel_langgraph/test/`, `packages/koel_runtime/test/`). Confirm each is `@Tags(['conformance'])`, declared in its `dart_test.yaml`, and drives `ConformanceRunner.runAgainst(...)`. Run `melos run conformance` locally → confirm all three packages execute (the others print "no conformance tests"/exit 79, tolerated). Note the stale `5.9` references in the `conformance.yml` banner + the `conformance` melos-script `description:`.
+  - [ ] **Confirm the failure path is honest, not silently tolerated:** inspect `tool/conformance.sh` — exit codes 0 (pass), 79 (no tests matched the tag), 65 (no `test/` dir) are treated green; **any other** code (a real `expect` failure → 1) propagates. Confirm a genuine conformance failure cannot be swallowed by the 79/65 tolerance (it only covers packages with *no* conformance test). This is the AC1 "fails on any failure" evidence.
+  - [ ] **Publish-dry-run (net-new half):** reproduce the dry-run state per package — run `cd packages/<pkg> && dart pub publish --dry-run; echo $?` for a few packages. Confirm the ground truth this story is built on: **(a)** `dart pub publish` has **no `--publish-to` / `--server` flag** (D2); **(b)** `--dry-run` does **NOT** refuse on `publish_to: none` in Dart 3.12 — it runs full validation regardless (D2); **(c)** `--dry-run` **exits 65 when any warning is present** (warnings are fatal by default; `--ignore-warnings` → 0) (D3); **(d)** every release package currently emits warnings — universally "missing homepage/repository" + "CHANGELOG doesn't mention 1.0.0"; **koel_lints additionally** emits "lib/main.dart name should match package" + "analysis_server_plugin constraint too tight" (D4); **(e)** dry-run does **not** check pub.dev for the unpublished `^1.0.0` intra-repo deps (the `koel` meta-package dry-runs with only the two universal warnings, no "dependency not found" error).
+
+- [ ] **Task 1 — Clear the fixable dry-run warnings on all ten release pubspecs** (AC3, D5)
+  - [ ] Add `repository: https://github.com/si-huynh/koel` (and optionally `homepage: https://github.com/si-huynh/koel#readme`) to each of the ten release pubspecs (`packages/{koel,koel_core,koel_http,koel_lints,koel_test,koel_agno,koel_langgraph,koel_runtime,koel_flutter,koel_widgets}/pubspec.yaml`). Use the canonical repo URL already used in the package READMEs (`github.com/si-huynh/koel`). Do **not** edit `koel_devtools` (out of the release set).
+  - [ ] **Do not touch versions, dependency ranges, or `koel_lints`'s `analysis_server_plugin: 0.3.14` pin** — adding metadata only. Confirm `melos run verify:versioning` stays green (it checks lock-step versions + ranged intra-repo deps + lints-dev-only; metadata is orthogonal).
+  - [ ] Re-run `dart pub publish --dry-run` per package → confirm the homepage/repository warning is gone everywhere; the only remaining warnings are the CHANGELOG-version one (Task 2) + koel_lints's two intentional ones (D4).
+
+- [ ] **Task 2 — Seed a `## 1.0.0` CHANGELOG stanza on all ten packages so dry-run "mentions the current version"** (AC3, D5, D9)
+  - [ ] Each release `CHANGELOG.md` currently holds only `## 0.0.1 — Initial scaffold.` → pub warns "doesn't mention current version (1.0.0)". Add a **minimal** `## 1.0.0` entry (e.g. "First stable release.") above the `0.0.1` line on all ten. Keep it minimal: **Story 9.9 owns the foundation-trio CHANGELOG *mirroring/finalization* (R-2)** — this story only seeds the stanza so the dry-run is clean (D9 boundary). Do not write release prose here.
+  - [ ] Re-run `dart pub publish --dry-run` per package → confirm the nine non-lints packages now emit **0 warnings** (exit 0), and `koel_lints` emits **exactly** its two intentional warnings (exit 65 under strict — handled by the allowlist in Task 3).
+
+- [ ] **Task 3 — Write `tool/publish_dry_run.sh` + the `publish-dry` melos script** (AC2, D4, D6)
+  - [ ] Create `tool/publish_dry_run.sh` in the house style (mirror `tool/conformance.sh` + `tool/verify_versioning.sh`: `set -euo pipefail`, `cd "$MELOS_ROOT_PATH"`, a `release_pkgs="koel koel_core koel_http koel_lints koel_test koel_agno koel_langgraph koel_runtime koel_flutter koel_widgets"` loop — **identical set to `verify_versioning.sh`**, zero new dependency). For each package: `cd packages/$pkg && dart pub publish --dry-run`, capture exit + output, `cd` back, aggregate into one pass/fail with a per-package summary line.
+  - [ ] **The `koel_lints` allowlist (D4) — own it, document it, don't loosen the pin:** `koel_lints` has exactly two warnings that are *mandated*, not fixable: (1) `lib/main.dart` is the **asp-framework-required entrypoint** (the analysis server generates code importing `lib/main.dart` + the top-level `plugin` var — renaming breaks the plugin); (2) `analysis_server_plugin: 0.3.14` is the **deliberate analyzer-12 stopgap pin** (architecture D3 + SCP-2026-05-29-B; loosening it risks the freezed↔analyzer-13 conflict the whole pin strategy exists to prevent — AI-5.9). So for `koel_lints` only, run the dry-run with `--ignore-warnings` (errors still block) **and** assert it emits **no more than** these two known warnings (e.g. grep the un-ignored output for the "Package has N warnings" line and assert `N <= 2`, or assert the two specific warning substrings are the only ones) — so a *new* koel_lints warning still trips the gate. Comment the script enumerating exactly which two warnings are allowlisted and why. The other nine run **strict** (no `--ignore-warnings`) → any warning fatal.
+  - [ ] Add a `publish-dry` script to root `pubspec.yaml` `melos.scripts:` (architecture.md:1130 names it `publish-dry`) in the same shape as `conformance`/`verify:versioning`: a one-line `description:` (what it gates, the ten-package set, the koel_lints allowlist) + `run: bash "$MELOS_ROOT_PATH/tool/publish_dry_run.sh"`. Confirm `melos run publish-dry` is discoverable + green locally.
+
+- [ ] **Task 4 — Build `.github/workflows/publish-dry-run.yml`** (AC2, D7)
+  - [ ] Replace the placeholder body. Single job, `ubuntu-latest`. Mirror `api-diff.yml` / `conformance.yml` **exactly**: `actions/checkout@v4` → `subosito/flutter-action@v2` (`channel: stable`, `flutter-version: 3.44.0`, `cache: true` — provides both `flutter` and a compatible `dart`, needed because `melos bootstrap` runs `flutter pub get` for the Flutter workspace members) → `dart pub global activate melos 7.8.0` → `melos bootstrap` → `melos run build` (codegen for freezed members so resolution is consistent with the other gates — confirm whether dry-run strictly needs it; keep for parity with api-diff/conformance unless proven inert) → `melos run publish-dry`.
+  - [ ] Keep `on:` = `pull_request` + `push` to `main` (matching the other five). Write a top-of-file banner in the codebase convention (every workflow documents its origin story + what it gates): describe the real body, the Story-9.5 origin, the ten-package set, and the koel_lints allowlist. **Do NOT touch** `api-diff.yml` / `perf-bench.yml` / `codegen-drift.yml` / `ci.yml`.
+
+- [ ] **Task 5 — Refresh `conformance.yml` + the `conformance` melos description (verify-only, no behavior change)** (AC1)
+  - [ ] Update the `conformance.yml` banner: it currently says "Story 5.3 wires the real lane … Stories 5.6 (langgraph), 5.9 (dojo), and 5.11 (copilotkit v2 …) extend the lane". Correct the **stale** `5.9` dojo/copilotkit-GraphQL reference (the GraphQL copilotkit lane was *removed* per SCP-2026-06-05; the live copilotkit conformance is the 5.11 v2 native-SSE lane). State that the lane is **complete** as of Epic 9 (all three backends live). Mirror the same correction in the `conformance` melos-script `description:` in root `pubspec.yaml` (it still says "copilotkit 5.9").
+  - [ ] **Do not change the conformance run itself** — `tool/conformance.sh`, the tag scheme, the three test files, and the fixtures are untouched. This is banner/description doc alignment only (the AC1 "complete green" doc half).
+
+- [ ] **Task 6 — Capture the green matrix + prove the gate bites** (AC2, AC3, AC4, D8)
+  - [ ] Push the branch → confirm the **`publish-dry-run` job is GREEN** for all ten on the PR (nine 0-warning + koel_lints allowlisted). Record the per-package verdicts in the Dev Agent Record.
+  - [ ] **Negative bite-check (prove the gate fails on a real defect):** in a throwaway commit, introduce a genuine publishability defect (e.g. blank one package's `description:`, or add a bogus tight dependency range) → confirm the `publish-dry-run` job **fails** with a clear per-package error; revert. Also confirm a clean run passes. Record both (a gate that can't fail is a silent no-op — the codegen-drift retro-D1 / 9.3 / 9.4 lesson).
+  - [ ] Confirm the **full six-workflow matrix is green** on the PR head: `ci.yml`, `conformance.yml`, `perf-bench.yml`, `api-diff.yml`, `codegen-drift.yml`, `publish-dry-run.yml`. Record the run links. This is the AC4 / PRD §12 R-5 publish-readiness anchor for Story 9.9.
+
+- [ ] **Task 7 — Gate verification** (all ACs)
+  - [ ] `git diff pubspec.lock` (root) → **0 drift**. No workspace dependency added (the gate is a bash loop over the existing `dart`/`melos` CLIs). **AI-5.9 pins MUST NOT move** (`analyzer 12.1.0` / `freezed 3.2.6-dev.1`; `analysis_server_plugin: 0.3.14` exact pin held — D4). The only `pubspec.yaml` edits are the `publish-dry` melos-script line + the ten `repository`/`homepage` metadata adds + the `conformance` description fix.
+  - [ ] `melos run analyze` clean. The new `tool/publish_dry_run.sh` is bash (not analyzed by `dart analyze`; `shellcheck` optionally, matching `tool/*.sh` convention). No Dart source added → nothing new for analyze to sweep.
+  - [ ] `melos run format:check` 0-changed (no hand-written Dart added; pubspec/CHANGELOG/yaml/bash are outside `dart format`). `melos run test` SUCCESS — **unchanged** (this story adds no unit test; the conformance lane is unchanged; the perf/golden exclusions are untouched).
+  - [ ] `melos run verify:versioning` (9.1) + `melos run api-diff` (9.3) + `melos run conformance` + `melos run perf` (9.4) all still **green** — 9.5 touches no `lib/src/**`, no public symbol, no version/range, no perf harness. The release set is unchanged.
+
+## Dev Notes
+
+### Locked decisions
+
+- **D1 — `conformance.yml` is already complete (5.3/5.6/5.11); 9.5 VERIFIES + refreshes its banner, it does not build it.** The live lane: `conformance.yml` → `melos run conformance` → `tool/conformance.sh` → `dart test --tags conformance` per package. `koel_agno`, `koel_langgraph`, `koel_runtime` each ship a `@Tags(['conformance'])` `conformance_test.dart` driving `ConformanceRunner.runAgainst(...)` over `synthesized/all_event_types.jsonl` (28 AG-UI types → 25/28 pass, 3 chunk types synthesized at transport) + the real captured Epic-5 fixtures (`agno/`, `langgraph/`, `copilotkit/`). **9.4 already migrated this workflow's bootstrap to `subosito/flutter-action@v2`.** So the epic-9.5 AC ("conformance.yml runs ConformanceRunner against all three backends, fails on any failure") is **already satisfied**; 9.5's contribution is proving it (Task 0) + correcting the stale `5.9` doc references (Task 5). *Parity/scope decided — FYI→Si.*
+
+- **D2 — `dart pub publish` has no `--publish-to`/`--server` flag, and `--dry-run` does NOT refuse on `publish_to: none` (Dart 3.12).** *Adversarially verified, not assumed.* The valid flags are `--dry-run`, `--force`, `--skip-validation`, `--directory`, `--ignore-warnings`. Crucially, in Dart 3.12 `dart pub publish --dry-run` runs **full validation regardless of `publish_to: none`** — it only *blocks the real upload*, not the dry-run. So the gate runs **plain `dart pub publish --dry-run` per package**; there is **no need to strip `publish_to: none`** (that unlock is Story 9.9's, with the actual publish). Also verified: dry-run does **not** query pub.dev for the unpublished `^1.0.0` intra-repo deps (no "dependency not found" error), so the ten can dry-run clean before any is published. (An earlier draft of this analysis assumed a `--publish-to` override and an immediate `publish_to: none` refusal — both **false** on Dart 3.12; the gate is simpler than that.)
+
+- **D3 — `--dry-run` exits 65 on warnings (fatal by default); the gate runs STRICT (warnings fatal) except for the koel_lints allowlist.** Empirically: a package with warnings → exit 65; `--ignore-warnings` → exit 0. The AC intent ("missing required pubspec fields … blocks merge") + the koel craft bar say: **fix the warnings, gate strict**, don't blanket-`--ignore-warnings` (that would silently let publishability rot). So the nine non-lints packages run strict (any warning fatal → forces them to 0-warning), and `koel_lints` is the single documented exception (D4).
+
+- **D4 — `koel_lints` has exactly two intentional, unfixable warnings the gate allowlists; do NOT loosen the asp pin or rename the entrypoint.** Verified against the framework source + the pin rationale:
+  - **`lib/main.dart` "name should match package":** `lib/main.dart` is the **asp-framework-mandated entrypoint** — its own dartdoc states *"the analysis server generates code that imports this `lib/main.dart` and references the top-level `plugin` variable."* Renaming it to `lib/koel_lints.dart` breaks the plugin loader. Unfixable-by-rename → allowlist.
+  - **`analysis_server_plugin: 0.3.14` "constraint too tight":** this exact pin is the **deliberate analyzer-12 stopgap** (architecture D3 + SCP-2026-05-29-B; koel_lints' own pubspec comment documents it) so `freezed` (which caps analyzer < 13) shares the single pub-workspace resolution. Loosening to `^0.3.14` would let 0.3.16 (analyzer 13) in → the exact freezed↔asp drift the AI-5.9 pin strategy prevents. **Must not loosen** until the documented upgrade trigger (stable freezed supports analyzer ≥ 13). Allowlist.
+  - The gate runs koel_lints with `--ignore-warnings` (errors still block) **and** asserts no *new* warning appears beyond these two (count ≤ 2, or the two known substrings are the only ones). Enumerate both in the `tool/publish_dry_run.sh` comment. *Own-it, parity-decided — FYI→Si; the alternative (loosening the pin to satisfy pub) is rejected because it violates an explicit project invariant.*
+
+- **D5 — Clear the fixable warnings: `repository`/`homepage` on all ten pubspecs + a `## 1.0.0` CHANGELOG stanza on all ten.** Both warnings are universal (every release package). `repository: https://github.com/si-huynh/koel` (the canonical URL already in the READMEs) + the minimal `## 1.0.0` stanza make the nine non-lints packages 0-warning. These edits are orthogonal to `verify:versioning` (version/ranges/lints-dev-only), to `api-diff` (no public symbol), and to `pubspec.lock` (metadata + CHANGELOG text don't resolve anything) — all stay green / 0-drift.
+
+- **D6 — The gate is `melos run publish-dry` → `tool/publish_dry_run.sh` (architecture.md:1130 names `publish-dry`).** Bash loop over the same ten-package `release_pkgs` set as `tool/verify_versioning.sh`, CWD per package, exit-code aggregation + per-package summary — the house style of `conformance.sh`/`verify_versioning.sh`. **Zero new dependency** (pure `dart`/`bash` CLIs already present). Don't inline ten `dart pub publish` invocations in YAML — one named tool the CI job + local `melos run publish-dry` both call (the 9.3/9.4 single-orchestrator precedent).
+
+- **D7 — `publish-dry-run.yml` mirrors `api-diff.yml`/`conformance.yml` boilerplate exactly.** `checkout@v4` → `flutter-action@v2` (stable 3.44.0, cache) → `melos 7.8.0` global-activate → `bootstrap` → `build` → `melos run publish-dry`. `flutter-action` (not `setup-dart`) is required because `melos bootstrap` runs `flutter pub get` on the Flutter workspace members (the 9.4-documented bootstrap fix). `melos run build` is kept for parity with the sibling gates; confirm whether dry-run strictly needs the generated files (it does not *compile*, so likely inert — keep unless proven removable, document the finding).
+
+- **D8 — Prove the gate is green AND bites (the 9.3/9.4 Task-5 precedent).** A gate that can't fail is a silent no-op (the codegen-drift retro-D1 lesson, re-proven by 9.3 and 9.4). Task 6 records: the green ten-package run + a negative bite-check (inject a real publishability defect → job fails → revert). AC4's full six-workflow-green capture is the PRD §12 R-5 publish-readiness anchor Story 9.9 consumes.
+
+- **D9 — CHANGELOG *finalization/mirroring* + the actual publish are Story 9.9's, not 9.5's.** 9.5 seeds a minimal `## 1.0.0` stanza so dry-run is clean; **Story 9.9** mirrors the foundation-trio (`koel_core`/`koel_http`/`koel_lints`) CHANGELOG entries (PRD §12 R-2), removes `publish_to: none`, and runs the real `melos publish`. Keep 9.5's CHANGELOG edits minimal to avoid double-ownership churn (the 9.4 D6/D7 boundary discipline).
+
+### Current state of files being modified/created (read before editing)
+
+- **`.github/workflows/conformance.yml`** — **already complete + live** (not a placeholder). Runs `melos run conformance` after flutter-action bootstrap + build. Banner has **stale** `5.9` dojo/copilotkit-GraphQL references → refresh (Task 5). Behavior untouched. [Source: .github/workflows/conformance.yml]
+- **`.github/workflows/publish-dry-run.yml`** — **the Epic-1 placeholder** (`placeholder` job, `run: echo "Wired in Epic 9"`; banner already says "Real body wired in Epic 9 / `dart pub publish --dry-run` per package"). Replace the job; mirror `api-diff.yml`/`conformance.yml`. [Source: .github/workflows/publish-dry-run.yml, api-diff.yml]
+- **`tool/publish_dry_run.sh`** — **does NOT exist** (this story creates it). Model on `tool/conformance.sh` + `tool/verify_versioning.sh` (bash, `set -euo pipefail`, `release_pkgs` loop, exit aggregation, zero dep). [Source: tool/conformance.sh, tool/verify_versioning.sh]
+- **`tool/conformance.sh`** — exists; `dart test --tags conformance` per package; tolerates exit 0/79/65; propagates real failures. **Do NOT change** (AC1 is verify-only). [Source: tool/conformance.sh]
+- **Root `pubspec.yaml` `melos.scripts:`** — holds `analyze`/`test`/`test:coverage`/`build`/`format`/`format:check`/`conformance`/`verify:versioning`/`api-diff`/`perf`/`capture-fixtures`. Add `publish-dry` in the same shape; fix the stale `conformance` description (`copilotkit 5.9` → 5.11 v2). [Source: pubspec.yaml melos.scripts]
+- **The ten release pubspecs** — `packages/{koel,koel_core,koel_http,koel_lints,koel_test,koel_agno,koel_langgraph,koel_runtime,koel_flutter,koel_widgets}/pubspec.yaml`. All have `version: 1.0.0`, `publish_to: none` (kept — 9.9 removes it), `description`, `environment.sdk`, LICENSE/CHANGELOG/README present. **None has `repository`/`homepage`** → add. `koel_lints` pins `analysis_server_plugin: 0.3.14` (keep) + `analyzer: ^12.0.0` (already ranged, no warning). [Source: each pubspec.yaml; verified dry-run output]
+- **The ten CHANGELOGs** — currently only `## 0.0.1 — Initial scaffold.`; add a minimal `## 1.0.0` stanza. [Source: packages/*/CHANGELOG.md]
+- **`tool/verify_versioning.sh`** — defines the canonical `release_pkgs` ten-package set (excludes `koel_devtools`); reuse the same set in `publish_dry_run.sh`. Stays green (metadata edits are orthogonal). [Source: tool/verify_versioning.sh:25-26]
+- **The three `conformance_test.dart`** — `koel_agno` (2 tests: 25/28 synth + real `agno/text_only_run`), `koel_langgraph` (2: synth + real `langgraph/text_only_run`), `koel_runtime` (4: full 25/28 synth + real `copilotkit/{text_only_run,state_delta_basic,error_path}` — proving the v2 native-SSE surface vs the removed 7/28 GraphQL bridge). All tagged + declared in `dart_test.yaml`. **Read for AC1 evidence; do NOT modify.** [Source: packages/koel_{agno,langgraph,runtime}/test/conformance_test.dart]
+
+### What must keep working (regression guards)
+
+- **AI-5.9 pins held** — `analyzer 12.1.0` / `freezed 3.2.6-dev.1` no drift in root `pubspec.lock`; **`analysis_server_plugin: 0.3.14` exact pin held** (D4 — never loosen it to satisfy pub's range warning). This story adds **no workspace dependency**.
+- **No new public symbol, no `lib/src/**` change** — 9.5 is CI + tooling + pubspec/CHANGELOG metadata + banner docs. `melos run api-diff` (9.3) stays green because the public surface is untouched.
+- **`verify:versioning` stays green** — `repository`/`homepage`/CHANGELOG edits don't touch lock-step versions, intra-repo ranges, or lints-dev-only.
+- **Conformance behavior unchanged** — `tool/conformance.sh`, the tags, the three test files, the fixtures are untouched; only the banner + melos description change (AC1 is verify + doc-refresh).
+- **The gate is GREEN on the PR after this lands, and bites** — Task 6's positive (ten green) + negative (injected defect → fail) checks. A red `publish-dry-run` on the introducing PR means an un-cleared warning (D5 not done) or a mis-scoped allowlist (D4) — fix before merge, never merge a flaky/false-red gate.
+- **Other workflows untouched** — only `conformance.yml` (banner) + the new `publish-dry-run.yml` change. `ci.yml`/`perf-bench.yml`/`api-diff.yml`/`codegen-drift.yml` unchanged.
+
+### Scope boundaries (explicitly OUT of 9.5)
+
+- Removing `publish_to: none` + the actual `melos publish` lock-step + `gh release` → **Story 9.9** (9.5 only proves dry-run readiness).
+- Foundation-trio CHANGELOG mirroring/finalization (PRD §12 R-2) → **Story 9.9** (9.5 seeds the minimal `## 1.0.0` stanza only — D9).
+- Docs site + per-package README §13 D-1 polish → **Story 9.6**.
+- PRD OQ flips (OQ-Conformance-Equivalence et al.) + AR-24/25/26 reconciliation → **Story 9.7**.
+- Trademark / `ag_ui` license → **Story 9.8**.
+- Any `lib/` behavior change, any new public symbol, any conformance-run change — all OUT. 9.5 adds only `tool/publish_dry_run.sh` (bash), the `publish-dry` melos script, ten pubspec metadata adds, ten CHANGELOG seeds, the new `publish-dry-run.yml`, and the `conformance.yml`/description banner refresh.
+- `koel_devtools` — not in the release set (deferred post-1.0 / Epic 10 per SCP-2026-06-06-B); excluded from the gate.
+
+### Testing standards
+
+- This is **CI + tooling + metadata + docs**: the deliverable is verified by *running the gates*, not a new unit-test suite. Task 6's positive (ten dry-run green) + negative (inject a publishability defect → block; revert) + the full six-workflow-green capture are the acceptance evidence — record the CI run links + per-package verdicts in the Dev Agent Record (the 9.3/9.4 Task-5 "prove the gate bites" precedent).
+- `tool/publish_dry_run.sh` is bash — no `dart analyze`/`dart format` applies; keep it `set -euo pipefail`, shellcheck-clean (the `tool/*.sh` convention).
+- The conformance lane (`melos run conformance`) must still pass unchanged (AC1 verify-only); the three `conformance_test.dart` stay `@Tags(['conformance'])` and are not run by `melos run test`'s default lane semantics differently than today.
+
+### Project Structure Notes
+
+- `tool/publish_dry_run.sh` sits beside `tool/conformance.sh` / `tool/verify_versioning.sh` (repo-level scripts, not part of any package) — matches architecture.md:733 (`publish-dry-run.yml`) + :1130 (`melos run publish-dry`). No structural variance.
+- `publish-dry-run.yml` + `conformance.yml` are two of the six release-gate workflows (architecture.md:726-733); this story completes `publish-dry-run.yml` from skeleton + verifies `conformance.yml`, leaving the other four as-is.
+
+### References
+
+- [Source: epics/epic-9-meta-package-sample-app-v100-release-gates.md#Story 9.5 (lines 116–143)] — AC verbatim (conformance.yml runs ConformanceRunner vs all three backends, fails on any failure; publish-dry-run.yml runs `pub publish --dry-run` per package across the ten, koel_devtools deferred; all six workflows green = the PRD §12 R-5 publish precondition); the SCP-2026-06-05 gate (CopilotRuntimeAgent = v2 native-SSE from 5.10–5.11, NOT GraphQL).
+- [Source: prds/prd-koel-2026-05-27/prd.md §12 R-5] — the green six-workflow matrix is the v1.0.0 publish precondition.
+- [Source: architecture.md (lines 729, 733, 1125–1131)] — `conformance.yml` (uses koel_test's ConformanceRunner); `publish-dry-run.yml` (per-package `pub publish --dry-run`); `melos run conformance` runs ConformanceRunner against every backend adapter; `melos run publish-dry` runs `pub publish --dry-run` per package.
+- [Source: implementation-artifacts/9-4-perf-baselines-release-artifacts-benchmarks.md] — the sibling gate-completion story this mirrors: complete a placeholder workflow from skeleton, `tool/` orchestrator (zero workspace dep), `melos run <gate>` script, banner convention, "prove the gate bites" Task-5 evidence, AI-5.9 0-drift discipline; **and 9.4 already migrated conformance.yml to flutter-action** (the bootstrap fix this story relies on).
+- [Source: implementation-artifacts/9-3-dart-apitool-baselines-ci-gate.md] — the api-diff.yml gate pattern + boilerplate `publish-dry-run.yml` mirrors.
+- [Source: .github/workflows/api-diff.yml, conformance.yml, codegen-drift.yml] — the exact CI boilerplate (checkout@v4, flutter-action@v2 stable 3.44.0 cache, melos 7.8.0, bootstrap, build, `melos run <gate>`).
+- [Source: tool/conformance.sh, tool/verify_versioning.sh] — the bash house style + the canonical ten-package `release_pkgs` set; the conformance 0/79/65 exit tolerance.
+- [Source: packages/koel_lints/pubspec.yaml + packages/koel_lints/lib/main.dart] — the `analysis_server_plugin: 0.3.14` deliberate pin (with rationale comment) + the asp-framework-mandated `lib/main.dart` entrypoint — the two D4 allowlisted warnings.
+- [Source: packages/koel_{agno,langgraph,runtime}/test/conformance_test.dart + packages/koel_test/lib/src/conformance_runner.dart + .../fixtures/] — the three live backend conformance lanes + the ConformanceRunner + the captured Epic-5 fixtures (AC1 evidence).
+- [Source: SCP-2026-06-06-B] — Epic 9 resequenced ahead of the DevTools epic; v1.0.0 ships the ten packages; koel_devtools deferred post-1.0 → Epic 10.
+- [Source: .tool-versions] — Dart `3.12.0` / Flutter `3.44.0` (the reference toolchain pins; the dry-run/exit-65 behavior above was verified on this Dart).
+
+## Dev Agent Record
+
+### Agent Model Used
+
+_(dev-story fills in — recommend claude-opus-4-8 under the `/agent-flutter-engineer` persona.)_
+
+### Debug Log References
+
+### Completion Notes List
+
+### File List
+
+## Change Log
+
+| Date | Change |
+|---|---|
+| 2026-06-07 | Story 9.5 drafted (create-story): conformance.yml verify + banner refresh (already-live lane, 5.3/5.6/5.11); publish-dry-run.yml built from placeholder over the ten release packages; dry-run warnings cleared (repository/homepage + `## 1.0.0` CHANGELOG seed); koel_lints two-warning allowlist (asp entrypoint + AI-5.9 pin — D4); `tool/publish_dry_run.sh` + `melos run publish-dry`; prove-the-gate + full six-workflow-green = PRD §12 R-5 anchor for 9.9. |

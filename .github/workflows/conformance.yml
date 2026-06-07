@@ -1,13 +1,20 @@
 # conformance.yml — AG-UI conformance suite (FR-G4) via koel_test's
 # ConformanceRunner driven against each backend adapter. Story 1.5 shipped a
-# green-by-default placeholder; Story 5.3 wires the real lane (koel_agno).
+# green-by-default placeholder; Stories 5.3 (agno), 5.6 (langgraph), and 5.11
+# (copilotkit v2 — native AG-UI over SSE) wired the real lane. As of Epic 9 the
+# lane is COMPLETE: all three backend adapters — AgnoAgent (koel_agno),
+# LangGraphAgent (koel_langgraph), and the v2 native-SSE CopilotRuntimeAgent
+# (koel_runtime) — ship a `@Tags(['conformance'])` test driving ConformanceRunner
+# over the synthesized all_event_types corpus + their real captured fixtures, and
+# a genuine conformance failure exits non-zero (tool/conformance.sh's 0/79/65
+# tolerance covers only packages with NO conformance test, never a real failure).
+# Story 9.5 verifies this lane (no behavior change); the removed 5.9 dojo /
+# copilotkit-GraphQL lane (SCP-2026-06-05) is superseded by the 5.11 v2 lane.
 #
 # Offline by design: the conformance tests replay captured/synthesized fixtures
 # through a MockClient, so NO backend container runs in CI — live capture is a
-# one-time operator step (`make up-agno` → tool/capture_fixtures.dart). Stories
-# 5.6 (langgraph), 5.9 (dojo), and 5.11 (copilotkit v2 — replacing the removed 5.9
-# GraphQL copilotkit lane with native-SSE replay) extend the lane by adding their
-# own `@Tags(['conformance'])` tests; `melos run conformance` picks them up.
+# one-time operator step (`make up-agno` → tool/capture_fixtures.dart).
+# `melos run conformance` picks up every `@Tags(['conformance'])` test.
 name: Conformance
 permissions:
   contents: read
