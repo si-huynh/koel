@@ -9,34 +9,37 @@ import 'package:koel_flutter/koel_flutter.dart';
 
 import 'perf_baseline.dart';
 
-/// NFR-3 baseline harness: the **median** resident-set growth a **single active
-/// session** retains while folding one fixed streaming run.
+/// NFR-3 baseline harness: the **peak resident-set growth above a warmed floor**
+/// that driving a **single active session** to completion reaches.
 ///
 /// **Not a unit test — a regression tool.** Tagged `perf`, excluded from
 /// `melos run test`; run it on demand or in the Epic 9 perf job. It drives the
 /// real Flutter glue stack — a fresh [KoelClient] → [ChatSession] →
-/// [KoelChatController] — to completion over a **fixed, large** event sequence
-/// (so koel's retained structures dominate the GC-noisy RSS signal, exactly the
-/// "large N → stable" rationale `reducer_bench` uses), samples
-/// [ProcessInfo.currentRss] before/after each run, and records the **median** of
-/// the per-run delta. A fixed sequence bounds the conversation, so the metric
-/// reflects koel's steady footprint, **not** the unbounded consumer-held message
-/// history N-3 explicitly excludes.
+/// [KoelChatController] — to completion over a **fixed, large** event sequence,
+/// repeatedly, and records how far the process resident set climbs above the
+/// post-warmup floor (`peak_rss_growth_bytes`). A fixed sequence bounds the
+/// conversation, so the metric reflects koel's steady working-set footprint,
+/// **not** the unbounded consumer-held message history N-3 explicitly excludes.
 ///
-/// **Two stabilizations vs the original p99 capture (D3 / deferred-work.md:424).**
-/// `ProcessInfo.currentRss` is a process-wide, GC-nondeterministic signal: the
-/// raw per-run delta swung **±88–105%** run-to-run (Story 9.4 Task 0), so a
-/// single-sample p99 over it would either false-trip a > 10% gate or mask real
-/// regressions. (1) Before each `before` sample the bench runs a [_settleGc]
-/// churn-and-yield pass so `before` reflects *retained* footprint, not the prior
-/// run's in-flight garbage. (2) The recorded statistic is the **median** of the
-/// per-run deltas, not the p99 tail — N-3 is a *footprint* SLO, not a
-/// tail-latency one, so the central tendency is the faithful figure and the
-/// noise-sensitive tail is the wrong target. The recorded metric key is
-/// therefore `median_rss_delta_bytes` (renamed from the old `rss_delta_bytes`;
-/// the v1.0.0 baselines are recaptured on the reference device under this key,
-/// Task 5). The residual reference-device swing + the chosen gate band are
-/// documented in `BENCHMARKS.md`.
+/// **Why peak-growth, not the original per-run-delta p99 (D3 / deferred-work.md:424).**
+/// `ProcessInfo.currentRss` is a process-wide, GC-nondeterministic signal. The
+/// original metric — p99 of the per-run `after − before` delta — swung ±88–105%
+/// run-to-run (Story 9.4 Task 0): a fully-disposed session retains ≈ 0, so the
+/// per-run delta is dominated by GC timing, and on Linux (which returns freed
+/// pages to the OS) the **median per-run delta is even negative** (Task 5 capture
+/// recorded −504 KB) — a negative baseline makes the multiplicative gate
+/// meaningless. Neither a wider band nor a robust central statistic fixes a
+/// signal centred on zero. So the metric is the **peak working-set growth**: warm
+/// up, settle the GC to a stable floor ([_settleGc]), then drive the measured
+/// runs while tracking the maximum [ProcessInfo.currentRss], and record
+/// `peak − floor`. This is **positive, MB-scale, and stable** (a fixed workload's
+/// high-water set is deterministic up to new-space sizing), and it is exactly
+/// what a real leak inflates — a session that fails to release its messages makes
+/// the resident set climb run-over-run and the peak balloon. The metric key is
+/// `peak_rss_growth_bytes` (was `rss_delta_bytes`); the v1.0.0 baselines are
+/// recaptured on the reference device under it (Task 5). The observed
+/// reference-device swing + the chosen gate band are documented in
+/// `BENCHMARKS.md`.
 ///
 /// Plain `test` (no widget): [KoelChatController] is a `ChangeNotifier` and
 /// [ChatSession] constructs without a binding, so isolating the metric to koel's
@@ -47,36 +50,37 @@ import 'perf_baseline.dart';
 /// **Record-or-gate (never flakes) — see [recordOrGate]:** baseline absent **or**
 /// `KOEL_PERF_UPDATE` → write `test/perf/baselines/chat_session_memory_bench.json`
 /// (the committed v1.0.0 baseline); `KOEL_PERF_GATE` (Epic 9 reference-device
-/// path) → **fail when p99 regresses > 10%** (NFR-3); default local `flutter
-/// test` → log the delta, **pass unconditionally**.
+/// path) → **fail when peak growth regresses past the N-3 band** (NFR-3); default
+/// local `flutter test` → log the delta, **pass unconditionally**.
 const _deltaCount = 2000;
 const _argDeltas = 40;
 const _warmupRuns = 8;
-const _measuredRuns = 80;
+const _measuredRuns = 150;
 const _baselinePath = 'test/perf/baselines/chat_session_memory_bench.json';
 
-/// GC-settle tuning (D3). Each pass allocates a short-lived buffer to pressure
-/// the scavenger, then yields the event loop so a collection can complete before
-/// the next RSS sample. Sized to trigger a scavenge without growing the retained
-/// heap (so it stabilizes `before` rather than inflating it).
+/// Post-warmup GC-settle tuning (D3). One churn-and-yield pass batch runs once,
+/// after warmup, to collect warmup garbage so the recorded floor is the true
+/// post-warmup resident floor (not an in-flight-garbage peak). Each pass
+/// allocates a short-lived buffer to pressure the scavenger, then yields the
+/// event loop so a collection can complete.
 const _gcSettlePasses = 4;
 const _gcChurnInts = 1 << 16; // ~512 KB transient churn per pass
 
-/// N-3 gate band (D3). After GC-stabilization the median per-run RSS delta sits
-/// at the OS page-quantization floor (koel retains ≈ 0 per disposed session —
-/// no leak), so a uniform > 10% band is meaningless: a single page (4–16 KB)
-/// dwarfs 10% of a tens-of-KB median. This wider multiple is the smallest that
-/// does not false-block on the reference device's residual GC swing while still
-/// *biting a genuine (MB-scale) footprint leak* — a leak pushes the median far
-/// above the page floor. It stays a hard block, never a silent downgrade. The
-/// observed reference-device swing + this band are documented in BENCHMARKS.md.
-/// Validated on the reference device in Story 9.4 Task 5.
-const _n3GateTolerance = 4.0;
+/// N-3 gate band (D3). The peak-RSS-growth metric is positive and MB-scale, so a
+/// multiplicative band is meaningful (unlike the original per-run delta, whose
+/// reference-device median was negative). This multiple is sized to the observed
+/// reference-device run-to-run swing of the peak — wider than the compute
+/// metrics' 10% because peak working-set carries new-space-sizing + GC-schedule
+/// jitter on a shared runner — while still *biting a genuine footprint leak* (a
+/// leak climbs the resident set run-over-run, far past this band). It stays a
+/// hard block, never a silent downgrade. The observed swing + this band are
+/// documented in BENCHMARKS.md. Validated on the reference device in Task 5.
+const _n3GateTolerance = 1.5;
 
 void main() {
   group('chat_session_memory_bench', () {
     test(
-      'p99 RSS delta over a fixed streaming run',
+      'peak RSS growth over a fixed streaming run',
       () async {
         final fixedRun = _buildFixedRun();
         // Observed accumulator: an XOR of final-state fields keeps the whole drive
@@ -103,20 +107,22 @@ void main() {
           sink ^= await driveOnce();
         }
 
-        final deltas = List<double>.filled(_measuredRuns, 0);
+        // Settle warmup garbage so the floor is the true post-warmup resident
+        // set, then track how far the resident set climbs over the measured runs.
+        await _settleGc();
+        final floor = ProcessInfo.currentRss;
+        var peak = floor;
         for (var i = 0; i < _measuredRuns; i++) {
-          await _settleGc();
-          final before = ProcessInfo.currentRss;
           sink ^= await driveOnce();
-          final after = ProcessInfo.currentRss;
-          deltas[i] = (after - before).toDouble();
+          final rss = ProcessInfo.currentRss;
+          if (rss > peak) peak = rss;
         }
         expect(sink, greaterThanOrEqualTo(0));
 
         recordOrGate(
           path: _baselinePath,
-          metric: 'median_rss_delta_bytes',
-          value: percentile(deltas, 50),
+          metric: 'peak_rss_growth_bytes',
+          value: (peak - floor).toDouble(),
           sampleSize: _measuredRuns,
           label: 'chat_session_memory',
           tolerance: _n3GateTolerance,
