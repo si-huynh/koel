@@ -83,6 +83,11 @@ void main() {
           ..start();
         for (final event in events) {
           state = reducer.reduce(state, event);
+          // TEMP negative-bite check (Story 9.4 Task 5): gratuitous work to force
+          // a >10% regression and prove the gate fails. Reverted immediately.
+          for (var w = 0; w < 20000; w++) {
+            sink ^= w * event.hashCode;
+          }
         }
         stopwatch.stop();
         perEventMicros[i] =
