@@ -35,6 +35,15 @@ const _timedStarts = 3000;
 const _baselinePath = 'test/perf/baselines/cold_start_bench.json';
 const _input = RunAgentInput(threadId: 'bench-thread', runId: 'bench-run');
 
+/// Gate band. Cold-start is a tiny absolute interval (~37µs on the reference
+/// device), so GitHub shared-runner CPU-generation variance dominates it: Story
+/// 9.4 Task 5 saw it span 37–45µs across normal jobs (~22%) with no code change,
+/// and a stressed runner pushed it to 69µs. 100% absorbs that jitter while still
+/// biting a real cold-start regression (a doubled init path). The wider band vs
+/// the other compute metrics is honest about a sub-50µs metric's noise floor on a
+/// shared runner — documented in BENCHMARKS.md; a hard block.
+const _gateTolerance = 2.0;
+
 /// A terminal [AbstractAgent] whose run completes with no events — the empty
 /// cold-start workload (stands in for the not-yet-built `MockAgent.empty`).
 class _EmptyAgent implements AbstractAgent {
@@ -63,6 +72,7 @@ void main() {
         value: percentile(micros, 99),
         sampleSize: _timedStarts,
         label: 'cold_start',
+        tolerance: _gateTolerance,
       );
     });
   });
