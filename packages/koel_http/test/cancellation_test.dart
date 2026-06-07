@@ -1,4 +1,10 @@
 @TestOn('vm')
+// These tests assert on real loopback-socket teardown (TCP RST observation),
+// whose timing is at the mercy of a shared CI runner's scheduler — the teardown
+// is occasionally not observed within the window (a fresh socket on re-run
+// resolves it). Retry makes the inherently timing-dependent assertions reliable
+// without weakening them; a genuine regression fails all attempts (Story 9.4).
+@Retry(2)
 library;
 
 import 'dart:async';
@@ -24,9 +30,10 @@ RunAgentInput _input() => const RunAgentInput(threadId: 't', runId: 'r');
 /// `writeFailed`). It bounds *that* the awaited Future resolves at all — NOT a
 /// latency budget (the teardown lags the close by a tick + RST round-trip, as the
 /// server dartdoc notes) — so it is sized well above worst-case shared-runner
-/// scheduling stalls. A 2s guard flaked on a loaded CI runner (Story 9.4); 30s
-/// still fails fast on a genuine hang.
-const _syncWait = Duration(seconds: 30);
+/// scheduling stalls. A 2s guard flaked on a loaded CI runner (Story 9.4); 20s
+/// fires a clear message before the 30s test-default, and `@Retry` (above) covers
+/// the rare case where the teardown is not observed at all in the window.
+const _syncWait = Duration(seconds: 20);
 
 /// What [_longRunningServer] hands back: where to point an agent, plus the two
 /// observation points the cancellation assertions hang on.

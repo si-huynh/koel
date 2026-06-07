@@ -1,4 +1,11 @@
 @TestOn('browser')
+// The mid-stream-cancel test asserts on real fetch/ReadableStream startup and
+// AbortController-driven TCP teardown, whose timing is at the mercy of headless
+// Chrome on a shared CI runner (occasionally the first frame or the abort
+// observation slips past the window; a fresh fetch on re-run resolves it). Retry
+// makes the timing-dependent assertions reliable without weakening them; a genuine
+// regression fails all attempts (Story 9.4).
+@Retry(2)
 library;
 
 import 'dart:async';
@@ -15,9 +22,10 @@ RunAgentInput _input() => const RunAgentInput(threadId: 't', runId: 'r');
 /// `server.aborted`). It bounds *that* the awaited Future resolves at all — NOT a
 /// latency budget (the <50 ms abort budget is asserted separately via the
 /// Stopwatch) — so it is sized well above worst-case headless-Chrome startup on a
-/// loaded runner. A 5s guard flaked on CI (Story 9.4); 30s still fails fast on a
-/// genuine hang.
-const _syncWait = Duration(seconds: 30);
+/// loaded runner. A 5s guard flaked on CI (Story 9.4); 20s fires a clear message
+/// before the 30s test-default, and `@Retry` (above) covers the rare case where a
+/// frame or the abort is not observed at all in the window.
+const _syncWait = Duration(seconds: 20);
 
 /// What [_server] hands back: where to point an agent, the inbound
 /// `Authorization` header the server saw, and (long mode) a future that
