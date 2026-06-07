@@ -1,5 +1,9 @@
 # koel_langgraph
 
+[![pub package](https://img.shields.io/pub/v/koel_langgraph.svg)](https://pub.dev/packages/koel_langgraph)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![CI](https://github.com/si-huynh/koel/actions/workflows/ci.yml/badge.svg)](https://github.com/si-huynh/koel/actions/workflows/ci.yml)
+
 LangGraph backend bridge for [koel](https://github.com/si-huynh/koel), the
 premium Dart/Flutter SDK for the AG-UI protocol. `koel_langgraph` adapts a
 [LangGraph](https://github.com/langchain-ai/langgraph) agent backend to koel's
@@ -61,13 +65,14 @@ LangGraph rebuilds run state **server-side** from its checkpoint — koel perfor
 no client-side state reconstruction.
 
 **Deep** (stateful sub-tree) interrupt-resume defers to v2, tracked as
-`OQ-LangGraph-Graduation` in the koel open-questions registry (linkable once the
-docs site lands — `OQ-Docs-Framework`).
+`OQ-LangGraph-Graduation` in the koel open-questions registry.
 
 ## Documentation
 
-API reference is on the pub.dev API tab (`dart doc`). Guides will live on the
-koel docs site (framework pending — `OQ-Docs-Framework`). See the repo-root
+Guides are on the [koel docs site](https://si-huynh.github.io/koel/) — see
+[Connect LangGraph](https://si-huynh.github.io/koel/recipes/connect-langgraph) and
+[Interrupt &amp; resume](https://si-huynh.github.io/koel/recipes/interrupt-resume).
+The API reference is on the pub.dev API tab (`dart doc`); see the repo-root
 [README](../../README.md) for the package map.
 
 ## Changelog

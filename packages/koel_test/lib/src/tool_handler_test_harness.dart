@@ -117,9 +117,9 @@ final class ToolHandlerTestHarness {
   /// `'{"value":5}'`. Decode it test-side with
   /// `(jsonDecode(result.content) as Map<String, dynamic>)['value']`.
   ///
-  /// When [isReplaying] is `true`, [this.isReplaying] reads `true` for the
-  /// duration of the handler call so a replay-aware handler can skip its side
-  /// effect while still returning the recorded value.
+  /// When the `isReplaying:` argument is `true`, [ToolHandlerTestHarness.isReplaying]
+  /// reads `true` for the duration of the handler call so a replay-aware handler
+  /// can skip its side effect while still returning the recorded value.
   ///
   /// Throws [ArgumentError] (enumerating the registered names) when [name] has
   /// no handler — a typo'd name is a test-authoring mistake, not a runtime

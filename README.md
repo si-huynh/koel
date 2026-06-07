@@ -9,13 +9,14 @@
 import 'package:koel/koel.dart';
 
 final client = KoelClient(
-  agent: HttpAgent(endpoint: Uri.parse('https://your-backend/agui')),
+  agent: HttpAgent(url: Uri.parse('https://your-backend/agui')),
 );
 
-final session = client.chatSession(threadId: 'demo');
-await for (final state in session.run('Hello, agent!')) {
+final session = client.newSession();
+session.stream.listen((state) {
   print(state.messages.last.content); // streamed assistant output
-}
+});
+await session.send('Hello, agent!');
 ```
 
 > The quickstart above is the target `koel` meta-package surface; the underlying
@@ -45,9 +46,11 @@ Per-package changelogs live in each package's `CHANGELOG.md` (see the table link
 
 ## Documentation
 
-Full guides, concept docs, and the API reference will be hosted on the docs site
-(framework selection pending — tracked as `OQ-Docs-Framework`). Until then, the
-pub.dev API tab (`dart doc`) and per-package READMEs are the reference.
+Full guides, concept docs, recipes, the migration guide, and the adapter cookbook
+are on the [koel docs site](https://si-huynh.github.io/koel/) (built with
+Docusaurus — see [`docs/ADR-001-docs-framework.md`](docs/ADR-001-docs-framework.md)).
+The API reference is on each package's pub.dev API tab (`dart doc`); the
+per-package READMEs (linked in the table above) are the quick reference.
 
 ## Contributing
 

@@ -1,5 +1,9 @@
 # koel_runtime
 
+[![pub package](https://img.shields.io/pub/v/koel_runtime.svg)](https://pub.dev/packages/koel_runtime)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![CI](https://github.com/si-huynh/koel/actions/workflows/ci.yml/badge.svg)](https://github.com/si-huynh/koel/actions/workflows/ci.yml)
+
 CopilotKit runtime backend bridge for [koel](https://github.com/si-huynh/koel),
 the premium Dart/Flutter SDK for the AG-UI protocol. `koel_runtime` adapts the
 [CopilotKit](https://www.copilotkit.ai) runtime to koel's typed AG-UI event
@@ -80,8 +84,9 @@ bridge limitation. A real runtime never emits chunk shapes anyway.
 
 ## Documentation
 
-API reference is on the pub.dev API tab (`dart doc`). Guides will live on the
-koel docs site (framework pending — `OQ-Docs-Framework`). See the repo-root
+Guides are on the [koel docs site](https://si-huynh.github.io/koel/) — see
+[Connect CopilotKit runtime](https://si-huynh.github.io/koel/recipes/connect-copilotkit-runtime).
+The API reference is on the pub.dev API tab (`dart doc`); see the repo-root
 [README](../../README.md) for the package map.
 
 ## Changelog

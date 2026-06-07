@@ -1,5 +1,9 @@
 # koel_flutter
 
+[![pub package](https://img.shields.io/pub/v/koel_flutter.svg)](https://pub.dev/packages/koel_flutter)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![CI](https://github.com/si-huynh/koel/actions/workflows/ci.yml/badge.svg)](https://github.com/si-huynh/koel/actions/workflows/ci.yml)
+
 Flutter glue for [koel](https://github.com/si-huynh/koel), the premium
 Dart/Flutter SDK for the AG-UI protocol. `koel_flutter` bridges `koel_core` into
 the widget tree: a `KoelChatController`, a `KoelClientScope`, Hive and secure
@@ -14,8 +18,7 @@ import 'package:koel_flutter/koel_flutter.dart';
 ```
 
 Requires Flutter 3.38.0+ (the release that ships Dart 3.11.0). Most apps use the
-[`koel`](../koel) meta-package. The controller, scope, and storage land across
-Epic 6.
+[`koel`](../koel) meta-package.
 
 ## Session persistence
 
@@ -79,8 +82,11 @@ every PR (NFR-11) with a render smoke test:
 
 ## Documentation
 
-API reference is on the pub.dev API tab (`dart doc`). Guides will live on the
-koel docs site (framework pending — `OQ-Docs-Framework`). See the repo-root
+Guides are on the [koel docs site](https://si-huynh.github.io/koel/) — see
+[Sessions](https://si-huynh.github.io/koel/concepts/sessions),
+[Persist sessions](https://si-huynh.github.io/koel/recipes/persist-sessions), and
+[Generative UI](https://si-huynh.github.io/koel/recipes/generative-ui). The API
+reference is on the pub.dev API tab (`dart doc`); see the repo-root
 [README](../../README.md) for the package map.
 
 ## Changelog

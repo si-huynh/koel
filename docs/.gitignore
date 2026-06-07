@@ -1,0 +1,11 @@
+# Docusaurus / Node toolchain — isolated under docs/, NOT a pub-workspace member
+# (ADR-001). Keeping node_modules + build output out of git is what guarantees
+# pubspec.lock 0-drift and the AI-5.9 pins stay unmoved.
+/node_modules
+/build
+/.docusaurus
+/.cache-loader
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store

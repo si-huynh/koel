@@ -1,5 +1,9 @@
 # koel_lints
 
+[![pub package](https://img.shields.io/pub/v/koel_lints.svg)](https://pub.dev/packages/koel_lints)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![CI](https://github.com/si-huynh/koel/actions/workflows/ci.yml/badge.svg)](https://github.com/si-huynh/koel/actions/workflows/ci.yml)
+
 Analyzer plugin enforcing koel's mandatory rules, built on the first-party
 [`analysis_server_plugin`][asp] (asp) — in-SDK since Dart 3.10 / Flutter 3.38, so
 it runs inside the analysis server and reports under `dart analyze` and IDEs
@@ -74,8 +78,10 @@ Epic 9 (Story 9-5), not here.
 
 ## Documentation
 
-See the repo-root [README](../../README.md) for the package map. Changelog:
-[CHANGELOG.md](CHANGELOG.md).
+Guides are on the [koel docs site](https://si-huynh.github.io/koel/); the
+[Migration Guide](https://si-huynh.github.io/koel/migration-guide) covers the
+lint profile's semver policy. See the repo-root [README](../../README.md) for the
+package map. Changelog: [CHANGELOG.md](CHANGELOG.md).
 
 ## License
 

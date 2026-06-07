@@ -1,5 +1,9 @@
 # koel_test
 
+[![pub package](https://img.shields.io/pub/v/koel_test.svg)](https://pub.dev/packages/koel_test)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![CI](https://github.com/si-huynh/koel/actions/workflows/ci.yml/badge.svg)](https://github.com/si-huynh/koel/actions/workflows/ci.yml)
+
 Test harness for [koel](https://github.com/si-huynh/koel), the premium
 Dart/Flutter SDK for the AG-UI protocol. `koel_test` provides the testing
 toolkit: a `MockAgent`, a synthesized fixture set, a fixture loader, a
@@ -13,13 +17,13 @@ to prove they emit spec-correct AG-UI event sequences.
 import 'package:koel_test/koel_test.dart';
 ```
 
-The mock agent, fixtures, and conformance runner land across Epic 3.
-
 ## Documentation
 
-API reference is on the pub.dev API tab (`dart doc`). Guides will live on the
-koel docs site (framework pending — `OQ-Docs-Framework`). See the repo-root
-[README](../../README.md) for the package map.
+Guides are on the [koel docs site](https://si-huynh.github.io/koel/) — see the
+[Quickstart (offline)](https://si-huynh.github.io/koel/recipes/quickstart-offline)
+and the [Adapter Cookbook](https://si-huynh.github.io/koel/adapter-cookbook) for
+the conformance runner. The API reference is on the pub.dev API tab (`dart doc`);
+see the repo-root [README](../../README.md) for the package map.
 
 ## Changelog
 

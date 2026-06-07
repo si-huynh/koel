@@ -1,5 +1,9 @@
 # koel
 
+[![pub package](https://img.shields.io/pub/v/koel.svg)](https://pub.dev/packages/koel)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![CI](https://github.com/si-huynh/koel/actions/workflows/ci.yml/badge.svg)](https://github.com/si-huynh/koel/actions/workflows/ci.yml)
+
 The meta-package for [koel](https://github.com/si-huynh/koel), the premium
 Dart/Flutter SDK for the AG-UI protocol. `koel` re-exports `koel_core` +
 `koel_http` + `koel_flutter` so that `dart pub add koel` gives you the complete
@@ -13,14 +17,15 @@ single dependency.
 import 'package:koel/koel.dart';
 
 final client = KoelClient(
-  agent: HttpAgent(endpoint: Uri.parse('https://your-backend/agui')),
+  agent: HttpAgent(url: Uri.parse('https://your-backend/agui')),
 );
 ```
 
 ## Documentation
 
-See the repo-root [README](../../README.md) and the koel docs site (framework
-pending — `OQ-Docs-Framework`). API reference is on the pub.dev API tab.
+Guides, concepts, and recipes are on the [koel docs site](https://si-huynh.github.io/koel/).
+The API reference is on the pub.dev API tab (`dart doc`); see the repo-root
+[README](../../README.md) for the package map.
 
 ## Changelog
 

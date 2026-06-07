@@ -7,7 +7,7 @@
 ## The problem
 
 koel agents expose runs as `Stream<AgUiEvent>` produced by `async*` + `await for`
-(`SseParser.parse`, `MultipartGraphQLStreamParser.parse`). When a consumer
+(e.g. `SseParser.parse`). When a consumer
 `cancel()`s the subscription, Dart's cancel signal only reaches an `async*` body
 *at its next suspension point* — so relying on it to propagate a connection
 teardown **strands** the cancel and blows the sub-50 ms abort budget (NFR-8). Two
@@ -25,7 +25,7 @@ things must happen the instant the consumer cancels, neither of which the bare
 Wrap the inner stream in a `StreamController` whose `onCancel` does the teardown
 **fire-and-forget**, and race it against the budget with a one-shot watchdog
 `Timer`. Canonical implementation:
-[`abortOnCancel`](../../packages/koel_http/lib/src/connection/cancellation.dart).
+[`abortOnCancel`](https://github.com/si-huynh/koel/blob/main/packages/koel_http/lib/src/connection/cancellation.dart).
 
 ```dart
 final controller = StreamController<AgUiEvent>(sync: true);
@@ -87,4 +87,4 @@ Any koel layer that must act on consumer-cancel of an `async*` stream:
 - A watchdog `Timer` not cancelled on settle — leaks a pending timer (test
   failures, lingering isolate).
 - `catch (_) {}` swallowing a teardown error instead of letting it settle the
-  watchdog — see [no silent failures](../../CLAUDE.md).
+  watchdog — see [no silent failures](https://github.com/si-huynh/koel/blob/main/CLAUDE.md).

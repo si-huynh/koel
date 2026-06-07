@@ -1,5 +1,9 @@
 # koel_core
 
+[![pub package](https://img.shields.io/pub/v/koel_core.svg)](https://pub.dev/packages/koel_core)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![CI](https://github.com/si-huynh/koel/actions/workflows/ci.yml/badge.svg)](https://github.com/si-huynh/koel/actions/workflows/ci.yml)
+
 Foundation package for [koel](https://github.com/si-huynh/koel), the premium
 Dart/Flutter SDK for the AG-UI protocol. `koel_core` is pure Dart (no Flutter
 dependency) and defines the protocol kernel: the sealed `AgUiEvent` union, the
@@ -14,15 +18,15 @@ import 'package:koel_core/koel_core.dart';
 ```
 
 Most apps use the [`koel`](../koel) meta-package rather than depending on
-`koel_core` directly. The event kernel, pipeline, and client API land across
-Epic 2.
+`koel_core` directly.
 
 ## Documentation
 
-API reference is published on the pub.dev API tab (`dart doc`). Guides and
-concept docs will live on the koel docs site (framework pending —
-`OQ-Docs-Framework`). See the repo-root [README](../../README.md) for the
-package map.
+Guides and concept docs are on the [koel docs site](https://si-huynh.github.io/koel/)
+— start with [Events](https://si-huynh.github.io/koel/concepts/events) and
+[The reducer](https://si-huynh.github.io/koel/concepts/reducer). The API
+reference is on the pub.dev API tab (`dart doc`); see the repo-root
+[README](../../README.md) for the package map.
 
 ## Changelog
 

@@ -1,5 +1,9 @@
 # koel_agno
 
+[![pub package](https://img.shields.io/pub/v/koel_agno.svg)](https://pub.dev/packages/koel_agno)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![CI](https://github.com/si-huynh/koel/actions/workflows/ci.yml/badge.svg)](https://github.com/si-huynh/koel/actions/workflows/ci.yml)
+
 Agno backend bridge for [koel](https://github.com/si-huynh/koel), the premium
 Dart/Flutter SDK for the AG-UI protocol. `koel_agno` adapts an
 [Agno](https://github.com/agno-agi/agno) agent backend to koel's typed event
@@ -13,8 +17,6 @@ runner.
 // pubspec.yaml:  dart pub add koel_agno
 import 'package:koel_agno/koel_agno.dart';
 ```
-
-The bridge lands in Epic 5.
 
 ## Authentication
 
@@ -31,8 +33,9 @@ final agent = AgnoAgent(baseURL: Uri.parse('https://my-agno.example'), token: 'x
 
 ## Documentation
 
-API reference is on the pub.dev API tab (`dart doc`). Guides will live on the
-koel docs site (framework pending — `OQ-Docs-Framework`). See the repo-root
+Guides are on the [koel docs site](https://si-huynh.github.io/koel/) — see
+[Connect Agno](https://si-huynh.github.io/koel/recipes/connect-agno). The API
+reference is on the pub.dev API tab (`dart doc`); see the repo-root
 [README](../../README.md) for the package map.
 
 ## Changelog

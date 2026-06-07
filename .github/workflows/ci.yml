@@ -227,3 +227,28 @@ jobs:
       - if: matrix.os == 'windows-latest'
         working-directory: example
         run: flutter build windows --release
+
+  # docs (Story 9.6, FR-H6 / NFR-16) — the `dart doc` BUILD gate. Stronger than
+  # the already-green `public_member_api_docs` analyze lint: the build also fails
+  # on broken [reference] links + malformed /// example blocks that analyze
+  # passes (the 7.4 precedent). Runs `dart doc` per release package (the ten;
+  # koel_devtools excluded) and fails unless every build reports 0 warnings and
+  # 0 errors. The docs SITE (Docusaurus) is a separate JS toolchain isolated
+  # under docs/ (ADR-001) and is NOT built here — this lane gates the API
+  # reference, not the guide site. Mirrors the example-smoke in-scope-lane shape.
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.44.0
+          cache: true
+      - run: dart pub global activate melos 7.8.0
+      - run: melos bootstrap
+      # Generated *.freezed.dart (gitignored) must exist before `dart doc`, or
+      # the build errors on the missing `part` files — same reason analyze builds
+      # first.
+      - run: melos run build
+      - run: melos run docs

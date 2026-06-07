@@ -1,0 +1,25 @@
+/* koel docs — minimal theme over the Docusaurus classic defaults.
+   Infinity-blue accent (the koel brand teal), Inter/JetBrains-ish stacks. */
+
+:root {
+  --ifm-color-primary: #0e7c86;
+  --ifm-color-primary-dark: #0d707a;
+  --ifm-color-primary-darker: #0c6a72;
+  --ifm-color-primary-darkest: #0a575e;
+  --ifm-color-primary-light: #0f8892;
+  --ifm-color-primary-lighter: #108e9a;
+  --ifm-color-primary-lightest: #13a1ae;
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #3ec5d2;
+  --ifm-color-primary-dark: #2bbccb;
+  --ifm-color-primary-darker: #29b2c0;
+  --ifm-color-primary-darkest: #22939e;
+  --ifm-color-primary-light: #54cdd8;
+  --ifm-color-primary-lighter: #61d1db;
+  --ifm-color-primary-lightest: #84dce4;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
