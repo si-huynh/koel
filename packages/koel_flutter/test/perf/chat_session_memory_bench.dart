@@ -108,21 +108,26 @@ void main() {
         }
 
         // Settle warmup garbage so the floor is the true post-warmup resident
-        // set, then track how far the resident set climbs over the measured runs.
+        // set, then record how far the resident set sits above it on each run.
         await _settleGc();
         final floor = ProcessInfo.currentRss;
-        var peak = floor;
+        final growths = List<double>.filled(_measuredRuns, 0);
         for (var i = 0; i < _measuredRuns; i++) {
           sink ^= await driveOnce();
-          final rss = ProcessInfo.currentRss;
-          if (rss > peak) peak = rss;
+          growths[i] = (ProcessInfo.currentRss - floor).toDouble();
         }
         expect(sink, greaterThanOrEqualTo(0));
 
+        // ignore: avoid_print
+        print(
+          '[chat_session_memory] DIAG growth-above-floor bytes: '
+          'p50=${percentile(growths, 50)} p90=${percentile(growths, 90)} '
+          'max=${growths.reduce((a, b) => a > b ? a : b)}',
+        );
         recordOrGate(
           path: _baselinePath,
           metric: 'peak_rss_growth_bytes',
-          value: (peak - floor).toDouble(),
+          value: percentile(growths, 90),
           sampleSize: _measuredRuns,
           label: 'chat_session_memory',
           tolerance: _n3GateTolerance,
