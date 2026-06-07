@@ -4,7 +4,7 @@ baseline_commit: 2c702b78759225dbc484de439def66420f4769b7
 
 # Story 9.4: Perf baselines published as release artifacts + `BENCHMARKS.md`
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -85,6 +85,18 @@ This is the **second of the three release-gate workflows** Epic 9 completes from
   - [x] `dart format --set-exit-if-changed` the new `tool/perf/run_benchmarks.dart` + the two edited bench files (repo-root `tool/` is checked directly — `tool/format.sh` is `packages/`-only; the bench files are under `packages/` so `melos run format:check` covers them). `melos run format:check` 0-changed.
   - [x] `melos run test` SUCCESS — **unchanged**: the perf benches stay `@Tags(['perf'])`-excluded from `melos run test` + `test:coverage` (the D4/D3 edits don't change the tags). Confirm `tool/test_package.sh --exclude-tags=perf,golden` + `coverage.sh` still skip them. No new lib test (this story adds none).
   - [x] `melos run api-diff` (9.3 gate) still **green** — 9.4 touches no `lib/src/**` and adds no public symbol, so the API surface is unchanged. `melos run verify:versioning` still green (no release-set change). The other five workflows untouched.
+
+### Review Findings
+
+> Adversarial code review (2026-06-07), 3 layers (Blind Hunter / Edge Case Hunter / Acceptance Auditor). All 4 ACs verified satisfied; scope within disclosed bounds; PRD correctly not edited (D7). 7 patch findings, 0 decision-needed, 0 defer, 6 dismissed as noise.
+
+- [x] [Review][Patch] Four bench dartdocs still advertise the PRD "> 10%" band while the code gates at +100% (`_gateTolerance = 2.0`) — self-contradicting comment (CLAUDE.md bans lying comments). The auditor undercounted as 3; verification found **4** [packages/koel_core/test/perf/reducer_bench.dart:28, packages/koel_core/test/perf/cold_start_bench.dart:18, packages/koel_http/test/perf/sse_parse_bench.dart:29, packages/koel_flutter/test/perf/streaming_jank_bench.dart:41]
+- [x] [Review][Patch] Orchestrator robustness: `Process.start` is uncaught (a missing `flutter`/`dart` crashes `main` with no per-bench summary) and pass/fail rests solely on `exitCode == 0` with no positive assertion that a metric line was emitted in gate mode — an exit-0-without-metric path would be a vacuous pass (the exact silent-no-op this story targets) [tool/perf/run_benchmarks.dart:169-196]
+- [x] [Review][Patch] `recordOrGate` divides by `baselineValue` with no zero-guard → a `0.0` baseline (reachable if N-3 `peak == floor`, or a zeroed JSON) yields NaN/Infinity delta and a no-op/false gate; live baselines are non-zero so defensive, but the precise-failure design should cover it. All three copies [packages/koel_core/test/perf/perf_baseline.dart:92, packages/koel_http/test/perf/perf_baseline.dart, packages/koel_flutter/test/perf/perf_baseline.dart]
+- [x] [Review][Patch] Orchestrator header comment labels N-3 as "RSS footprint median" but the metric is `peak_rss_growth_bytes` (the median was explicitly rejected per D3) — misleading to the next reader [tool/perf/run_benchmarks.dart header]
+- [x] [Review][Patch] `_settleGc` dartdoc still says the following `before` sample reflects retained footprint, but the per-run `before` sample was removed in this diff (now a single floor sample) — stale comment [packages/koel_flutter/test/perf/chat_session_memory_bench.dart:961-967]
+- [x] [Review][Patch] BENCHMARKS.md cites three different N-3 observed-swing upper bounds for the same observation (4.4–15.5 / 4.4–13.7 MB) and the bench says 4.4–13.2 MB — reconcile to one figure (the file is "the contract") [BENCHMARKS.md:228, BENCHMARKS.md:290, packages/koel_flutter/test/perf/chat_session_memory_bench.dart:902]
+- [x] [Review][Patch] `_extractMetricLine` last-wins substring match on `[` + `delta=` could be shadowed by a `flutter test` framework log line containing `delta=`; cosmetic (the gate verdict uses the exit code, not this line) but the displayed delta can mislead [tool/perf/run_benchmarks.dart:203-215]
 
 ## Dev Notes
 

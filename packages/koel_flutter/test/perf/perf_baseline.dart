@@ -98,6 +98,14 @@ void recordOrGate({
     );
   }
   final baselineValue = rawMetric.toDouble();
+  if (baselineValue == 0) {
+    fail(
+      '[$label] baseline "$metric" at $path is 0 — a multiplicative gate '
+      '(value > baseline * tolerance) is meaningless against zero (any '
+      'positive sample fails, delta is NaN/Infinity); re-record with '
+      'KOEL_PERF_UPDATE',
+    );
+  }
 
   final deltaPct = (value - baselineValue) / baselineValue * 100;
   final sign = deltaPct >= 0 ? '+' : '';

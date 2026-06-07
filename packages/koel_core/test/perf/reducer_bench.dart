@@ -25,8 +25,8 @@ import 'perf_baseline.dart';
 ///   `test/perf/baselines/reducer_bench.json`, pass (captures the v1.0.0
 ///   baseline);
 /// - `KOEL_PERF_GATE` set (the CI reference-device path, Epic 9
-///   `perf-bench.yml`) → measure, **fail when p99 regresses > 10%** vs the
-///   committed baseline (NFR-2);
+///   `perf-bench.yml`) → measure, **fail when p99 regresses past the gate
+///   band** (see [_gateTolerance] below) vs the committed baseline (NFR-2);
 /// - default local `dart test` → measure, log the delta, **pass
 ///   unconditionally** (convention §6 "no flaky tests").
 ///
@@ -36,8 +36,8 @@ import 'perf_baseline.dart';
 /// timed via [Stopwatch.elapsedTicks] ÷ [Stopwatch.frequency] (→ fractional µs),
 /// **not** `elapsedMicroseconds`: the latter floors the whole-sweep duration to
 /// an integer microsecond before the ÷28, so on fast reference hardware a
-/// sub-µs sweep would record `0.0` and the `value <= baseline * 1.10` gate would
-/// silently always pass (D4 / deferred-work.md:285). Ticks resolution removes
+/// sub-µs sweep would record `0.0` and the `value <= baseline * tolerance` gate
+/// would silently always pass (D4 / deferred-work.md:285). Ticks resolution removes
 /// that truncation; the metric key (`p99_micros_per_event`) and gate are
 /// unchanged — only the measurement precision improves.
 const _warmupSweeps = 500;

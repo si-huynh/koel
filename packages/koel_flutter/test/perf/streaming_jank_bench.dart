@@ -38,8 +38,9 @@ import 'perf_baseline.dart';
 /// work exceeded the 16 ms (= 16000 µs) budget — the human-readable NFR-5 line.
 /// **Record-or-gate (never flakes) — see [recordOrGate]:** baseline absent **or**
 /// `KOEL_PERF_UPDATE` → write the committed v1.0.0 baseline; `KOEL_PERF_GATE`
-/// (Epic 9 reference-device path) → **fail when p99 regresses > 10%** (NFR-5);
-/// default local `flutter test` → log the delta, **pass unconditionally**.
+/// (Epic 9 reference-device path) → **fail when p99 regresses past the gate
+/// band** (see [_gateTolerance] below) (NFR-5); default local `flutter test` →
+/// log the delta, **pass unconditionally**.
 const _frame = Duration(milliseconds: 16);
 const _frameBudgetMicros = 16000;
 const _warmupEvents = 50;

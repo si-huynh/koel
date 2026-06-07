@@ -165,7 +165,7 @@ development_status:
   9-1-koel-meta-package-versioning: done
   9-2-repo-root-sample-app: done
   9-3-dart-apitool-baselines-ci-gate: done
-  9-4-perf-baselines-release-artifacts-benchmarks: review
+  9-4-perf-baselines-release-artifacts-benchmarks: done
   9-5-conformance-publish-dry-run-green: backlog
   9-6-docs-site-scaffold-readmes-final: backlog
   9-7-prd-addendum-reconciliation: backlog

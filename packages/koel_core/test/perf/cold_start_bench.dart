@@ -15,8 +15,9 @@ import 'perf_baseline.dart';
 /// **Not a unit test — a regression tool.** Tagged `perf`, excluded from
 /// `melos run test`. Same record-or-gate contract as `reducer_bench` (see
 /// [recordOrGate]): records the v1.0.0 baseline when absent / under
-/// `KOEL_PERF_UPDATE`, **gates > 10% regression** under `KOEL_PERF_GATE` (Epic 9
-/// reference device), logs-and-passes by default so it never flakes.
+/// `KOEL_PERF_UPDATE`, **gates regressions past the band** (see [_gateTolerance]
+/// below) under `KOEL_PERF_GATE` (Epic 9 reference device), logs-and-passes by
+/// default so it never flakes.
 ///
 /// **Measured interval (AC2, fixed):** the [Stopwatch] starts immediately before
 /// `KoelClient(agent: ...)` and stops the moment `runRaw(...).listen(...)`

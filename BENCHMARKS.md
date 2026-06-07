@@ -35,7 +35,7 @@ Task 5):
 |---|---|
 | N-1 sse_parse | ~4.0–4.9 µs/event |
 | N-2 reducer | ~1.4–2.2 µs/event (up to ~54% over baseline on a slow instance) |
-| N-3 chat_session_memory (peak) | ~4.4–15.5 MB (~3×) |
+| N-3 chat_session_memory (peak) | ~4.4–13.7 MB (~3×) |
 | N-4 cold_start | ~37–69 µs (up to ~86% on a slow/contended instance) |
 | N-5 streaming_jank | ~2.55–3.30 ms |
 

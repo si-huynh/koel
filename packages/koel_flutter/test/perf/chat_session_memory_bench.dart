@@ -69,7 +69,7 @@ const _gcChurnInts = 1 << 16; // ~512 KB transient churn per pass
 /// N-3 gate band (D3). The peak-RSS-growth metric is positive and MB-scale, so a
 /// multiplicative band is meaningful (unlike the original per-run delta, whose
 /// reference-device median was negative). The reference-device peak swung
-/// **4.4–13.2 MB (~3×) run-to-run** (Task 5 captures) from shared-runner
+/// **4.4–13.7 MB (~3×) run-to-run** (Task 5 captures) from shared-runner
 /// old-space GC nondeterminism — irreducible without a fixed self-hosted device.
 /// This `4.0` band is the smallest honest multiple that clears that swing from
 /// any captured baseline while still *biting a genuine leak*: a session that
@@ -143,7 +143,7 @@ void main() {
 /// Best-effort GC settle before an RSS sample (D3). Dart exposes no synchronous
 /// force-GC outside the VM service, so this pressures the scavenger with a burst
 /// of short-lived allocations and yields the event loop between passes, letting a
-/// collection complete so the following `before` sample reflects retained
+/// collection complete so the following `floor` sample reflects retained
 /// footprint rather than the prior run's in-flight garbage (the ±88% noise
 /// source, deferred-work.md:424). The churn is read back so the optimizer can't
 /// elide it.

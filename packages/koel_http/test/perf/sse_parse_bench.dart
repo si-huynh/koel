@@ -26,8 +26,8 @@ import 'perf_baseline.dart';
 ///   `test/perf/baselines/sse_parse_bench.json`, pass (captures the v1.0.0
 ///   baseline);
 /// - `KOEL_PERF_GATE` set (the CI reference-device path, Epic 9
-///   `perf-bench.yml`) → measure, **fail when p99 regresses > 10%** vs the
-///   committed baseline (NFR-1);
+///   `perf-bench.yml`) → measure, **fail when p99 regresses past the gate
+///   band** (see [_gateTolerance] below) vs the committed baseline (NFR-1);
 /// - default local `dart test` → measure, log the delta + derived events/sec,
 ///   **pass unconditionally** (convention §6 "no flaky tests").
 ///

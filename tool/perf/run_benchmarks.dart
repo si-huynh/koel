@@ -15,7 +15,7 @@
 //
 //   - N-1 sse_parse           koel_http     dart test    (SSE parse µs/event)
 //   - N-2 reducer             koel_core     dart test    (reduce µs/event)
-//   - N-3 chat_session_memory koel_flutter  flutter test (RSS footprint median)
+//   - N-3 chat_session_memory koel_flutter  flutter test (peak RSS growth)
 //   - N-4 cold_start          koel_core     dart test    (client cold-start µs)
 //   - N-5 streaming_jank      koel_flutter  flutter test (UI-thread µs/delta)
 //
@@ -166,13 +166,29 @@ Future<_Result> _runBench(_Bench bench, String repoRoot, String envKey) async {
     '--tags perf  (cwd: packages/${bench.package})',
   );
 
-  final process = await Process.start(
-    bench.runner.executable,
-    ['test', bench.file, '--tags', 'perf'],
-    workingDirectory: workdir,
-    environment: {envKey: '1'},
-    runInShell: Platform.isWindows, // resolve flutter/dart shims on Windows
-  );
+  final Process process;
+  try {
+    process = await Process.start(
+      bench.runner.executable,
+      ['test', bench.file, '--tags', 'perf'],
+      workingDirectory: workdir,
+      environment: {envKey: '1'},
+      runInShell: Platform.isWindows, // resolve flutter/dart shims on Windows
+    );
+  } on ProcessException catch (e) {
+    // The runner binary is missing/unspawnable (e.g. `flutter` not on PATH on a
+    // misconfigured lane). Fail this bench cleanly so the aggregate summary
+    // still prints, rather than crashing main with an uncaught exception.
+    stderr.writeln(
+      '  ✗ could not start ${bench.runner.executable}: ${e.message}',
+    );
+    return _Result(
+      bench: bench,
+      passed: false,
+      summaryLine:
+          'runner "${bench.runner.executable}" could not start (${e.message})',
+    );
+  }
 
   // Forward both streams live; tee stdout so the metric line can be summarized.
   final outBuffer = StringBuffer();
@@ -189,10 +205,32 @@ Future<_Result> _runBench(_Bench bench, String repoRoot, String envKey) async {
   final exitCode = await process.exitCode;
   await Future.wait([stdoutDone, stderrDone]);
 
+  final metricLine = _extractMetricLine(outBuffer.toString());
+
+  // In GATE mode a zero exit is necessary but NOT sufficient: the bench must
+  // actually have measured + gated, which it signals by printing its
+  // `[label] …delta=…` line. A zero exit with no such line means the gated test
+  // never ran (the `--tags perf` filter matched nothing, or a refactor dropped
+  // the body) — a vacuous pass, the exact silent-no-op this gate exists to
+  // prevent. Treat it as a failure. CAPTURE mode prints `recorded baseline …`
+  // instead and is verified by the committed JSON diff, so it is exempt.
+  final vacuous =
+      envKey == 'KOEL_PERF_GATE' &&
+      exitCode == 0 &&
+      !(metricLine?.contains('delta=') ?? false);
+  if (vacuous) {
+    stderr.writeln(
+      '  ✗ ${bench.label} exited 0 but emitted no metric line — the gated '
+      'test did not run (vacuous pass).',
+    );
+  }
+
   return _Result(
     bench: bench,
-    passed: exitCode == 0,
-    summaryLine: _extractMetricLine(outBuffer.toString()),
+    passed: exitCode == 0 && !vacuous,
+    summaryLine: vacuous
+        ? 'NO METRIC — gated test did not run (vacuous pass)'
+        : metricLine,
   );
 }
 
@@ -204,10 +242,13 @@ String? _extractMetricLine(String output) {
   String? found;
   for (final line in const LineSplitter().convert(output)) {
     final trimmed = line.trim();
-    if (trimmed.startsWith('[') && trimmed.contains('delta=')) {
+    if (!trimmed.startsWith('[')) continue;
+    // The bench's metric line carries both `baseline=` and `delta=` (gate + log
+    // modes); requiring both anchors past a stray `flutter test` timestamp log
+    // line like `[ +123 ms] …delta=…` that happens to contain one token.
+    if (trimmed.contains('baseline=') && trimmed.contains('delta=')) {
       found = trimmed;
-    } else if (trimmed.startsWith('[') &&
-        trimmed.contains('recorded baseline')) {
+    } else if (trimmed.contains('recorded baseline')) {
       found = trimmed;
     }
   }
