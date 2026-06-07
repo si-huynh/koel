@@ -68,14 +68,17 @@ const _gcChurnInts = 1 << 16; // ~512 KB transient churn per pass
 
 /// N-3 gate band (D3). The peak-RSS-growth metric is positive and MB-scale, so a
 /// multiplicative band is meaningful (unlike the original per-run delta, whose
-/// reference-device median was negative). This multiple is sized to the observed
-/// reference-device run-to-run swing of the peak — wider than the compute
-/// metrics' 10% because peak working-set carries new-space-sizing + GC-schedule
-/// jitter on a shared runner — while still *biting a genuine footprint leak* (a
-/// leak climbs the resident set run-over-run, far past this band). It stays a
-/// hard block, never a silent downgrade. The observed swing + this band are
-/// documented in BENCHMARKS.md. Validated on the reference device in Task 5.
-const _n3GateTolerance = 1.5;
+/// reference-device median was negative). The reference-device peak swung
+/// **4.4–13.2 MB (~3×) run-to-run** (Task 5 captures) from shared-runner
+/// old-space GC nondeterminism — irreducible without a fixed self-hosted device.
+/// This `4.0` band is the smallest honest multiple that clears that swing from
+/// any captured baseline while still *biting a genuine leak*: a session that
+/// failed to release its history would climb the resident set by tens of MB over
+/// the 150 measured runs, far past 4×. Sub-MB footprint creep is below RSS
+/// resolution on a shared runner and is NOT claimed to be caught — documented
+/// honestly in BENCHMARKS.md (no silent cap). It stays a hard block, never a
+/// silent downgrade.
+const _n3GateTolerance = 4.0;
 
 void main() {
   group('chat_session_memory_bench', () {
@@ -108,26 +111,25 @@ void main() {
         }
 
         // Settle warmup garbage so the floor is the true post-warmup resident
-        // set, then record how far the resident set sits above it on each run.
+        // set, then track the high-water resident growth over the measured runs.
+        // The peak (max) is the most stable cross-run statistic for this signal —
+        // the median is dominated by where the GC-driven RSS climb happens to land
+        // (it swung ~68× run-to-run on the reference device), while the peak is
+        // the saturated high-water and is exactly what a leak inflates.
         await _settleGc();
         final floor = ProcessInfo.currentRss;
-        final growths = List<double>.filled(_measuredRuns, 0);
+        var peak = floor;
         for (var i = 0; i < _measuredRuns; i++) {
           sink ^= await driveOnce();
-          growths[i] = (ProcessInfo.currentRss - floor).toDouble();
+          final rss = ProcessInfo.currentRss;
+          if (rss > peak) peak = rss;
         }
         expect(sink, greaterThanOrEqualTo(0));
 
-        // ignore: avoid_print
-        print(
-          '[chat_session_memory] DIAG growth-above-floor bytes: '
-          'p50=${percentile(growths, 50)} p90=${percentile(growths, 90)} '
-          'max=${growths.reduce((a, b) => a > b ? a : b)}',
-        );
         recordOrGate(
           path: _baselinePath,
           metric: 'peak_rss_growth_bytes',
-          value: percentile(growths, 90),
+          value: (peak - floor).toDouble(),
           sampleSize: _measuredRuns,
           label: 'chat_session_memory',
           tolerance: _n3GateTolerance,
