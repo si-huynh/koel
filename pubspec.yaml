@@ -69,3 +69,6 @@ melos:
     api-diff:
       description: "Public-API breaking-change gate (Story 9.3, NFR-14 / AR-12 / D7) — runs dart_apitool per package, diffing the current public surface against the committed packages/<pkg>/.api-baseline/<pkg>.json. Default verifies (breaking blocks, additive warns); pass `-- --update` to refresh the baselines. Shells out to the GLOBAL dart-apitool 0.23.1 (never a workspace dep). See tool/verify_api_surface.dart."
       run: dart run "$MELOS_ROOT_PATH/tool/verify_api_surface.dart"
+    perf:
+      description: "Regression-relative perf SLO gate (Story 9.4, NFR-1..NFR-5) — runs the five test/perf/*_bench.dart harnesses (sse_parse/reducer/chat_session_memory/cold_start/streaming_jank) per package under KOEL_PERF_GATE; any metric past its band (>10%, N-3 wider — see BENCHMARKS.md) fails the job. Pass `-- --update` to recapture the committed baselines on the reference device (reviewed-PR flow). Pure dart:io orchestrator, never a workspace dep. See tool/perf/run_benchmarks.dart."
+      run: dart run "$MELOS_ROOT_PATH/tool/perf/run_benchmarks.dart"

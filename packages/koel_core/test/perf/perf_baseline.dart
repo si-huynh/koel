@@ -39,13 +39,18 @@ double percentile(List<double> samples, int p) {
 /// the running Dart [Platform.version] are recorded alongside it for context.
 /// [label] prefixes the human-readable log/gate messages. Lower [value] is
 /// better (it is a duration in microseconds); the gate fires when
-/// `value > baseline * 1.10`.
+/// `value > baseline * tolerance`. [tolerance] defaults to `1.10` (the PRD's
+/// > 10% regression band); a metric whose reference-device signal is
+/// legitimately noisier than the compute metrics (e.g. a page-quantized RSS
+/// footprint, N-3) may pass a wider documented band — see the caller +
+/// BENCHMARKS.md. It stays a *block*, never a silent downgrade.
 void recordOrGate({
   required String path,
   required String metric,
   required double value,
   required int sampleSize,
   required String label,
+  double tolerance = 1.10,
 }) {
   final file = File(path);
   final env = Platform.environment;
@@ -84,19 +89,28 @@ void recordOrGate({
   }
   final baselineValue = rawMetric.toDouble();
 
+  final deltaPct = (value - baselineValue) / baselineValue * 100;
+  final sign = deltaPct >= 0 ? '+' : '';
+
   if (env.containsKey('KOEL_PERF_GATE')) {
+    final bandPct = ((tolerance - 1) * 100).toStringAsFixed(0);
+    // Print the delta in gate mode too (not only on failure) so every bench's
+    // number is visible in the perf job log (AC2), then enforce the band.
+    // ignore: avoid_print
+    print(
+      '[$label] $metric=${rounded}us baseline=${baselineValue}us '
+      'delta=$sign${deltaPct.toStringAsFixed(1)}% (gate band +$bandPct%)',
+    );
     expect(
       value,
-      lessThanOrEqualTo(baselineValue * 1.10),
+      lessThanOrEqualTo(baselineValue * tolerance),
       reason:
-          '[$label] $metric regressed > 10%: ${rounded}us vs '
+          '[$label] $metric regressed > $bandPct%: ${rounded}us vs '
           'baseline ${baselineValue}us (NFR regression gate)',
     );
     return;
   }
 
-  final deltaPct = (value - baselineValue) / baselineValue * 100;
-  final sign = deltaPct >= 0 ? '+' : '';
   // ignore: avoid_print
   print(
     '[$label] $metric=${rounded}us baseline=${baselineValue}us '

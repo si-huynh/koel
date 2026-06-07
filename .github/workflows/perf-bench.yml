@@ -1,5 +1,35 @@
-# perf-bench.yml — placeholder. Real body wired in Epic 9.
-# Regression-relative perf SLOs (N-1..N-5) via test/perf/*_bench.dart.
+# perf-bench.yml — regression-relative perf SLO gate (Story 9.4, NFR-1..NFR-5).
+# Runs the five committed test/perf/*_bench.dart harnesses (sse_parse N-1,
+# reducer N-2, chat_session_memory N-3, cold_start N-4, streaming_jank N-5) via
+# tool/perf/run_benchmarks.dart and fails the job if any gated metric regresses
+# past its band vs the committed reference-device baseline. The compute metrics
+# use the PRD's > 10% band; N-3 (a page-quantized RSS footprint) uses a wider
+# documented band — see BENCHMARKS.md.
+#
+# ## Reference device (D1)
+#
+# The reference device is THIS runner: ubuntu-latest, GitHub-hosted, pinned
+# Flutter 3.44.0 / Dart 3.12.0 (.tool-versions), identical to api-diff.yml /
+# ci.yml's Flutter lanes. subosito/flutter-action provides both `flutter` and a
+# compatible `dart`: two benches run under `flutter test` (chat_session_memory,
+# streaming_jank import flutter_test); the rest under `dart test`. `melos run
+# build` regenerates koel_core's *.freezed.dart (gitignored) so the bench imports
+# of the state/event types compile — mirrors api-diff.yml / codegen-drift.yml.
+# Hosted runners are not a fixed CPU, so absolute-µs metrics carry shared-runner
+# jitter; the regression band (relative to a baseline captured on the same runner
+# class) is what absorbs it. A fixed self-hosted device is a possible post-1.0
+# hardening, not a v1.0.0 blocker.
+#
+# ## Lanes
+#
+#   gate     (pull_request + push to main) — run_benchmarks.dart under
+#            KOEL_PERF_GATE; a > band regression blocks the merge.
+#   capture  (workflow_dispatch, manual)   — run_benchmarks.dart --update
+#            (KOEL_PERF_UPDATE) recaptures the five baselines ON the reference
+#            device and uploads them as a build artifact for a dev to download
+#            and commit in a reviewed PR (D2; Story 9.4 Task 5 / 9.9 publish).
+#            CI never auto-commits a baseline — the committed-baseline change
+#            always goes through a reviewed PR.
 name: Perf bench
 permissions:
   contents: read
@@ -8,8 +38,43 @@ on:
     branches: [main]
   push:
     branches: [main]
+  workflow_dispatch:
 jobs:
-  placeholder:
+  gate:
+    if: github.event_name != 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Wired in Epic 9"
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.44.0
+          cache: true
+      - run: dart pub global activate melos 7.8.0
+      - run: melos bootstrap
+      - run: melos run build
+      # The gate: run all five benches under KOEL_PERF_GATE. A > band regression
+      # → non-zero exit blocks the PR; the per-bench delta + band is in this log.
+      - run: melos run perf
+
+  capture:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.44.0
+          cache: true
+      - run: dart pub global activate melos 7.8.0
+      - run: melos bootstrap
+      - run: melos run build
+      # Recapture the five baselines on the reference device, then upload them.
+      # The dev downloads this artifact and commits the JSONs in a reviewed PR.
+      - run: melos run perf -- --update
+      - uses: actions/upload-artifact@v4
+        with:
+          name: perf-baselines-reference-device
+          path: packages/**/test/perf/baselines/*.json
+          if-no-files-found: error
