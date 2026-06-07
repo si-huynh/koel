@@ -26,8 +26,8 @@ dev_dependencies:
 melos:
   scripts:
     analyze:
-      description: Run `dart analyze .` per package (NFR-13 gate).
-      exec: dart analyze .
+      description: "Run `dart analyze .` per package SEQUENTIALLY (-c 1, NFR-13 gate). The koel_lints analysis_server_plugin compiles to one shared AOT snapshot under ~/.dartServer/.plugin_manager; parallel `melos exec` makes packages race on that cache (plugin.aot 'file too short' / invalid-AOT / analysis-server Bus-error crash, seen on CI). Sequential = the snapshot compiles once, then is reused."
+      run: melos exec --concurrency 1 -- dart analyze .
     test:
       description: Run `dart test` per package (CWD = package root for fixture reads, deferred-work.md :158), excluding the perf benches. Scaffold packages with no test files yet (exit 79) are tolerated; real failures propagate. See tool/test_package.sh.
       exec: bash "$MELOS_ROOT_PATH/tool/test_package.sh"
