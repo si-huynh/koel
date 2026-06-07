@@ -33,20 +33,24 @@ Task 5):
 
 | metric | observed spread (no code change) |
 |---|---|
-| N-1 sse_parse | ~4.0–4.7 µs/event (~17%) |
-| N-2 reducer | ~1.4–1.6 µs/event (~7–13%) |
-| N-3 chat_session_memory (peak) | ~4.4–13.7 MB (~3×) |
-| N-4 cold_start | ~37–69 µs (~22% typical, up to ~86% on a contended runner) |
-| N-5 streaming_jank | ~2.55–3.16 ms (up to ~24%) |
+| N-1 sse_parse | ~4.0–4.9 µs/event |
+| N-2 reducer | ~1.4–2.2 µs/event (up to ~54% over baseline on a slow instance) |
+| N-3 chat_session_memory (peak) | ~4.4–15.5 MB (~3×) |
+| N-4 cold_start | ~37–69 µs (up to ~86% on a slow/contended instance) |
+| N-5 streaming_jank | ~2.55–3.30 ms |
 
-The gate bands (below) are sized **above** each metric's observed shared-runner
-variance, so the gate does not false-trip on runner jitter, while still biting a
-real regression (an algorithmic change is many ×, not tens of %). The PRD's flat
-"> 10%" is the default for a *fixed* reference device; on a shared runner it is
-empirically too tight for these absolute-time metrics, so the bands are widened
-and documented here rather than left to flake (a flaky gate is worthless). A
-dedicated self-hosted fixed reference device — which would permit much tighter
-bands — is a possible post-1.0 hardening, not a v1.0.0 blocker.
+A GitHub-hosted runner can land on hardware ~**2× slower** than the one a baseline
+was captured on: with **no code change**, a single slow instance ran reducer +54%
+and cold-start +86% over their baselines. The gate bands (below) are therefore
+sized to clear that full runner-speed variance — the absolute-time compute metrics
+(N-1/N-2/N-4/N-5) all use **+100%**, N-3 (memory) uses **+300%** — so the gate
+does not false-trip on a slow instance, while still biting a real regression (an
+algorithmic change is many ×, not tens of %). The PRD's flat "> 10%" is the
+default for a *fixed* reference device; on a shared runner it is empirically far
+too tight, so the bands are widened and documented here rather than left to flake
+(a flaky gate is worthless). A dedicated self-hosted fixed reference device —
+which would permit much tighter bands — is a possible post-1.0 hardening, not a
+v1.0.0 blocker.
 
 ## 2. The five benchmarks
 
@@ -59,7 +63,7 @@ bands — is a possible post-1.0 hardening, not a v1.0.0 blocker.
   stream; `SseParser.parse` drains it to completion. 50 warm-up sweeps, 300 timed
   sweeps; the p99 of the per-event time. Throughput (events/sec = `1e6 / µs`) is
   logged as the derived human figure.
-- **v1.0.0 baseline:** `4.731` µs/event (≈ 211k events/sec) · **band: +50%**
+- **v1.0.0 baseline:** `4.731` µs/event (≈ 211k events/sec) · **band: +100%**
 
 ### N-2 — Reducer fold (NFR-2)
 
@@ -71,7 +75,7 @@ bands — is a possible post-1.0 hardening, not a v1.0.0 blocker.
   fold is timed via `Stopwatch.elapsedTicks ÷ frequency` (fractional µs) — **not**
   `elapsedMicroseconds`, which floors the whole-sweep duration to an integer µs
   and could record `0.0` on fast hardware, silently disabling the gate.
-- **v1.0.0 baseline:** `1.455` µs/event · **band: +50%**
+- **v1.0.0 baseline:** `1.455` µs/event · **band: +100%**
 
 ### N-3 — Single-session memory footprint (NFR-3)
 
@@ -125,7 +129,7 @@ bands — is a possible post-1.0 hardening, not a v1.0.0 blocker.
   so this measures the **UI-thread work per event** that would consume a frame's
   budget — a deliberate host proxy. Literal real-device frame-raster timing during
   continuous streaming is the post-1.0 device matrix (AR-17), **not** covered here.
-- **v1.0.0 baseline:** `2798.0` µs · **band: +50%**
+- **v1.0.0 baseline:** `2798.0` µs · **band: +100%**
 
 ## 3. Release artifacts
 
