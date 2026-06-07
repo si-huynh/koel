@@ -20,6 +20,14 @@ import 'package:test/test.dart';
 /// A minimal run payload — these tests assert on cancellation, not body shape.
 RunAgentInput _input() => const RunAgentInput(threadId: 't', runId: 'r');
 
+/// Hang-guard for the loopback-server synchronization points (`firstEvent`,
+/// `writeFailed`). It bounds *that* the awaited Future resolves at all — NOT a
+/// latency budget (the teardown lags the close by a tick + RST round-trip, as the
+/// server dartdoc notes) — so it is sized well above worst-case shared-runner
+/// scheduling stalls. A 2s guard flaked on a loaded CI runner (Story 9.4); 30s
+/// still fails fast on a genuine hang.
+const _syncWait = Duration(seconds: 30);
+
 /// What [_longRunningServer] hands back: where to point an agent, plus the two
 /// observation points the cancellation assertions hang on.
 typedef _Server = ({
@@ -238,7 +246,7 @@ void main() {
       });
       addTearDown(sub.cancel);
 
-      await firstSeen.future.timeout(const Duration(seconds: 2));
+      await firstSeen.future.timeout(_syncWait);
       final countAtCancel = events.length;
 
       clock.start();
@@ -279,7 +287,7 @@ void main() {
       });
       addTearDown(sub.cancel);
 
-      await firstSeen.future.timeout(const Duration(seconds: 2));
+      await firstSeen.future.timeout(_syncWait);
       expect(connects, 1, reason: 'onConnect fired once on headers-received');
 
       clock.start();
@@ -312,13 +320,13 @@ void main() {
       });
       addTearDown(sub.cancel);
 
-      await firstSeen.future.timeout(const Duration(seconds: 2));
+      await firstSeen.future.timeout(_syncWait);
       await sub.cancel();
 
       // The owned client closes with `force: true`; the server's next writes
       // fail once the socket is gone — proving a real TCP teardown, not just a
       // koel-side drop.
-      await server.writeFailed.timeout(const Duration(seconds: 2));
+      await server.writeFailed.timeout(_syncWait);
     });
 
     test('synthesis on — cancel mid-chunk-envelope aborts <50 ms and flushes '
@@ -339,7 +347,7 @@ void main() {
       });
       addTearDown(sub.cancel);
 
-      await firstSeen.future.timeout(const Duration(seconds: 2));
+      await firstSeen.future.timeout(_syncWait);
       final countAtCancel = events.length;
       // The first synthesized event is the START — proving synthesis was live.
       expect(events.first, isA<ToolCallStartEvent>());
@@ -382,7 +390,7 @@ void main() {
           });
           addTearDown(sub.cancel);
 
-          await firstSeen.future.timeout(const Duration(seconds: 2));
+          await firstSeen.future.timeout(_syncWait);
           final countAtCancel = events.length;
 
           clock.start();
@@ -413,7 +421,7 @@ void main() {
           });
           addTearDown(sub.cancel);
 
-          await firstSeen.future.timeout(const Duration(seconds: 2));
+          await firstSeen.future.timeout(_syncWait);
           clock.start();
           await sub.cancel();
 
@@ -456,7 +464,7 @@ void main() {
             events.add(e);
             if (!firstSeen.isCompleted) firstSeen.complete();
           });
-          await firstSeen.future.timeout(const Duration(seconds: 2));
+          await firstSeen.future.timeout(_syncWait);
           final countAtCancel = events.length;
 
           await sub.cancel();
@@ -493,7 +501,7 @@ void main() {
         addTearDown(evSub.cancel);
 
         final sendFuture = session.send('hi');
-        await firstEvent.future.timeout(const Duration(seconds: 2));
+        await firstEvent.future.timeout(_syncWait);
         session.cancel();
         await sendFuture;
 
@@ -517,7 +525,7 @@ void main() {
         addTearDown(evSub.cancel);
 
         final sendFuture = session.send('hi');
-        await firstEvent.future.timeout(const Duration(seconds: 2));
+        await firstEvent.future.timeout(_syncWait);
         session.cancel();
         await sendFuture;
 

@@ -11,6 +11,14 @@ import 'package:test/test.dart';
 /// shape.
 RunAgentInput _input() => const RunAgentInput(threadId: 't', runId: 'r');
 
+/// Hang-guard for the fetch/ReadableStream synchronization points (`firstSeen`,
+/// `server.aborted`). It bounds *that* the awaited Future resolves at all — NOT a
+/// latency budget (the <50 ms abort budget is asserted separately via the
+/// Stopwatch) — so it is sized well above worst-case headless-Chrome startup on a
+/// loaded runner. A 5s guard flaked on CI (Story 9.4); 30s still fails fast on a
+/// genuine hang.
+const _syncWait = Duration(seconds: 30);
+
 /// What [_server] hands back: where to point an agent, the inbound
 /// `Authorization` header the server saw, and (long mode) a future that
 /// completes when the server observes the fetch's TCP teardown.
@@ -95,7 +103,7 @@ void main() {
       });
       addTearDown(sub.cancel);
 
-      await firstSeen.future.timeout(const Duration(seconds: 5));
+      await firstSeen.future.timeout(_syncWait);
       final countAtCancel = events.length;
 
       final clock = Stopwatch()..start();
@@ -111,7 +119,7 @@ void main() {
 
       // The unique web proof: `AbortController.abort()` really tore the fetch's
       // TCP connection down — the server's next flush failed.
-      await server.aborted.timeout(const Duration(seconds: 5));
+      await server.aborted.timeout(_syncWait);
     });
 
     test('non-2xx status surfaces a terminal RunErrorEvent, same as native '
