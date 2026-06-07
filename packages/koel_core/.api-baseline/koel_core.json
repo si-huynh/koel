@@ -2,8 +2,8 @@
     "version": 3,
     "packageApi": {
         "packageName": "koel_core",
-        "packageVersion": "0.0.1",
-        "packagePath": "/tmp/claude-501/aaqBxf",
+        "packageVersion": "1.0.0",
+        "packagePath": "",
         "interfaceDeclarations": [
             {
                 "name": "KoelClient",
@@ -1001,6 +1001,28 @@
                         "isStatic": false,
                         "entryPoints": [],
                         "relativePath": "lib/src/event/ag_ui_event.dart"
+                    },
+                    {
+                        "returnTypeName": "AgUiEvent",
+                        "name": "fromWire",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "json",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/event/ag_ui_event.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/event/ag_ui_event.dart"
                     }
                 ],
                 "fieldDeclarations": [
@@ -1076,6 +1098,28 @@
                     "Object"
                 ],
                 "executableDeclarations": [
+                    {
+                        "returnTypeName": "AgUiEvent",
+                        "name": "fromWire",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "json",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/event/ag_ui_event.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/event/ag_ui_event.dart"
+                    },
                     {
                         "returnTypeName": "AgUiEvent",
                         "name": "new",
@@ -1270,6 +1314,28 @@
                         "typeParameterNames": [],
                         "type": "constructor",
                         "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/event/ag_ui_event.dart"
+                    },
+                    {
+                        "returnTypeName": "AgUiEvent",
+                        "name": "fromWire",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "json",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/event/ag_ui_event.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
                         "entryPoints": [],
                         "relativePath": "lib/src/event/ag_ui_event.dart"
                     }
@@ -1493,6 +1559,28 @@
                         "typeParameterNames": [],
                         "type": "constructor",
                         "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/event/ag_ui_event.dart"
+                    },
+                    {
+                        "returnTypeName": "AgUiEvent",
+                        "name": "fromWire",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "json",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/event/ag_ui_event.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
                         "entryPoints": [],
                         "relativePath": "lib/src/event/ag_ui_event.dart"
                     }
@@ -1938,6 +2026,28 @@
                         "isStatic": false,
                         "entryPoints": [],
                         "relativePath": "lib/src/event/ag_ui_event.dart"
+                    },
+                    {
+                        "returnTypeName": "AgUiEvent",
+                        "name": "fromWire",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "json",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/event/ag_ui_event.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/event/ag_ui_event.dart"
                     }
                 ],
                 "fieldDeclarations": [
@@ -2119,6 +2229,28 @@
                         "typeParameterNames": [],
                         "type": "constructor",
                         "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/event/ag_ui_event.dart"
+                    },
+                    {
+                        "returnTypeName": "AgUiEvent",
+                        "name": "fromWire",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "json",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/event/ag_ui_event.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
                         "entryPoints": [],
                         "relativePath": "lib/src/event/ag_ui_event.dart"
                     }
@@ -2311,6 +2443,28 @@
                         "typeParameterNames": [],
                         "type": "constructor",
                         "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/event/ag_ui_event.dart"
+                    },
+                    {
+                        "returnTypeName": "AgUiEvent",
+                        "name": "fromWire",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "json",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/event/ag_ui_event.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
                         "entryPoints": [],
                         "relativePath": "lib/src/event/ag_ui_event.dart"
                     }
@@ -2532,6 +2686,28 @@
                         "typeParameterNames": [],
                         "type": "constructor",
                         "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/event/ag_ui_event.dart"
+                    },
+                    {
+                        "returnTypeName": "AgUiEvent",
+                        "name": "fromWire",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "json",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/event/ag_ui_event.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
                         "entryPoints": [],
                         "relativePath": "lib/src/event/ag_ui_event.dart"
                     }
@@ -2757,6 +2933,28 @@
                         "isStatic": false,
                         "entryPoints": [],
                         "relativePath": "lib/src/event/ag_ui_event.dart"
+                    },
+                    {
+                        "returnTypeName": "AgUiEvent",
+                        "name": "fromWire",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "json",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/event/ag_ui_event.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/event/ag_ui_event.dart"
                     }
                 ],
                 "fieldDeclarations": [
@@ -2965,6 +3163,28 @@
                         "typeParameterNames": [],
                         "type": "constructor",
                         "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/event/ag_ui_event.dart"
+                    },
+                    {
+                        "returnTypeName": "AgUiEvent",
+                        "name": "fromWire",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "json",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/event/ag_ui_event.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
                         "entryPoints": [],
                         "relativePath": "lib/src/event/ag_ui_event.dart"
                     }
@@ -3210,6 +3430,28 @@
                         "isStatic": false,
                         "entryPoints": [],
                         "relativePath": "lib/src/event/ag_ui_event.dart"
+                    },
+                    {
+                        "returnTypeName": "AgUiEvent",
+                        "name": "fromWire",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "json",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/event/ag_ui_event.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/event/ag_ui_event.dart"
                     }
                 ],
                 "fieldDeclarations": [
@@ -3366,6 +3608,28 @@
                         "typeParameterNames": [],
                         "type": "constructor",
                         "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/event/ag_ui_event.dart"
+                    },
+                    {
+                        "returnTypeName": "AgUiEvent",
+                        "name": "fromWire",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "json",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/event/ag_ui_event.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
                         "entryPoints": [],
                         "relativePath": "lib/src/event/ag_ui_event.dart"
                     }
@@ -3572,7 +3836,7 @@
                                 "name": "context",
                                 "isDeprecated": false,
                                 "isExperimental": false,
-                                "typeName": "Map<String, dynamic>",
+                                "typeName": "List<Context>",
                                 "relativePath": "lib/src/input/run_agent_input.dart"
                             },
                             {
@@ -3658,7 +3922,7 @@
                         "isWriteable": false
                     },
                     {
-                        "typeName": "Map<String, dynamic>",
+                        "typeName": "List<Context>",
                         "name": "context",
                         "isDeprecated": false,
                         "isExperimental": false,
@@ -4360,6 +4624,217 @@
                 "relativePath": "lib/src/tool/tool_definition.dart"
             },
             {
+                "name": "Context",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": true,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "Object",
+                    "_$Context"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "Context",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "description",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String",
+                                "relativePath": "lib/src/context/context.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "value",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String",
+                                "relativePath": "lib/src/context/context.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/context/context.dart"
+                    },
+                    {
+                        "returnTypeName": "Context",
+                        "name": "fromJson",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "json",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/context/context.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/context/context.dart"
+                    },
+                    {
+                        "returnTypeName": "Map<String, dynamic>",
+                        "name": "toJson",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/context/context.dart"
+                    }
+                ],
+                "fieldDeclarations": [
+                    {
+                        "typeName": "String",
+                        "name": "description",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/context/context.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "String",
+                        "name": "value",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/context/context.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "$ContextCopyWith<Context>",
+                        "name": "copyWith",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/context/context.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "int",
+                        "name": "hashCode",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/context/context.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    }
+                ],
+                "entryPoints": [
+                    "koel_core.dart"
+                ],
+                "relativePath": "lib/src/context/context.dart"
+            },
+            {
+                "name": "$ContextCopyWith",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [
+                    "$Res"
+                ],
+                "superTypeNames": [
+                    "Object"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "$Res",
+                        "name": "call",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "description",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String",
+                                "relativePath": "lib/src/context/context.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "value",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String",
+                                "relativePath": "lib/src/context/context.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/context/context.dart"
+                    },
+                    {
+                        "returnTypeName": "$ContextCopyWith<$Res>",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "value",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Context",
+                                "relativePath": "lib/src/context/context.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "_then",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "$Res Function(Context)",
+                                "relativePath": "lib/src/context/context.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/context/context.dart"
+                    }
+                ],
+                "fieldDeclarations": [],
+                "entryPoints": [
+                    "koel_core.dart"
+                ],
+                "relativePath": "lib/src/context/context.dart"
+            },
+            {
                 "name": "$RunAgentInputCopyWith",
                 "isDeprecated": false,
                 "isExperimental": false,
@@ -4429,7 +4904,7 @@
                                 "name": "context",
                                 "isDeprecated": false,
                                 "isExperimental": false,
-                                "typeName": "Map<String, dynamic>",
+                                "typeName": "List<Context>",
                                 "relativePath": "lib/src/input/run_agent_input.dart"
                             },
                             {
@@ -4579,6 +5054,40 @@
                         ],
                         "typeParameterNames": [],
                         "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/state/chat_state.dart"
+                    },
+                    {
+                        "returnTypeName": "ChatState",
+                        "name": "fromJson",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "json",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/state/chat_state.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/state/chat_state.dart"
+                    },
+                    {
+                        "returnTypeName": "Map<String, dynamic>",
+                        "name": "toJson",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [],
+                        "typeParameterNames": [],
+                        "type": "method",
                         "isStatic": false,
                         "entryPoints": [],
                         "relativePath": "lib/src/state/chat_state.dart"
@@ -4747,6 +5256,40 @@
                         ],
                         "typeParameterNames": [],
                         "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/state/tool_call.dart"
+                    },
+                    {
+                        "returnTypeName": "ToolCall",
+                        "name": "fromJson",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "json",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/state/tool_call.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/state/tool_call.dart"
+                    },
+                    {
+                        "returnTypeName": "Map<String, dynamic>",
+                        "name": "toJson",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [],
+                        "typeParameterNames": [],
+                        "type": "method",
                         "isStatic": false,
                         "entryPoints": [],
                         "relativePath": "lib/src/state/tool_call.dart"
@@ -5809,6 +6352,28 @@
                         "isStatic": false,
                         "entryPoints": [],
                         "relativePath": "lib/src/event/ag_ui_event.dart"
+                    },
+                    {
+                        "returnTypeName": "AgUiEvent",
+                        "name": "fromWire",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "json",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/event/ag_ui_event.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/event/ag_ui_event.dart"
                     }
                 ],
                 "fieldDeclarations": [
@@ -6012,6 +6577,28 @@
                         "isStatic": false,
                         "entryPoints": [],
                         "relativePath": "lib/src/event/ag_ui_event.dart"
+                    },
+                    {
+                        "returnTypeName": "AgUiEvent",
+                        "name": "fromWire",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "json",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/event/ag_ui_event.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/event/ag_ui_event.dart"
                     }
                 ],
                 "fieldDeclarations": [
@@ -6211,6 +6798,28 @@
                         "typeParameterNames": [],
                         "type": "constructor",
                         "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/event/ag_ui_event.dart"
+                    },
+                    {
+                        "returnTypeName": "AgUiEvent",
+                        "name": "fromWire",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "json",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/event/ag_ui_event.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
                         "entryPoints": [],
                         "relativePath": "lib/src/event/ag_ui_event.dart"
                     }
@@ -6445,6 +7054,28 @@
                         "isStatic": false,
                         "entryPoints": [],
                         "relativePath": "lib/src/event/ag_ui_event.dart"
+                    },
+                    {
+                        "returnTypeName": "AgUiEvent",
+                        "name": "fromWire",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "json",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/event/ag_ui_event.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/event/ag_ui_event.dart"
                     }
                 ],
                 "fieldDeclarations": [
@@ -6673,6 +7304,28 @@
                         "typeParameterNames": [],
                         "type": "constructor",
                         "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/event/ag_ui_event.dart"
+                    },
+                    {
+                        "returnTypeName": "AgUiEvent",
+                        "name": "fromWire",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "json",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/event/ag_ui_event.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
                         "entryPoints": [],
                         "relativePath": "lib/src/event/ag_ui_event.dart"
                     }
@@ -6918,6 +7571,28 @@
                         "isStatic": false,
                         "entryPoints": [],
                         "relativePath": "lib/src/event/ag_ui_event.dart"
+                    },
+                    {
+                        "returnTypeName": "AgUiEvent",
+                        "name": "fromWire",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "json",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/event/ag_ui_event.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/event/ag_ui_event.dart"
                     }
                 ],
                 "fieldDeclarations": [
@@ -7099,6 +7774,28 @@
                         "typeParameterNames": [],
                         "type": "constructor",
                         "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/event/ag_ui_event.dart"
+                    },
+                    {
+                        "returnTypeName": "AgUiEvent",
+                        "name": "fromWire",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "json",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/event/ag_ui_event.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
                         "entryPoints": [],
                         "relativePath": "lib/src/event/ag_ui_event.dart"
                     }
@@ -7309,6 +8006,28 @@
                         "typeParameterNames": [],
                         "type": "constructor",
                         "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/event/ag_ui_event.dart"
+                    },
+                    {
+                        "returnTypeName": "AgUiEvent",
+                        "name": "fromWire",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "json",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/event/ag_ui_event.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
                         "entryPoints": [],
                         "relativePath": "lib/src/event/ag_ui_event.dart"
                     }
@@ -7572,6 +8291,28 @@
                         "isStatic": false,
                         "entryPoints": [],
                         "relativePath": "lib/src/event/ag_ui_event.dart"
+                    },
+                    {
+                        "returnTypeName": "AgUiEvent",
+                        "name": "fromWire",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "json",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/event/ag_ui_event.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/event/ag_ui_event.dart"
                     }
                 ],
                 "fieldDeclarations": [
@@ -7795,6 +8536,28 @@
                         "isStatic": false,
                         "entryPoints": [],
                         "relativePath": "lib/src/event/ag_ui_event.dart"
+                    },
+                    {
+                        "returnTypeName": "AgUiEvent",
+                        "name": "fromWire",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "json",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/event/ag_ui_event.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/event/ag_ui_event.dart"
                     }
                 ],
                 "fieldDeclarations": [
@@ -7976,6 +8739,28 @@
                         "typeParameterNames": [],
                         "type": "constructor",
                         "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/event/ag_ui_event.dart"
+                    },
+                    {
+                        "returnTypeName": "AgUiEvent",
+                        "name": "fromWire",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "json",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/event/ag_ui_event.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
                         "entryPoints": [],
                         "relativePath": "lib/src/event/ag_ui_event.dart"
                     }
@@ -8168,6 +8953,28 @@
                         "typeParameterNames": [],
                         "type": "constructor",
                         "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/event/ag_ui_event.dart"
+                    },
+                    {
+                        "returnTypeName": "AgUiEvent",
+                        "name": "fromWire",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "json",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/event/ag_ui_event.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
                         "entryPoints": [],
                         "relativePath": "lib/src/event/ag_ui_event.dart"
                     }
@@ -8382,6 +9189,28 @@
                         "isStatic": false,
                         "entryPoints": [],
                         "relativePath": "lib/src/event/ag_ui_event.dart"
+                    },
+                    {
+                        "returnTypeName": "AgUiEvent",
+                        "name": "fromWire",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "json",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/event/ag_ui_event.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/event/ag_ui_event.dart"
                     }
                 ],
                 "fieldDeclarations": [
@@ -8585,6 +9414,28 @@
                         "isStatic": false,
                         "entryPoints": [],
                         "relativePath": "lib/src/event/ag_ui_event.dart"
+                    },
+                    {
+                        "returnTypeName": "AgUiEvent",
+                        "name": "fromWire",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "json",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/event/ag_ui_event.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/event/ag_ui_event.dart"
                     }
                 ],
                 "fieldDeclarations": [
@@ -8775,6 +9626,28 @@
                         "typeParameterNames": [],
                         "type": "constructor",
                         "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/event/ag_ui_event.dart"
+                    },
+                    {
+                        "returnTypeName": "AgUiEvent",
+                        "name": "fromWire",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "json",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/event/ag_ui_event.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
                         "entryPoints": [],
                         "relativePath": "lib/src/event/ag_ui_event.dart"
                     }
@@ -9005,6 +9878,28 @@
                         "typeParameterNames": [],
                         "type": "constructor",
                         "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/event/ag_ui_event.dart"
+                    },
+                    {
+                        "returnTypeName": "AgUiEvent",
+                        "name": "fromWire",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "json",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/event/ag_ui_event.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
                         "entryPoints": [],
                         "relativePath": "lib/src/event/ag_ui_event.dart"
                     }
@@ -9259,6 +10154,28 @@
                         "isStatic": false,
                         "entryPoints": [],
                         "relativePath": "lib/src/event/ag_ui_event.dart"
+                    },
+                    {
+                        "returnTypeName": "AgUiEvent",
+                        "name": "fromWire",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "json",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/event/ag_ui_event.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/event/ag_ui_event.dart"
                     }
                 ],
                 "fieldDeclarations": [
@@ -9469,6 +10386,28 @@
                         "typeParameterNames": [],
                         "type": "constructor",
                         "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/event/ag_ui_event.dart"
+                    },
+                    {
+                        "returnTypeName": "AgUiEvent",
+                        "name": "fromWire",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "json",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/event/ag_ui_event.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
                         "entryPoints": [],
                         "relativePath": "lib/src/event/ag_ui_event.dart"
                     }
@@ -17351,6 +18290,184 @@
                 "relativePath": "lib/src/session/in_memory_session_storage.dart"
             },
             {
+                "name": "ContextPatterns",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "TResult",
+                        "name": "maybeMap",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "$default",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TResult Function(_Context)?",
+                                "relativePath": "lib/src/context/context.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "orElse",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TResult Function()",
+                                "relativePath": "lib/src/context/context.dart"
+                            }
+                        ],
+                        "typeParameterNames": [
+                            "TResult"
+                        ],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/context/context.dart"
+                    },
+                    {
+                        "returnTypeName": "TResult",
+                        "name": "map",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "$default",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TResult Function(_Context)",
+                                "relativePath": "lib/src/context/context.dart"
+                            }
+                        ],
+                        "typeParameterNames": [
+                            "TResult"
+                        ],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/context/context.dart"
+                    },
+                    {
+                        "returnTypeName": "TResult?",
+                        "name": "mapOrNull",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "$default",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TResult? Function(_Context)?",
+                                "relativePath": "lib/src/context/context.dart"
+                            }
+                        ],
+                        "typeParameterNames": [
+                            "TResult"
+                        ],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/context/context.dart"
+                    },
+                    {
+                        "returnTypeName": "TResult",
+                        "name": "maybeWhen",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "$default",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TResult Function(String, String)?",
+                                "relativePath": "lib/src/context/context.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "orElse",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TResult Function()",
+                                "relativePath": "lib/src/context/context.dart"
+                            }
+                        ],
+                        "typeParameterNames": [
+                            "TResult"
+                        ],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/context/context.dart"
+                    },
+                    {
+                        "returnTypeName": "TResult",
+                        "name": "when",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "$default",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TResult Function(String, String)",
+                                "relativePath": "lib/src/context/context.dart"
+                            }
+                        ],
+                        "typeParameterNames": [
+                            "TResult"
+                        ],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/context/context.dart"
+                    },
+                    {
+                        "returnTypeName": "TResult?",
+                        "name": "whenOrNull",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "$default",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TResult? Function(String, String)?",
+                                "relativePath": "lib/src/context/context.dart"
+                            }
+                        ],
+                        "typeParameterNames": [
+                            "TResult"
+                        ],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/context/context.dart"
+                    }
+                ],
+                "fieldDeclarations": [],
+                "entryPoints": [
+                    "koel_core.dart"
+                ],
+                "relativePath": "lib/src/context/context.dart"
+            },
+            {
                 "name": "RunAgentInputPatterns",
                 "isDeprecated": false,
                 "isExperimental": false,
@@ -17452,7 +18569,7 @@
                                 "name": "$default",
                                 "isDeprecated": false,
                                 "isExperimental": false,
-                                "typeName": "TResult Function(String, String, Map<String, dynamic>, List<Message>, List<ToolDefinition>, Map<String, dynamic>, Map<String, dynamic>, Map<String, Uint8List>?)?",
+                                "typeName": "TResult Function(String, String, Map<String, dynamic>, List<Message>, List<ToolDefinition>, List<Context>, Map<String, dynamic>, Map<String, Uint8List>?)?",
                                 "relativePath": "lib/src/input/run_agent_input.dart"
                             },
                             {
@@ -17485,7 +18602,7 @@
                                 "name": "$default",
                                 "isDeprecated": false,
                                 "isExperimental": false,
-                                "typeName": "TResult Function(String, String, Map<String, dynamic>, List<Message>, List<ToolDefinition>, Map<String, dynamic>, Map<String, dynamic>, Map<String, Uint8List>?)",
+                                "typeName": "TResult Function(String, String, Map<String, dynamic>, List<Message>, List<ToolDefinition>, List<Context>, Map<String, dynamic>, Map<String, Uint8List>?)",
                                 "relativePath": "lib/src/input/run_agent_input.dart"
                             }
                         ],
@@ -17509,7 +18626,7 @@
                                 "name": "$default",
                                 "isDeprecated": false,
                                 "isExperimental": false,
-                                "typeName": "TResult? Function(String, String, Map<String, dynamic>, List<Message>, List<ToolDefinition>, Map<String, dynamic>, Map<String, dynamic>, Map<String, Uint8List>?)?",
+                                "typeName": "TResult? Function(String, String, Map<String, dynamic>, List<Message>, List<ToolDefinition>, List<Context>, Map<String, dynamic>, Map<String, Uint8List>?)?",
                                 "relativePath": "lib/src/input/run_agent_input.dart"
                             }
                         ],
@@ -20065,7 +21182,21 @@
             }
         ],
         "executableDeclarations": [],
-        "fieldDeclarations": [],
+        "fieldDeclarations": [
+            {
+                "typeName": "StreamTransformer<AgUiEvent, AgUiEvent>",
+                "name": "chunksStage",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isStatic": true,
+                "entryPoints": [
+                    "koel_core.dart"
+                ],
+                "relativePath": "lib/src/pipeline/chunks_stage.dart",
+                "isReadable": true,
+                "isWriteable": false
+            }
+        ],
         "typeAliasDeclarations": [],
         "semantics": [
             "containsPlatformConstraints"

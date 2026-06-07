@@ -2,8 +2,8 @@
     "version": 3,
     "packageApi": {
         "packageName": "koel_flutter",
-        "packageVersion": "0.0.1",
-        "packagePath": "/var/folders/s8/jnjbmckd0v33h5b7nltj5trm0000gn/T/Hk4Uqm",
+        "packageVersion": "1.0.0",
+        "packagePath": "",
         "interfaceDeclarations": [
             {
                 "name": "KoelChatController",
@@ -793,7 +793,7 @@
         "packageDependencies": [
             {
                 "packageName": "koel_core",
-                "packageVersion": "any"
+                "packageVersion": "^1.0.0"
             },
             {
                 "packageName": "hive_ce",

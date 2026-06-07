@@ -1,5 +1,21 @@
-# api-diff.yml — placeholder. Real body wired in Epic 9.
-# dart_apitool public-surface diff per package against published baseline (D7 / N-14).
+# api-diff.yml — public-API breaking-change gate (Story 9.3, NFR-14 / AR-12 / D7).
+# Runs `dart_apitool` per package (via tool/verify_api_surface.dart) and diffs the
+# current public surface against the committed packages/<pkg>/.api-baseline/<pkg>.json.
+# A BREAKING change (symbol removal, signature/type change, required-param add)
+# fails the job → blocks merge; an additive change (new public symbol) logs a
+# warning and passes. Covers the 9 surface-bearing release packages (koel,
+# koel_core, koel_http, koel_test, koel_agno, koel_langgraph, koel_runtime,
+# koel_flutter, koel_widgets); koel_lints + koel_devtools are excluded (no v1.x
+# Dart surface to protect — see the wrapper header).
+#
+# subosito/flutter-action provides both `flutter` and a compatible `dart`: the
+# two Flutter packages (koel_flutter, koel_widgets) need `flutter` on PATH to
+# extract, and dart_apitool 0.23.1 extracts a Flutter package with NO
+# --force-use-flutter (verified on the 3.44.0 / Dart 3.12.0 toolchain). dart-apitool
+# is a GLOBAL activation (its own pubspec, isolated from the AI-5.9 analyzer-12 /
+# freezed workspace pins); `melos run build` regenerates koel_core's *.freezed.dart
+# (gitignored) so the surface extracts cleanly — mirrors codegen-drift.yml /
+# ci.yml's example-build lane.
 name: API diff
 permissions:
   contents: read
@@ -9,7 +25,20 @@ on:
   push:
     branches: [main]
 jobs:
-  placeholder:
+  api-diff:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Wired in Epic 9"
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.44.0
+          cache: true
+      - run: dart pub global activate dart_apitool 0.23.1
+      - run: dart pub global activate melos 7.8.0
+      - run: melos bootstrap
+      - run: melos run build
+      # The gate: extract each package's current surface and diff it against the
+      # committed baseline. Breaking → non-zero exit blocks the PR; the per-package
+      # report (which package, which symbol, what changed) is in this job log.
+      - run: melos run api-diff

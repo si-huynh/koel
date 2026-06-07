@@ -2,8 +2,8 @@
     "version": 3,
     "packageApi": {
         "packageName": "koel_widgets",
-        "packageVersion": "0.0.1",
-        "packagePath": "/var/folders/s8/jnjbmckd0v33h5b7nltj5trm0000gn/T/ygNee8",
+        "packageVersion": "1.0.0",
+        "packagePath": "",
         "interfaceDeclarations": [
             {
                 "name": "KoelColors",
@@ -1132,11 +1132,11 @@
         "packageDependencies": [
             {
                 "packageName": "koel_core",
-                "packageVersion": "any"
+                "packageVersion": "^1.0.0"
             },
             {
                 "packageName": "koel_flutter",
-                "packageVersion": "any"
+                "packageVersion": "^1.0.0"
             }
         ]
     },

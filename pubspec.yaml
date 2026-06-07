@@ -66,3 +66,6 @@ melos:
     verify:versioning:
       description: "Hybrid-versioning convention gate (Story 9.1, FR-H2 / R-2..R-3) — the ten v1.0.0 release pubspecs carry lock-step foundation versions, ranged (^X.Y.Z) intra-repo deps, and koel_lints dev-only; koel_devtools + koel_widgets/example excluded. bash+awk, zero new dep. See tool/verify_versioning.sh."
       run: bash "$MELOS_ROOT_PATH/tool/verify_versioning.sh"
+    api-diff:
+      description: "Public-API breaking-change gate (Story 9.3, NFR-14 / AR-12 / D7) — runs dart_apitool per package, diffing the current public surface against the committed packages/<pkg>/.api-baseline/<pkg>.json. Default verifies (breaking blocks, additive warns); pass `-- --update` to refresh the baselines. Shells out to the GLOBAL dart-apitool 0.23.1 (never a workspace dep). See tool/verify_api_surface.dart."
+      run: dart run "$MELOS_ROOT_PATH/tool/verify_api_surface.dart"

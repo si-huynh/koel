@@ -1,0 +1,231 @@
+{
+    "version": 3,
+    "packageApi": {
+        "packageName": "koel_langgraph",
+        "packageVersion": "1.0.0",
+        "packagePath": "",
+        "interfaceDeclarations": [
+            {
+                "name": "LangGraphErrorClassifier",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "DefaultErrorClassifier",
+                    "Object",
+                    "ErrorClassifier"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "LangGraphErrorClassifier",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "inner",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "ErrorClassifier?",
+                                "relativePath": "lib/src/error/langgraph_error_classifier.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/error/langgraph_error_classifier.dart"
+                    }
+                ],
+                "fieldDeclarations": [],
+                "entryPoints": [
+                    "koel_langgraph.dart"
+                ],
+                "relativePath": "lib/src/error/langgraph_error_classifier.dart"
+            },
+            {
+                "name": "LangGraphAgent",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "HttpAgent",
+                    "Object",
+                    "AbstractAgent"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "Stream<AgUiEvent>",
+                        "name": "resume",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "threadId",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String",
+                                "relativePath": "lib/src/langgraph_agent.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "resumeValue",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Object?",
+                                "relativePath": "lib/src/langgraph_agent.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/langgraph_agent.dart"
+                    },
+                    {
+                        "returnTypeName": "LangGraphAgent",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "deploymentUrl",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Uri",
+                                "relativePath": "lib/src/langgraph_agent.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "apiKey",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String?",
+                                "relativePath": "lib/src/langgraph_agent.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "client",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Client?",
+                                "relativePath": "lib/src/langgraph_agent.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "interceptors",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "List<Interceptor>?",
+                                "relativePath": "lib/src/langgraph_agent.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/langgraph_agent.dart"
+                    }
+                ],
+                "fieldDeclarations": [
+                    {
+                        "typeName": "String?",
+                        "name": "apiKey",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/langgraph_agent.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    }
+                ],
+                "entryPoints": [
+                    "koel_langgraph.dart"
+                ],
+                "relativePath": "lib/src/langgraph_agent.dart"
+            },
+            {
+                "name": "LangGraphAuthInterceptor",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "AuthInterceptor",
+                    "Object",
+                    "Interceptor"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "LangGraphAuthInterceptor",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "apiKey",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String?",
+                                "relativePath": "lib/src/langgraph_auth_interceptor.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/langgraph_auth_interceptor.dart"
+                    }
+                ],
+                "fieldDeclarations": [],
+                "entryPoints": [
+                    "koel_langgraph.dart"
+                ],
+                "relativePath": "lib/src/langgraph_auth_interceptor.dart"
+            }
+        ],
+        "executableDeclarations": [],
+        "fieldDeclarations": [],
+        "typeAliasDeclarations": [],
+        "semantics": [
+            "containsPlatformConstraints"
+        ],
+        "iosPlatformConstraints": null,
+        "androidPlatformConstraints": null,
+        "sdkType": "dart",
+        "minSdkVersion": "3.11.0",
+        "packageDependencies": [
+            {
+                "packageName": "koel_core",
+                "packageVersion": "^1.0.0"
+            },
+            {
+                "packageName": "koel_http",
+                "packageVersion": "^1.0.0"
+            },
+            {
+                "packageName": "http",
+                "packageVersion": "^1.6.0"
+            }
+        ]
+    },
+    "missingEntryPoints": []
+}

@@ -1,0 +1,1654 @@
+{
+    "version": 3,
+    "packageApi": {
+        "packageName": "koel_test",
+        "packageVersion": "1.0.0",
+        "packagePath": "",
+        "interfaceDeclarations": [
+            {
+                "name": "MockAgent",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "Object",
+                    "AbstractAgent"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "MockAgentBuilder",
+                        "name": "programmatic",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/mock_agent.dart"
+                    },
+                    {
+                        "returnTypeName": "Future<MockAgent>",
+                        "name": "fromFixture",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "name",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String",
+                                "relativePath": "lib/src/mock_agent.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/mock_agent.dart"
+                    },
+                    {
+                        "returnTypeName": "MockAgent",
+                        "name": "fromEvents",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "events",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "List<AgUiEvent>",
+                                "relativePath": "lib/src/mock_agent.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "delay",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Duration",
+                                "relativePath": "lib/src/mock_agent.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/mock_agent.dart"
+                    }
+                ],
+                "fieldDeclarations": [],
+                "entryPoints": [
+                    "koel_test.dart"
+                ],
+                "relativePath": "lib/src/mock_agent.dart"
+            },
+            {
+                "name": "MockAgentBuilder",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "Object"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "MockAgentBuilder",
+                        "name": "runStarted",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "threadId",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String?",
+                                "relativePath": "lib/src/mock_agent.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "runId",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String?",
+                                "relativePath": "lib/src/mock_agent.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "delay",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Duration?",
+                                "relativePath": "lib/src/mock_agent.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/mock_agent.dart"
+                    },
+                    {
+                        "returnTypeName": "MockAgentBuilder",
+                        "name": "textMessage",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "text",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String",
+                                "relativePath": "lib/src/mock_agent.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "messageId",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String?",
+                                "relativePath": "lib/src/mock_agent.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "role",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String",
+                                "relativePath": "lib/src/mock_agent.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "delay",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Duration?",
+                                "relativePath": "lib/src/mock_agent.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/mock_agent.dart"
+                    },
+                    {
+                        "returnTypeName": "MockAgentBuilder",
+                        "name": "runFinished",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "result",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Object?",
+                                "relativePath": "lib/src/mock_agent.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "delay",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Duration?",
+                                "relativePath": "lib/src/mock_agent.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/mock_agent.dart"
+                    },
+                    {
+                        "returnTypeName": "MockAgentBuilder",
+                        "name": "event",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "event",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "AgUiEvent",
+                                "relativePath": "lib/src/mock_agent.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "delay",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Duration?",
+                                "relativePath": "lib/src/mock_agent.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/mock_agent.dart"
+                    },
+                    {
+                        "returnTypeName": "MockAgent",
+                        "name": "build",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/mock_agent.dart"
+                    }
+                ],
+                "fieldDeclarations": [],
+                "entryPoints": [
+                    "koel_test.dart"
+                ],
+                "relativePath": "lib/src/mock_agent.dart"
+            },
+            {
+                "name": "FixtureSession",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "Object"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "FixtureSession",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "koelVersion",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String",
+                                "relativePath": "lib/src/fixture_loader.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "adapter",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String",
+                                "relativePath": "lib/src/fixture_loader.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "captured",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "DateTime",
+                                "relativePath": "lib/src/fixture_loader.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "threadId",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String",
+                                "relativePath": "lib/src/fixture_loader.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "runId",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String",
+                                "relativePath": "lib/src/fixture_loader.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "synthesized",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "bool",
+                                "relativePath": "lib/src/fixture_loader.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "backendVersion",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String?",
+                                "relativePath": "lib/src/fixture_loader.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/fixture_loader.dart"
+                    },
+                    {
+                        "returnTypeName": "FixtureSession",
+                        "name": "fromJson",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "session",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/fixture_loader.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/fixture_loader.dart"
+                    }
+                ],
+                "fieldDeclarations": [
+                    {
+                        "typeName": "String",
+                        "name": "koelVersion",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/fixture_loader.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "String",
+                        "name": "adapter",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/fixture_loader.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "DateTime",
+                        "name": "captured",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/fixture_loader.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "String",
+                        "name": "threadId",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/fixture_loader.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "String",
+                        "name": "runId",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/fixture_loader.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "bool",
+                        "name": "synthesized",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/fixture_loader.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "String?",
+                        "name": "backendVersion",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/fixture_loader.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    }
+                ],
+                "entryPoints": [
+                    "koel_test.dart"
+                ],
+                "relativePath": "lib/src/fixture_loader.dart"
+            },
+            {
+                "name": "FixtureLoader",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "Object"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "Future<List<AgUiEvent>>",
+                        "name": "loadSynthesized",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "name",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String",
+                                "relativePath": "lib/src/fixture_loader.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/fixture_loader.dart"
+                    },
+                    {
+                        "returnTypeName": "Future<List<AgUiEvent>>",
+                        "name": "loadDojo",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "eventType",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String",
+                                "relativePath": "lib/src/fixture_loader.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/fixture_loader.dart"
+                    },
+                    {
+                        "returnTypeName": "Future<List<AgUiEvent>>",
+                        "name": "loadAgno",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "scenario",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String",
+                                "relativePath": "lib/src/fixture_loader.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/fixture_loader.dart"
+                    },
+                    {
+                        "returnTypeName": "Future<List<AgUiEvent>>",
+                        "name": "loadLangGraph",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "scenario",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String",
+                                "relativePath": "lib/src/fixture_loader.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/fixture_loader.dart"
+                    },
+                    {
+                        "returnTypeName": "Future<List<AgUiEvent>>",
+                        "name": "loadCopilotkit",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "scenario",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String",
+                                "relativePath": "lib/src/fixture_loader.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": true,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/fixture_loader.dart"
+                    },
+                    {
+                        "returnTypeName": "FixtureLoader",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/fixture_loader.dart"
+                    }
+                ],
+                "fieldDeclarations": [],
+                "entryPoints": [
+                    "koel_test.dart"
+                ],
+                "relativePath": "lib/src/fixture_loader.dart"
+            },
+            {
+                "name": "ToolHandlerTestHarness",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "Object"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "ToolHandlerTestHarness",
+                        "name": "register",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "name",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String",
+                                "relativePath": "lib/src/tool_handler_test_harness.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "handler",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "FutureOr<Object?> Function(Map<String, dynamic>)",
+                                "relativePath": "lib/src/tool_handler_test_harness.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/tool_handler_test_harness.dart"
+                    },
+                    {
+                        "returnTypeName": "ToolHandlerTestHarness",
+                        "name": "observe",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "subscriber",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "AgentSubscriber",
+                                "relativePath": "lib/src/tool_handler_test_harness.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/tool_handler_test_harness.dart"
+                    },
+                    {
+                        "returnTypeName": "Future<ToolCallResultEvent>",
+                        "name": "invoke",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "name",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String",
+                                "relativePath": "lib/src/tool_handler_test_harness.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "args",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/tool_handler_test_harness.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "isReplaying",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "bool",
+                                "relativePath": "lib/src/tool_handler_test_harness.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/tool_handler_test_harness.dart"
+                    },
+                    {
+                        "returnTypeName": "ToolHandlerTestHarness",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/tool_handler_test_harness.dart"
+                    }
+                ],
+                "fieldDeclarations": [
+                    {
+                        "typeName": "bool",
+                        "name": "isReplaying",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/tool_handler_test_harness.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    }
+                ],
+                "entryPoints": [
+                    "koel_test.dart"
+                ],
+                "relativePath": "lib/src/tool_handler_test_harness.dart"
+            },
+            {
+                "name": "ConformanceFailure",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": true,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "Object",
+                    "_$ConformanceFailure"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "ConformanceFailure",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "eventType",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "expected",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "AgUiEvent",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "actual",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "AgUiEvent?",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "error",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "KoelError?",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/conformance_report.dart"
+                    }
+                ],
+                "fieldDeclarations": [
+                    {
+                        "typeName": "String",
+                        "name": "eventType",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/conformance_report.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "AgUiEvent",
+                        "name": "expected",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/conformance_report.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "AgUiEvent?",
+                        "name": "actual",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/conformance_report.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "KoelError?",
+                        "name": "error",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/conformance_report.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "$ConformanceFailureCopyWith<ConformanceFailure>",
+                        "name": "copyWith",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/conformance_report.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "int",
+                        "name": "hashCode",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/conformance_report.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    }
+                ],
+                "entryPoints": [
+                    "koel_test.dart"
+                ],
+                "relativePath": "lib/src/conformance_report.dart"
+            },
+            {
+                "name": "$ConformanceFailureCopyWith",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [
+                    "$Res"
+                ],
+                "superTypeNames": [
+                    "Object"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "$Res",
+                        "name": "call",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "eventType",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "expected",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "AgUiEvent",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "actual",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "AgUiEvent?",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "error",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "KoelError?",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/conformance_report.dart"
+                    },
+                    {
+                        "returnTypeName": "$ConformanceFailureCopyWith<$Res>",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "value",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "ConformanceFailure",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "_then",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "$Res Function(ConformanceFailure)",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/conformance_report.dart"
+                    }
+                ],
+                "fieldDeclarations": [],
+                "entryPoints": [
+                    "koel_test.dart"
+                ],
+                "relativePath": "lib/src/conformance_report.dart"
+            },
+            {
+                "name": "ConformanceReport",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": true,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "Object",
+                    "_$ConformanceReport"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "ConformanceReport",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "passed",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "List<String>",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "failed",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "List<ConformanceFailure>",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "agentName",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "runDuration",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Duration",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/conformance_report.dart"
+                    }
+                ],
+                "fieldDeclarations": [
+                    {
+                        "typeName": "List<String>",
+                        "name": "passed",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/conformance_report.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "List<ConformanceFailure>",
+                        "name": "failed",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/conformance_report.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "String",
+                        "name": "agentName",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/conformance_report.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "Duration",
+                        "name": "runDuration",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/conformance_report.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "$ConformanceReportCopyWith<ConformanceReport>",
+                        "name": "copyWith",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/conformance_report.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "int",
+                        "name": "hashCode",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/conformance_report.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    }
+                ],
+                "entryPoints": [
+                    "koel_test.dart"
+                ],
+                "relativePath": "lib/src/conformance_report.dart"
+            },
+            {
+                "name": "$ConformanceReportCopyWith",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [
+                    "$Res"
+                ],
+                "superTypeNames": [
+                    "Object"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "$Res",
+                        "name": "call",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "passed",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "List<String>",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "failed",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "List<ConformanceFailure>",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "agentName",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "runDuration",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Duration",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/conformance_report.dart"
+                    },
+                    {
+                        "returnTypeName": "$ConformanceReportCopyWith<$Res>",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "value",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "ConformanceReport",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "_then",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "$Res Function(ConformanceReport)",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/conformance_report.dart"
+                    }
+                ],
+                "fieldDeclarations": [],
+                "entryPoints": [
+                    "koel_test.dart"
+                ],
+                "relativePath": "lib/src/conformance_report.dart"
+            },
+            {
+                "name": "ConformanceFailurePatterns",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "TResult",
+                        "name": "maybeMap",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "$default",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TResult Function(_ConformanceFailure)?",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "orElse",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TResult Function()",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            }
+                        ],
+                        "typeParameterNames": [
+                            "TResult"
+                        ],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/conformance_report.dart"
+                    },
+                    {
+                        "returnTypeName": "TResult",
+                        "name": "map",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "$default",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TResult Function(_ConformanceFailure)",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            }
+                        ],
+                        "typeParameterNames": [
+                            "TResult"
+                        ],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/conformance_report.dart"
+                    },
+                    {
+                        "returnTypeName": "TResult?",
+                        "name": "mapOrNull",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "$default",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TResult? Function(_ConformanceFailure)?",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            }
+                        ],
+                        "typeParameterNames": [
+                            "TResult"
+                        ],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/conformance_report.dart"
+                    },
+                    {
+                        "returnTypeName": "TResult",
+                        "name": "maybeWhen",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "$default",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TResult Function(String, AgUiEvent, AgUiEvent?, KoelError?)?",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "orElse",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TResult Function()",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            }
+                        ],
+                        "typeParameterNames": [
+                            "TResult"
+                        ],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/conformance_report.dart"
+                    },
+                    {
+                        "returnTypeName": "TResult",
+                        "name": "when",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "$default",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TResult Function(String, AgUiEvent, AgUiEvent?, KoelError?)",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            }
+                        ],
+                        "typeParameterNames": [
+                            "TResult"
+                        ],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/conformance_report.dart"
+                    },
+                    {
+                        "returnTypeName": "TResult?",
+                        "name": "whenOrNull",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "$default",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TResult? Function(String, AgUiEvent, AgUiEvent?, KoelError?)?",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            }
+                        ],
+                        "typeParameterNames": [
+                            "TResult"
+                        ],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/conformance_report.dart"
+                    }
+                ],
+                "fieldDeclarations": [],
+                "entryPoints": [
+                    "koel_test.dart"
+                ],
+                "relativePath": "lib/src/conformance_report.dart"
+            },
+            {
+                "name": "ConformanceReportPatterns",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "TResult",
+                        "name": "maybeMap",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "$default",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TResult Function(_ConformanceReport)?",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "orElse",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TResult Function()",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            }
+                        ],
+                        "typeParameterNames": [
+                            "TResult"
+                        ],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/conformance_report.dart"
+                    },
+                    {
+                        "returnTypeName": "TResult",
+                        "name": "map",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "$default",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TResult Function(_ConformanceReport)",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            }
+                        ],
+                        "typeParameterNames": [
+                            "TResult"
+                        ],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/conformance_report.dart"
+                    },
+                    {
+                        "returnTypeName": "TResult?",
+                        "name": "mapOrNull",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "$default",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TResult? Function(_ConformanceReport)?",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            }
+                        ],
+                        "typeParameterNames": [
+                            "TResult"
+                        ],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/conformance_report.dart"
+                    },
+                    {
+                        "returnTypeName": "TResult",
+                        "name": "maybeWhen",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "$default",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TResult Function(List<String>, List<ConformanceFailure>, String, Duration)?",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "orElse",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TResult Function()",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            }
+                        ],
+                        "typeParameterNames": [
+                            "TResult"
+                        ],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/conformance_report.dart"
+                    },
+                    {
+                        "returnTypeName": "TResult",
+                        "name": "when",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "$default",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TResult Function(List<String>, List<ConformanceFailure>, String, Duration)",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            }
+                        ],
+                        "typeParameterNames": [
+                            "TResult"
+                        ],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/conformance_report.dart"
+                    },
+                    {
+                        "returnTypeName": "TResult?",
+                        "name": "whenOrNull",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "$default",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TResult? Function(List<String>, List<ConformanceFailure>, String, Duration)?",
+                                "relativePath": "lib/src/conformance_report.dart"
+                            }
+                        ],
+                        "typeParameterNames": [
+                            "TResult"
+                        ],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/conformance_report.dart"
+                    }
+                ],
+                "fieldDeclarations": [],
+                "entryPoints": [
+                    "koel_test.dart"
+                ],
+                "relativePath": "lib/src/conformance_report.dart"
+            },
+            {
+                "name": "ConformanceRunner",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "Object"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "Future<ConformanceReport>",
+                        "name": "runAgainst",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "agent",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "AbstractAgent",
+                                "relativePath": "lib/src/conformance_runner.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/conformance_runner.dart"
+                    },
+                    {
+                        "returnTypeName": "ConformanceRunner",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/conformance_runner.dart"
+                    }
+                ],
+                "fieldDeclarations": [],
+                "entryPoints": [
+                    "koel_test.dart"
+                ],
+                "relativePath": "lib/src/conformance_runner.dart"
+            }
+        ],
+        "executableDeclarations": [],
+        "fieldDeclarations": [],
+        "typeAliasDeclarations": [
+            {
+                "name": "ToolHandler",
+                "aliasedTypeName": "FutureOr<Object?> Function(Map<String, dynamic>)",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "entryPoints": [
+                    "koel_test.dart"
+                ],
+                "relativePath": "lib/src/tool_handler_test_harness.dart"
+            }
+        ],
+        "semantics": [
+            "containsPlatformConstraints"
+        ],
+        "iosPlatformConstraints": null,
+        "androidPlatformConstraints": null,
+        "sdkType": "dart",
+        "minSdkVersion": "3.11.0",
+        "packageDependencies": [
+            {
+                "packageName": "koel_core",
+                "packageVersion": "^1.0.0"
+            },
+            {
+                "packageName": "freezed_annotation",
+                "packageVersion": "^3.1.0"
+            }
+        ]
+    },
+    "missingEntryPoints": []
+}

@@ -1,0 +1,34 @@
+{
+    "version": 3,
+    "packageApi": {
+        "packageName": "koel",
+        "packageVersion": "1.0.0",
+        "packagePath": "",
+        "interfaceDeclarations": [],
+        "executableDeclarations": [],
+        "fieldDeclarations": [],
+        "typeAliasDeclarations": [],
+        "semantics": [
+            "containsPlatformConstraints"
+        ],
+        "iosPlatformConstraints": null,
+        "androidPlatformConstraints": null,
+        "sdkType": "dart",
+        "minSdkVersion": "3.11.0",
+        "packageDependencies": [
+            {
+                "packageName": "koel_core",
+                "packageVersion": "^1.0.0"
+            },
+            {
+                "packageName": "koel_http",
+                "packageVersion": "^1.0.0"
+            },
+            {
+                "packageName": "koel_flutter",
+                "packageVersion": "^1.0.0"
+            }
+        ]
+    },
+    "missingEntryPoints": []
+}
