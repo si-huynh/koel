@@ -26,9 +26,10 @@
 #
 # The ten == tool/verify_versioning.sh's release set (koel_devtools deferred
 # post-1.0 per SCP-2026-06-06-B; the repo-root example/ is not a release pkg).
-# Run LOCALLY only from a CLEAN git tree: `dart pub publish --dry-run` also warns
-# on uncommitted checked-in files, which the strict lane would (correctly) fail —
-# CI runs on a clean checkout so that transient warning never fires there.
+# Run LOCALLY from a CLEAN git tree: `dart pub publish --dry-run` warns on
+# MODIFIED checked-in (tracked) files — NOT on untracked files — and the strict
+# lane would (correctly) fail on that transient warning. CI runs on a clean
+# checkout so it never fires there.
 set -euo pipefail
 
 root="${MELOS_ROOT_PATH:-$(cd "$(dirname "$0")/.." && pwd)}"
@@ -37,10 +38,14 @@ cd "$root"
 release_pkgs="koel koel_core koel_http koel_lints koel_test \
 koel_agno koel_langgraph koel_runtime koel_flutter koel_widgets"
 
-# The two koel_lints warnings allowlisted in D4 — matched as substrings so a
-# THIRD, new warning is never silently tolerated.
+# The two koel_lints warnings allowlisted in D4 — matched against the SPECIFIC
+# warning phrasing (not the bare dependency name) so a THIRD, new warning that
+# merely mentions analysis_server_plugin is never silently tolerated. Both
+# substrings sit on pub's `* ` bullet line (verified, Dart 3.12.0):
+#   "* The name of \"lib/main.dart\", \"main\", should match the name of the package…"
+#   "* Your dependency on \"analysis_server_plugin\" should allow more than one version…"
 lints_allow_1="should match the name of the package"
-lints_allow_2="analysis_server_plugin"
+lints_allow_2="should allow more than one version"
 
 fail=0
 
@@ -60,9 +65,15 @@ for pkg in $release_pkgs; do
     # remain (a new warning's bullet would not match either substring).
     out=$(cd "$dir" && dart pub publish --dry-run 2>&1) || true
     unexpected=$(printf '%s\n' "$out" | grep -E '^\* ' | grep -vE "$lints_allow_1|$lints_allow_2" || true)
-    if [ -n "$unexpected" ]; then
+    # Cross-check pub's self-reported count ("Package has N warnings.") so a future
+    # bullet-format change — which would make the grep above match nothing — can't
+    # silently pass a NEW warning. Belt-and-suspenders against the substring match.
+    warn_count=$(printf '%s\n' "$out" | sed -nE 's/^Package has ([0-9]+) warning.*/\1/p' | tail -1)
+    if [ -n "$unexpected" ] || { [ -n "$warn_count" ] && [ "$warn_count" -gt 2 ]; }; then
       echo "publish-dry: FAIL — koel_lints emitted a warning OUTSIDE the 2-item D4 allowlist:" >&2
-      printf '%s\n' "$unexpected" >&2
+      [ -n "$unexpected" ] && printf '%s\n' "$unexpected" >&2
+      { [ -n "$warn_count" ] && [ "$warn_count" -gt 2 ]; } && \
+        echo "  (pub reports $warn_count warnings — the D4 allowlist permits at most 2)" >&2
       fail=1
     else
       echo "publish-dry: PASS — koel_lints (2 allowlisted warnings: asp lib/main.dart entrypoint + analyzer-12 pin)"

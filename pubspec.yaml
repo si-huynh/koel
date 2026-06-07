@@ -58,7 +58,7 @@ melos:
       description: Run `dart fix --apply` per package (auto-apply analyzer fixes).
       exec: dart fix --apply
     capture-fixtures:
-      description: "Fixture-capture pipeline (4 backends → JSONL); agno live (5.3), langgraph 5.6, dojo+copilotkit 5.9. Pass --backend=<name> [--base-url=<url>] [--token=<t>]."
+      description: "Fixture-capture pipeline (4 backends → JSONL); agno live (5.3), langgraph 5.6, copilotkit v2 native-SSE 5.11 (the removed 5.9 dojo/GraphQL lane is superseded, SCP-2026-06-05). Pass --backend=<name> [--base-url=<url>] [--token=<t>]."
       run: dart run "$MELOS_ROOT_PATH/tool/capture_fixtures.dart"
     conformance:
       description: "AG-UI conformance lane (FR-G4) — runs the `conformance`-tagged tests (ConformanceRunner vs each backend adapter, offline MockClient replay) per package; tolerates packages with none yet. COMPLETE: agno (5.3), langgraph (5.6), copilotkit v2 native-SSE (5.11 — the removed 5.9 GraphQL lane is superseded, SCP-2026-06-05). See tool/conformance.sh."
