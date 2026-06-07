@@ -1,0 +1,1328 @@
+{
+    "version": 3,
+    "packageApi": {
+        "packageName": "koel_http",
+        "packageVersion": "1.0.0",
+        "packagePath": "",
+        "interfaceDeclarations": [
+            {
+                "name": "RetryPolicy",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "Object"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "RetryPolicy",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "maxAttempts",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "int",
+                                "relativePath": "lib/src/connection/reconnect_policy.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "baseDelay",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Duration",
+                                "relativePath": "lib/src/connection/reconnect_policy.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "maxDelay",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Duration",
+                                "relativePath": "lib/src/connection/reconnect_policy.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "jitter",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "bool",
+                                "relativePath": "lib/src/connection/reconnect_policy.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/connection/reconnect_policy.dart"
+                    }
+                ],
+                "fieldDeclarations": [
+                    {
+                        "typeName": "int",
+                        "name": "maxAttempts",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/connection/reconnect_policy.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "Duration",
+                        "name": "baseDelay",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/connection/reconnect_policy.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "Duration",
+                        "name": "maxDelay",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/connection/reconnect_policy.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "bool",
+                        "name": "jitter",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/connection/reconnect_policy.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    }
+                ],
+                "entryPoints": [
+                    "koel_http.dart"
+                ],
+                "relativePath": "lib/src/connection/reconnect_policy.dart"
+            },
+            {
+                "name": "HttpAgent",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "Object",
+                    "AbstractAgent"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "Map<String, dynamic>",
+                        "name": "encodeBody",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "input",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "RunAgentInput",
+                                "relativePath": "lib/src/http_agent.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/http_agent.dart"
+                    },
+                    {
+                        "returnTypeName": "ErrorClassifier",
+                        "name": "errorClassifier",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/http_agent.dart"
+                    },
+                    {
+                        "returnTypeName": "HttpAgent",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "url",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Uri",
+                                "relativePath": "lib/src/http_agent.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "client",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Client?",
+                                "relativePath": "lib/src/http_agent.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "interceptors",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "List<Interceptor>?",
+                                "relativePath": "lib/src/http_agent.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "connectTimeout",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Duration",
+                                "relativePath": "lib/src/http_agent.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "readTimeout",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Duration",
+                                "relativePath": "lib/src/http_agent.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "retry",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "RetryPolicy?",
+                                "relativePath": "lib/src/http_agent.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "synthesizeChunks",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "bool",
+                                "relativePath": "lib/src/http_agent.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "onConnect",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "void Function()?",
+                                "relativePath": "lib/src/http_agent.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "onDisconnect",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "void Function(Object?)?",
+                                "relativePath": "lib/src/http_agent.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "onReconnectAttempt",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "void Function(int, Duration)?",
+                                "relativePath": "lib/src/http_agent.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/http_agent.dart"
+                    }
+                ],
+                "fieldDeclarations": [
+                    {
+                        "typeName": "Uri",
+                        "name": "url",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/http_agent.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "Duration",
+                        "name": "connectTimeout",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/http_agent.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "Duration",
+                        "name": "readTimeout",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/http_agent.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "bool",
+                        "name": "synthesizeChunks",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/http_agent.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    }
+                ],
+                "entryPoints": [
+                    "koel_http.dart"
+                ],
+                "relativePath": "lib/src/http_agent.dart"
+            },
+            {
+                "name": "AuthInterceptor",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "Object",
+                    "Interceptor"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "AuthInterceptor",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "headers",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Future<Map<String, String>> Function()",
+                                "relativePath": "lib/src/interceptors/auth_interceptor.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/interceptors/auth_interceptor.dart"
+                    }
+                ],
+                "fieldDeclarations": [
+                    {
+                        "typeName": "String",
+                        "name": "transportHeadersKey",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": true,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/interceptors/auth_interceptor.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    }
+                ],
+                "entryPoints": [
+                    "koel_http.dart"
+                ],
+                "relativePath": "lib/src/interceptors/auth_interceptor.dart"
+            },
+            {
+                "name": "EventTraceInterceptor",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "Object",
+                    "Interceptor"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "EventTraceInterceptor",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "sink",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Sink<TraceEntry>",
+                                "relativePath": "lib/src/interceptors/event_trace_interceptor.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/interceptors/event_trace_interceptor.dart"
+                    }
+                ],
+                "fieldDeclarations": [],
+                "entryPoints": [
+                    "koel_http.dart"
+                ],
+                "relativePath": "lib/src/interceptors/event_trace_interceptor.dart"
+            },
+            {
+                "name": "TraceEntry",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": true,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "Object",
+                    "_$TraceEntry"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "TraceEntry",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "timestamp",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "DateTime",
+                                "relativePath": "lib/src/interceptors/trace_entry.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "phase",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TracePhase",
+                                "relativePath": "lib/src/interceptors/trace_entry.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "runDuration",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Duration",
+                                "relativePath": "lib/src/interceptors/trace_entry.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "event",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "AgUiEvent?",
+                                "relativePath": "lib/src/interceptors/trace_entry.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/interceptors/trace_entry.dart"
+                    }
+                ],
+                "fieldDeclarations": [
+                    {
+                        "typeName": "DateTime",
+                        "name": "timestamp",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/interceptors/trace_entry.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "TracePhase",
+                        "name": "phase",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/interceptors/trace_entry.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "Duration",
+                        "name": "runDuration",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/interceptors/trace_entry.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "AgUiEvent?",
+                        "name": "event",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/interceptors/trace_entry.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "$TraceEntryCopyWith<TraceEntry>",
+                        "name": "copyWith",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/interceptors/trace_entry.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "int",
+                        "name": "hashCode",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/interceptors/trace_entry.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    }
+                ],
+                "entryPoints": [
+                    "koel_http.dart"
+                ],
+                "relativePath": "lib/src/interceptors/trace_entry.dart"
+            },
+            {
+                "name": "TracePhase",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "Enum",
+                    "Object"
+                ],
+                "executableDeclarations": [],
+                "fieldDeclarations": [
+                    {
+                        "typeName": "TracePhase",
+                        "name": "request",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": true,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/interceptors/trace_entry.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "TracePhase",
+                        "name": "event",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": true,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/interceptors/trace_entry.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "TracePhase",
+                        "name": "response",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": true,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/interceptors/trace_entry.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "TracePhase",
+                        "name": "error",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": true,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/interceptors/trace_entry.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "List<TracePhase>",
+                        "name": "values",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": true,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/interceptors/trace_entry.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    }
+                ],
+                "entryPoints": [
+                    "koel_http.dart"
+                ],
+                "relativePath": "lib/src/interceptors/trace_entry.dart"
+            },
+            {
+                "name": "$TraceEntryCopyWith",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [
+                    "$Res"
+                ],
+                "superTypeNames": [
+                    "Object"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "$Res",
+                        "name": "call",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "timestamp",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "DateTime",
+                                "relativePath": "lib/src/interceptors/trace_entry.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "phase",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TracePhase",
+                                "relativePath": "lib/src/interceptors/trace_entry.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "runDuration",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Duration",
+                                "relativePath": "lib/src/interceptors/trace_entry.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "event",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "AgUiEvent?",
+                                "relativePath": "lib/src/interceptors/trace_entry.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/interceptors/trace_entry.dart"
+                    },
+                    {
+                        "returnTypeName": "$TraceEntryCopyWith<$Res>",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "value",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TraceEntry",
+                                "relativePath": "lib/src/interceptors/trace_entry.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "_then",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "$Res Function(TraceEntry)",
+                                "relativePath": "lib/src/interceptors/trace_entry.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/interceptors/trace_entry.dart"
+                    }
+                ],
+                "fieldDeclarations": [],
+                "entryPoints": [
+                    "koel_http.dart"
+                ],
+                "relativePath": "lib/src/interceptors/trace_entry.dart"
+            },
+            {
+                "name": "LoggingInterceptor",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "Object",
+                    "Interceptor"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "LoggingInterceptor",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "level",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Level",
+                                "relativePath": "lib/src/interceptors/logging_interceptor.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/interceptors/logging_interceptor.dart"
+                    }
+                ],
+                "fieldDeclarations": [],
+                "entryPoints": [
+                    "koel_http.dart"
+                ],
+                "relativePath": "lib/src/interceptors/logging_interceptor.dart"
+            },
+            {
+                "name": "PIIRedactionInterceptor",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "Object",
+                    "Interceptor"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "PIIRedactionInterceptor",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "patterns",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "List<Pattern>",
+                                "relativePath": "lib/src/interceptors/pii_redaction_interceptor.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/interceptors/pii_redaction_interceptor.dart"
+                    }
+                ],
+                "fieldDeclarations": [],
+                "entryPoints": [
+                    "koel_http.dart"
+                ],
+                "relativePath": "lib/src/interceptors/pii_redaction_interceptor.dart"
+            },
+            {
+                "name": "RetryInterceptor",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "Object",
+                    "Interceptor"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "RetryInterceptor",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "maxAttempts",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "int",
+                                "relativePath": "lib/src/interceptors/retry_interceptor.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "baseDelay",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Duration",
+                                "relativePath": "lib/src/interceptors/retry_interceptor.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "maxDelay",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Duration",
+                                "relativePath": "lib/src/interceptors/retry_interceptor.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "jitter",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "double",
+                                "relativePath": "lib/src/interceptors/retry_interceptor.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "shouldRetry",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "bool Function(Object, int)?",
+                                "relativePath": "lib/src/interceptors/retry_interceptor.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/interceptors/retry_interceptor.dart"
+                    }
+                ],
+                "fieldDeclarations": [
+                    {
+                        "typeName": "String",
+                        "name": "connectionResumedEventName",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": true,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/interceptors/retry_interceptor.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "int",
+                        "name": "maxAttempts",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/interceptors/retry_interceptor.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "Duration",
+                        "name": "baseDelay",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/interceptors/retry_interceptor.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "Duration",
+                        "name": "maxDelay",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/interceptors/retry_interceptor.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "double",
+                        "name": "jitter",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/interceptors/retry_interceptor.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    }
+                ],
+                "entryPoints": [
+                    "koel_http.dart"
+                ],
+                "relativePath": "lib/src/interceptors/retry_interceptor.dart"
+            },
+            {
+                "name": "SentryBreadcrumbInterceptor",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "Object",
+                    "Interceptor"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "SentryBreadcrumbInterceptor",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "hub",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Hub?",
+                                "relativePath": "lib/src/interceptors/sentry_breadcrumb_interceptor.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/interceptors/sentry_breadcrumb_interceptor.dart"
+                    }
+                ],
+                "fieldDeclarations": [],
+                "entryPoints": [
+                    "koel_http.dart"
+                ],
+                "relativePath": "lib/src/interceptors/sentry_breadcrumb_interceptor.dart"
+            },
+            {
+                "name": "TraceEntryPatterns",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "TResult",
+                        "name": "maybeMap",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "$default",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TResult Function(_TraceEntry)?",
+                                "relativePath": "lib/src/interceptors/trace_entry.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "orElse",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TResult Function()",
+                                "relativePath": "lib/src/interceptors/trace_entry.dart"
+                            }
+                        ],
+                        "typeParameterNames": [
+                            "TResult"
+                        ],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/interceptors/trace_entry.dart"
+                    },
+                    {
+                        "returnTypeName": "TResult",
+                        "name": "map",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "$default",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TResult Function(_TraceEntry)",
+                                "relativePath": "lib/src/interceptors/trace_entry.dart"
+                            }
+                        ],
+                        "typeParameterNames": [
+                            "TResult"
+                        ],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/interceptors/trace_entry.dart"
+                    },
+                    {
+                        "returnTypeName": "TResult?",
+                        "name": "mapOrNull",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "$default",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TResult? Function(_TraceEntry)?",
+                                "relativePath": "lib/src/interceptors/trace_entry.dart"
+                            }
+                        ],
+                        "typeParameterNames": [
+                            "TResult"
+                        ],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/interceptors/trace_entry.dart"
+                    },
+                    {
+                        "returnTypeName": "TResult",
+                        "name": "maybeWhen",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "$default",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TResult Function(DateTime, TracePhase, Duration, AgUiEvent?)?",
+                                "relativePath": "lib/src/interceptors/trace_entry.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "orElse",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TResult Function()",
+                                "relativePath": "lib/src/interceptors/trace_entry.dart"
+                            }
+                        ],
+                        "typeParameterNames": [
+                            "TResult"
+                        ],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/interceptors/trace_entry.dart"
+                    },
+                    {
+                        "returnTypeName": "TResult",
+                        "name": "when",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "$default",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TResult Function(DateTime, TracePhase, Duration, AgUiEvent?)",
+                                "relativePath": "lib/src/interceptors/trace_entry.dart"
+                            }
+                        ],
+                        "typeParameterNames": [
+                            "TResult"
+                        ],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/interceptors/trace_entry.dart"
+                    },
+                    {
+                        "returnTypeName": "TResult?",
+                        "name": "whenOrNull",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "$default",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "TResult? Function(DateTime, TracePhase, Duration, AgUiEvent?)?",
+                                "relativePath": "lib/src/interceptors/trace_entry.dart"
+                            }
+                        ],
+                        "typeParameterNames": [
+                            "TResult"
+                        ],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/interceptors/trace_entry.dart"
+                    }
+                ],
+                "fieldDeclarations": [],
+                "entryPoints": [
+                    "koel_http.dart"
+                ],
+                "relativePath": "lib/src/interceptors/trace_entry.dart"
+            },
+            {
+                "name": "SseParser",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "Object"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "Stream<AgUiEvent>",
+                        "name": "parse",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "bytes",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Stream<List<int>>",
+                                "relativePath": "lib/src/sse_parser.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/sse_parser.dart"
+                    },
+                    {
+                        "returnTypeName": "SseParser",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/sse_parser.dart"
+                    }
+                ],
+                "fieldDeclarations": [],
+                "entryPoints": [
+                    "koel_http.dart"
+                ],
+                "relativePath": "lib/src/sse_parser.dart"
+            }
+        ],
+        "executableDeclarations": [
+            {
+                "returnTypeName": "ErrorClassifier",
+                "name": "transportErrorClassifier",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "parameters": [],
+                "typeParameterNames": [],
+                "type": "method",
+                "isStatic": true,
+                "entryPoints": [
+                    "koel_http.dart"
+                ],
+                "relativePath": "lib/src/error/error_classifier.dart"
+            },
+            {
+                "returnTypeName": "Duration",
+                "name": "retryBackoff",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "parameters": [
+                    {
+                        "isRequired": true,
+                        "isNamed": false,
+                        "name": "attempt",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "typeName": "int",
+                        "relativePath": "lib/src/interceptors/retry_interceptor.dart"
+                    },
+                    {
+                        "isRequired": true,
+                        "isNamed": true,
+                        "name": "baseDelay",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "typeName": "Duration",
+                        "relativePath": "lib/src/interceptors/retry_interceptor.dart"
+                    },
+                    {
+                        "isRequired": true,
+                        "isNamed": true,
+                        "name": "maxDelay",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "typeName": "Duration",
+                        "relativePath": "lib/src/interceptors/retry_interceptor.dart"
+                    },
+                    {
+                        "isRequired": true,
+                        "isNamed": true,
+                        "name": "jitter",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "typeName": "double",
+                        "relativePath": "lib/src/interceptors/retry_interceptor.dart"
+                    },
+                    {
+                        "isRequired": true,
+                        "isNamed": true,
+                        "name": "random",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "typeName": "Random",
+                        "relativePath": "lib/src/interceptors/retry_interceptor.dart"
+                    }
+                ],
+                "typeParameterNames": [],
+                "type": "method",
+                "isStatic": true,
+                "entryPoints": [
+                    "koel_http.dart"
+                ],
+                "relativePath": "lib/src/interceptors/retry_interceptor.dart"
+            }
+        ],
+        "fieldDeclarations": [],
+        "typeAliasDeclarations": [],
+        "semantics": [
+            "containsPlatformConstraints"
+        ],
+        "iosPlatformConstraints": null,
+        "androidPlatformConstraints": null,
+        "sdkType": "dart",
+        "minSdkVersion": "3.11.0",
+        "packageDependencies": [
+            {
+                "packageName": "koel_core",
+                "packageVersion": "^1.0.0"
+            },
+            {
+                "packageName": "freezed_annotation",
+                "packageVersion": "^3.1.0"
+            },
+            {
+                "packageName": "http",
+                "packageVersion": "^1.6.0"
+            },
+            {
+                "packageName": "logging",
+                "packageVersion": "^1.3.0"
+            },
+            {
+                "packageName": "meta",
+                "packageVersion": "^1.16.0"
+            },
+            {
+                "packageName": "web",
+                "packageVersion": "^1.1.0"
+            },
+            {
+                "packageName": "sentry",
+                "packageVersion": "^9.21.0"
+            }
+        ]
+    },
+    "missingEntryPoints": []
+}

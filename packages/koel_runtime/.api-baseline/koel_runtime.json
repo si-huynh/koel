@@ -1,0 +1,220 @@
+{
+    "version": 3,
+    "packageApi": {
+        "packageName": "koel_runtime",
+        "packageVersion": "1.0.0",
+        "packagePath": "",
+        "interfaceDeclarations": [
+            {
+                "name": "CopilotRuntimeAgent",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "HttpAgent",
+                    "Object",
+                    "AbstractAgent"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "CopilotRuntimeAgent",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "endpoint",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Uri",
+                                "relativePath": "lib/src/copilot_runtime_agent.dart"
+                            },
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "agentName",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String",
+                                "relativePath": "lib/src/copilot_runtime_agent.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "authToken",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String?",
+                                "relativePath": "lib/src/copilot_runtime_agent.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "client",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Client?",
+                                "relativePath": "lib/src/copilot_runtime_agent.dart"
+                            },
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "interceptors",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "List<Interceptor>?",
+                                "relativePath": "lib/src/copilot_runtime_agent.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/copilot_runtime_agent.dart"
+                    }
+                ],
+                "fieldDeclarations": [
+                    {
+                        "typeName": "String",
+                        "name": "agentName",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/copilot_runtime_agent.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    },
+                    {
+                        "typeName": "String?",
+                        "name": "authToken",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/copilot_runtime_agent.dart",
+                        "isReadable": true,
+                        "isWriteable": false
+                    }
+                ],
+                "entryPoints": [
+                    "koel_runtime.dart"
+                ],
+                "relativePath": "lib/src/copilot_runtime_agent.dart"
+            },
+            {
+                "name": "CopilotRuntimeAuthInterceptor",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "AuthInterceptor",
+                    "Object",
+                    "Interceptor"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "CopilotRuntimeAuthInterceptor",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": true,
+                                "name": "token",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "String?",
+                                "relativePath": "lib/src/copilot_runtime_auth_interceptor.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/copilot_runtime_auth_interceptor.dart"
+                    }
+                ],
+                "fieldDeclarations": [],
+                "entryPoints": [
+                    "koel_runtime.dart"
+                ],
+                "relativePath": "lib/src/copilot_runtime_auth_interceptor.dart"
+            },
+            {
+                "name": "CopilotRuntimeErrorClassifier",
+                "isDeprecated": false,
+                "isExperimental": false,
+                "isSealed": false,
+                "isRequired": false,
+                "typeParameterNames": [],
+                "superTypeNames": [
+                    "DefaultErrorClassifier",
+                    "Object",
+                    "ErrorClassifier"
+                ],
+                "executableDeclarations": [
+                    {
+                        "returnTypeName": "CopilotRuntimeErrorClassifier",
+                        "name": "new",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "inner",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "ErrorClassifier?",
+                                "relativePath": "lib/src/error/copilot_runtime_error_classifier.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "constructor",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/error/copilot_runtime_error_classifier.dart"
+                    }
+                ],
+                "fieldDeclarations": [],
+                "entryPoints": [
+                    "koel_runtime.dart"
+                ],
+                "relativePath": "lib/src/error/copilot_runtime_error_classifier.dart"
+            }
+        ],
+        "executableDeclarations": [],
+        "fieldDeclarations": [],
+        "typeAliasDeclarations": [],
+        "semantics": [
+            "containsPlatformConstraints"
+        ],
+        "iosPlatformConstraints": null,
+        "androidPlatformConstraints": null,
+        "sdkType": "dart",
+        "minSdkVersion": "3.11.0",
+        "packageDependencies": [
+            {
+                "packageName": "koel_core",
+                "packageVersion": "^1.0.0"
+            },
+            {
+                "packageName": "koel_http",
+                "packageVersion": "^1.0.0"
+            },
+            {
+                "packageName": "http",
+                "packageVersion": "^1.6.0"
+            }
+        ]
+    },
+    "missingEntryPoints": []
+}

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:stream_channel/stream_channel.dart';
@@ -60,26 +61,52 @@ Future<void> hybridMain(StreamChannel<Object?> channel, Object message) async {
       ..headers.contentType = ContentType('text', 'event-stream');
 
     if (mode == 'long') {
+      // Detach the socket so the fetch teardown is observed via the socket's
+      // read side closing (the browser's `AbortController.abort()` sends a FIN) —
+      // reliable cross-platform. Waiting for a periodic write to *throw* after
+      // the abort held on macOS but not on Linux/CI, where a FIN half-closes the
+      // connection and the server's writes keep succeeding (Story 9.4).
+      // Connection-close framing (NOT chunked) lets us write raw SSE bytes.
       response
-        ..write('data: {"type":"RUN_STARTED","threadId":"t","runId":"r"}\n\n')
-        ..write(
+        ..headers.chunkedTransferEncoding = false
+        ..persistentConnection = false;
+      final socket = await response.detachSocket();
+      var aborted = false;
+      void markAborted() {
+        if (aborted) return;
+        aborted = true;
+        channel.sink.add({'type': 'aborted'});
+      }
+
+      socket.listen((_) {}, onDone: markAborted, onError: (_) => markAborted());
+
+      socket.add(
+        utf8.encode(
+          'data: {"type":"RUN_STARTED","threadId":"t","runId":"r"}\n\n'
           'data: {"type":"TEXT_MESSAGE_START","messageId":"m",'
           '"role":"assistant"}\n\n',
-        );
-      await response.flush();
+        ),
+      );
+      await socket.flush();
       Timer.periodic(const Duration(milliseconds: 100), (timer) async {
-        try {
-          response.write(
-            'data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"m",'
-            '"delta":"tick"}\n\n',
-          );
-          await response.flush();
-        } on Object {
-          // The flush failed: the client socket is gone — the `AbortController`
-          // really tore the fetch down at the TCP level (not just a koel-side
-          // drop). Signal it once and stop ticking.
+        if (aborted) {
           timer.cancel();
-          channel.sink.add({'type': 'aborted'});
+          socket.destroy();
+          return;
+        }
+        try {
+          socket.add(
+            utf8.encode(
+              'data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"m",'
+              '"delta":"tick"}\n\n',
+            ),
+          );
+          await socket.flush();
+        } on Object {
+          // Backstop: the write into the torn-down socket threw first.
+          timer.cancel();
+          markAborted();
+          socket.destroy();
         }
       });
       return;

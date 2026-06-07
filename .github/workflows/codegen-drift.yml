@@ -13,9 +13,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: dart-lang/setup-dart@v1
+      # `melos bootstrap` runs `flutter pub get` (the workspace contains Flutter
+      # packages), so this lane needs flutter on PATH; flutter-action provides
+      # both flutter and a compatible dart (3.12.0). (setup-dart alone failed
+      # bootstrap with "flutter: not found".)
+      - uses: subosito/flutter-action@v2
         with:
-          sdk: 3.12.0
+          channel: stable
+          flutter-version: 3.44.0
+          cache: true
       - run: dart pub global activate melos 7.8.0
       - run: melos bootstrap
       - run: melos run build

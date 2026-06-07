@@ -7,6 +7,9 @@
 # and web (dart2js + headless Chrome), the NFR-11 dart:io-divergence proof. The
 # full 10 pkgs × 6 platforms expansion — including iOS/Android device lanes — is
 # still Epic 9 (AR-17).
+# Story 9.2 adds `example-app` (lint/format/smoke of the repo-root example/) and
+# `example-build` — the SIX-PLATFORM `flutter build` matrix proving the meta-package
+# quickstart app compiles + bundles on iOS/Android/web/macOS/Windows/Linux (AC2).
 name: CI
 permissions:
   contents: read
@@ -24,9 +27,15 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - uses: dart-lang/setup-dart@v1
+      # `melos bootstrap` runs `flutter pub get` (the workspace contains Flutter
+      # packages), so even this Dart-centric lane needs flutter on PATH;
+      # flutter-action provides both flutter and a compatible dart (3.12.0).
+      # (setup-dart alone failed bootstrap with "flutter: not found".)
+      - uses: subosito/flutter-action@v2
         with:
-          sdk: 3.12.0
+          channel: stable
+          flutter-version: 3.44.0
+          cache: true
       - run: dart pub global activate melos 7.8.0
       - run: melos bootstrap
       # Generated code (*.freezed.dart / *.g.dart) is gitignored, so it must be
@@ -35,6 +44,10 @@ jobs:
       - run: melos run build
       - run: melos run analyze
       - run: melos run format:check
+      # Hybrid-versioning convention (Story 9.1, FR-H2 / R-2..R-3): lock-step
+      # foundations + ranged intra-repo deps + koel_lints dev-only. Always-on
+      # per-PR gate ⇒ green main is a publish precondition (R-5).
+      - run: melos run verify:versioning
       - run: melos run test
 
   # koel_http's web transport (Story 4.10) is `@TestOn('browser')` and is
@@ -45,9 +58,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: dart-lang/setup-dart@v1
+      # `melos bootstrap` runs `flutter pub get` (the workspace contains Flutter
+      # packages), so even this Dart-centric lane needs flutter on PATH;
+      # flutter-action provides both flutter and a compatible dart (3.12.0).
+      # (setup-dart alone failed bootstrap with "flutter: not found".)
+      - uses: subosito/flutter-action@v2
         with:
-          sdk: 3.12.0
+          channel: stable
+          flutter-version: 3.44.0
+          cache: true
       - run: dart pub global activate melos 7.8.0
       - run: melos bootstrap
       - run: melos run build
@@ -139,3 +158,72 @@ jobs:
         working-directory: packages/koel_widgets/example
       - run: flutter test
         working-directory: packages/koel_widgets/example
+
+  # example-app lint/format/smoke (Story 9.2, FR-H3 / AR-22) — the repo-root
+  # `example/` quickstart app consuming the `koel` meta-package. `tool/format.sh`
+  # formats `packages/` only, so the root example's Dart is format-checked HERE
+  # (plus analyze + smoke), mirroring the koel_widgets example-smoke lane.
+  example-app:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.44.0
+          cache: true
+      - run: dart pub global activate melos 7.8.0
+      - run: melos bootstrap
+      - run: melos run build
+      - run: dart format --output=none --set-exit-if-changed .
+        working-directory: example
+      - run: dart analyze
+        working-directory: example
+      - run: flutter test
+        working-directory: example
+
+  # example-build (Story 9.2, AC2 / NFR-11 / AR-22) — proves the repo-root
+  # example COMPILES + BUNDLES on all six targets, each on the runner OS that
+  # supports it. These are `flutter build` assertions (compile + bundle), not
+  # device runs: iOS uses --no-codesign (no CI signing cert), Android builds the
+  # debug apk (no release keystore). Device/simulator *run* lanes remain the
+  # Epic 9 / AR-17 full matrix (continuing 6.7's deferral). The six platform
+  # folders are committed by `flutter create`, so the builds (and a human
+  # `flutter run`) work from a clean checkout.
+  example-build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.44.0
+          cache: true
+      - run: dart pub global activate melos 7.8.0
+      - run: melos bootstrap
+      # Codegen for the transitive koel_core *.freezed.dart before any build.
+      - run: melos run build
+      # The Linux desktop toolchain is not preinstalled on ubuntu runners.
+      # libsecret-1-dev is required by flutter_secure_storage_linux (koel_flutter's
+      # SecureSessionStorage dep, transitively in the example via the koel meta-package);
+      # without it `flutter build linux` fails at CMake `pkg_check_modules(libsecret-1)`.
+      - if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get update && sudo apt-get install -y ninja-build libgtk-3-dev libsecret-1-dev
+      - if: matrix.os == 'ubuntu-latest'
+        working-directory: example
+        run: |
+          flutter build web --release
+          flutter build linux --release
+          flutter build apk --debug
+      - if: matrix.os == 'macos-latest'
+        working-directory: example
+        run: |
+          flutter build macos --release
+          flutter build ios --release --no-codesign
+      - if: matrix.os == 'windows-latest'
+        working-directory: example
+        run: flutter build windows --release

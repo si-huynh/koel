@@ -26,8 +26,8 @@ import 'perf_baseline.dart';
 ///   `test/perf/baselines/sse_parse_bench.json`, pass (captures the v1.0.0
 ///   baseline);
 /// - `KOEL_PERF_GATE` set (the CI reference-device path, Epic 9
-///   `perf-bench.yml`) → measure, **fail when p99 regresses > 10%** vs the
-///   committed baseline (NFR-1);
+///   `perf-bench.yml`) → measure, **fail when p99 regresses past the gate
+///   band** (see [_gateTolerance] below) vs the committed baseline (NFR-1);
 /// - default local `dart test` → measure, log the delta + derived events/sec,
 ///   **pass unconditionally** (convention §6 "no flaky tests").
 ///
@@ -38,6 +38,14 @@ const _warmupSweeps = 50;
 const _timedSweeps = 300;
 const _bodyRepeats = 200;
 const _baselinePath = 'test/perf/baselines/sse_parse_bench.json';
+
+/// Gate band. The PRD's 10% default is far too tight for an absolute-µs metric on
+/// GitHub-hosted runners, whose CPU generation varies job-to-job — a slow instance
+/// ran the sibling compute metrics ~54–86% over with no code change (Story 9.4
+/// Task 5), i.e. ~2× slower hardware. 100% clears that shared-runner variance
+/// while still biting a real parse regression. Documented in BENCHMARKS.md; a hard
+/// block, never a silent downgrade.
+const _gateTolerance = 2.0;
 
 void main() {
   group('sse_parse_bench', () {
@@ -95,6 +103,7 @@ void main() {
         value: p99,
         sampleSize: _timedSweeps,
         label: 'sse_parse',
+        tolerance: _gateTolerance,
       );
     });
   });

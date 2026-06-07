@@ -1,4 +1,10 @@
 @TestOn('vm')
+// These tests assert on real loopback-socket teardown (TCP RST observation),
+// whose timing is at the mercy of a shared CI runner's scheduler — the teardown
+// is occasionally not observed within the window (a fresh socket on re-run
+// resolves it). Retry makes the inherently timing-dependent assertions reliable
+// without weakening them; a genuine regression fails all attempts (Story 9.4).
+@Retry(2)
 library;
 
 import 'dart:async';
@@ -20,66 +26,108 @@ import 'package:test/test.dart';
 /// A minimal run payload — these tests assert on cancellation, not body shape.
 RunAgentInput _input() => const RunAgentInput(threadId: 't', runId: 'r');
 
+/// Hang-guard for the loopback-server synchronization points (`firstEvent`,
+/// `tornDown`). It bounds *that* the awaited Future resolves at all — NOT a
+/// latency budget (teardown is observed via the detached socket's read-side
+/// close — see [_streamSse]) — so it is sized well above worst-case shared-runner
+/// scheduling stalls. A 2s guard flaked on a loaded CI runner (Story 9.4); 20s
+/// fires a clear message before the 30s test-default, and `@Retry` (above) covers
+/// any residual socket-timing flake.
+const _syncWait = Duration(seconds: 20);
+
 /// What [_longRunningServer] hands back: where to point an agent, plus the two
 /// observation points the cancellation assertions hang on.
-typedef _Server = ({
-  Uri uri,
-  Future<void> firstEvent,
-  Future<void> writeFailed,
-});
+typedef _Server = ({Uri uri, Future<void> firstEvent, Future<void> tornDown});
+
+/// Streams an SSE response for [request] over its **detached socket**: completes
+/// [firstEvent] once the [opening] frames flush, then emits [tick] every 50 ms,
+/// and completes [tornDown] the instant the client tears the connection down.
+///
+/// Teardown is observed via the detached socket's read side closing (`onDone` /
+/// `onError`) — i.e. the client's FIN. This is reliable cross-platform. The
+/// previous approach (waiting for a periodic write to *throw* after the client
+/// closed) held on macOS but NOT on Linux/CI: there a FIN half-closes the
+/// connection while the server's write half stays open, so writes keep succeeding
+/// and the teardown is never observed (Story 9.4). `tornDown` therefore proves the
+/// abort reached TCP — it bounds *that the connection tore down*, not the sub-50ms
+/// budget. Connection-close framing (`persistentConnection = false`, no chunked)
+/// lets us write raw SSE bytes to the socket; SSE clients read the body to close.
+Future<void> _streamSse(
+  HttpRequest request, {
+  required String opening,
+  required String tick,
+  required Completer<void> firstEvent,
+  required Completer<void> tornDown,
+}) async {
+  request.response
+    ..statusCode = HttpStatus.ok
+    ..headers.contentType = ContentType('text', 'event-stream')
+    // Connection-close framing, NOT chunked: we write raw SSE bytes to the
+    // detached socket, so the client must not try to parse them as chunk sizes.
+    ..headers.chunkedTransferEncoding = false
+    ..persistentConnection = false;
+  final socket = await request.response.detachSocket();
+  addTearDown(socket.destroy);
+
+  void markTornDown() {
+    if (!tornDown.isCompleted) tornDown.complete();
+  }
+
+  socket.listen((_) {}, onDone: markTornDown, onError: (_) => markTornDown());
+
+  socket.add(utf8.encode(opening));
+  await socket.flush();
+  if (!firstEvent.isCompleted) firstEvent.complete();
+
+  Timer.periodic(const Duration(milliseconds: 50), (timer) async {
+    if (tornDown.isCompleted) {
+      timer.cancel();
+      socket.destroy();
+      return;
+    }
+    try {
+      socket.add(utf8.encode(tick));
+      await socket.flush();
+    } on Object {
+      // Backstop: a write into the torn-down socket threw before `onDone` fired.
+      timer.cancel();
+      markTornDown();
+      socket.destroy();
+    }
+  });
+}
 
 /// A loopback SSE server that emits one `TEXT_MESSAGE_CONTENT` every 50 ms after
 /// an initial `RUN_STARTED` + `TEXT_MESSAGE_START`, and **never** sends
 /// `RUN_FINISHED` — the long-running run a consumer cancels mid-stream (AC1).
-///
-/// `firstEvent` completes once the opening frames are flushed (so a test can
-/// cancel mid-stream); `writeFailed` completes when a subsequent flush throws —
-/// i.e. the server observes the client socket gone, proving the abort reached
-/// TCP (the detection lags the real close by up to one tick + the RST round-trip,
-/// so it bounds *that the connection tore down*, not the sub-50ms budget).
+/// `firstEvent` completes once the opening frames flush; `tornDown` completes when
+/// the server observes the client teardown (see [_streamSse]).
 Future<_Server> _longRunningServer() async {
   final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
   addTearDown(() => server.close(force: true));
   final firstEvent = Completer<void>();
-  final writeFailed = Completer<void>();
+  final tornDown = Completer<void>();
 
   server.listen((request) async {
     await request.drain<void>();
-    final res = request.response
-      ..bufferOutput = false
-      ..headers.contentType = ContentType('text', 'event-stream');
-
-    res
-      ..write('data: {"type":"RUN_STARTED","threadId":"t","runId":"r"}\n\n')
-      ..write(
-        'data: {"type":"TEXT_MESSAGE_START","messageId":"m",'
-        '"role":"assistant"}\n\n',
-      );
-    await res.flush();
-    if (!firstEvent.isCompleted) firstEvent.complete();
-
-    Timer.periodic(const Duration(milliseconds: 50), (timer) async {
-      if (writeFailed.isCompleted) {
-        timer.cancel();
-        return;
-      }
-      try {
-        res.write(
+    await _streamSse(
+      request,
+      opening:
+          'data: {"type":"RUN_STARTED","threadId":"t","runId":"r"}\n\n'
+          'data: {"type":"TEXT_MESSAGE_START","messageId":"m",'
+          '"role":"assistant"}\n\n',
+      tick:
           'data: {"type":"TEXT_MESSAGE_CONTENT","messageId":"m",'
           '"delta":"tick"}\n\n',
-        );
-        await res.flush();
-      } on Object {
-        timer.cancel();
-        if (!writeFailed.isCompleted) writeFailed.complete();
-      }
-    });
+      firstEvent: firstEvent,
+      tornDown: tornDown,
+    );
   });
 
   return (
     uri: Uri.parse('http://${server.address.host}:${server.port}'),
     firstEvent: firstEvent.future,
-    writeFailed: writeFailed.future,
+    tornDown: tornDown.future,
   );
 }
 
@@ -93,42 +141,25 @@ Future<_Server> _longRunningChunkServer() async {
   final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
   addTearDown(() => server.close(force: true));
   final firstEvent = Completer<void>();
-  final writeFailed = Completer<void>();
+  final tornDown = Completer<void>();
 
   server.listen((request) async {
     await request.drain<void>();
-    final res = request.response
-      ..bufferOutput = false
-      ..headers.contentType = ContentType('text', 'event-stream');
-
-    res.write(
-      'data: {"type":"TOOL_CALL_CHUNK","toolCallId":"c","toolCallName":"fn"}'
-      '\n\n',
+    await _streamSse(
+      request,
+      opening:
+          'data: {"type":"TOOL_CALL_CHUNK","toolCallId":"c",'
+          '"toolCallName":"fn"}\n\n',
+      tick: 'data: {"type":"TOOL_CALL_CHUNK","toolCallId":"c","delta":"x"}\n\n',
+      firstEvent: firstEvent,
+      tornDown: tornDown,
     );
-    await res.flush();
-    if (!firstEvent.isCompleted) firstEvent.complete();
-
-    Timer.periodic(const Duration(milliseconds: 50), (timer) async {
-      if (writeFailed.isCompleted) {
-        timer.cancel();
-        return;
-      }
-      try {
-        res.write(
-          'data: {"type":"TOOL_CALL_CHUNK","toolCallId":"c","delta":"x"}\n\n',
-        );
-        await res.flush();
-      } on Object {
-        timer.cancel();
-        if (!writeFailed.isCompleted) writeFailed.complete();
-      }
-    });
   });
 
   return (
     uri: Uri.parse('http://${server.address.host}:${server.port}'),
     firstEvent: firstEvent.future,
-    writeFailed: writeFailed.future,
+    tornDown: tornDown.future,
   );
 }
 
@@ -238,7 +269,7 @@ void main() {
       });
       addTearDown(sub.cancel);
 
-      await firstSeen.future.timeout(const Duration(seconds: 2));
+      await firstSeen.future.timeout(_syncWait);
       final countAtCancel = events.length;
 
       clock.start();
@@ -279,7 +310,7 @@ void main() {
       });
       addTearDown(sub.cancel);
 
-      await firstSeen.future.timeout(const Duration(seconds: 2));
+      await firstSeen.future.timeout(_syncWait);
       expect(connects, 1, reason: 'onConnect fired once on headers-received');
 
       clock.start();
@@ -312,13 +343,13 @@ void main() {
       });
       addTearDown(sub.cancel);
 
-      await firstSeen.future.timeout(const Duration(seconds: 2));
+      await firstSeen.future.timeout(_syncWait);
       await sub.cancel();
 
       // The owned client closes with `force: true`; the server's next writes
       // fail once the socket is gone — proving a real TCP teardown, not just a
       // koel-side drop.
-      await server.writeFailed.timeout(const Duration(seconds: 2));
+      await server.tornDown.timeout(_syncWait);
     });
 
     test('synthesis on — cancel mid-chunk-envelope aborts <50 ms and flushes '
@@ -339,7 +370,7 @@ void main() {
       });
       addTearDown(sub.cancel);
 
-      await firstSeen.future.timeout(const Duration(seconds: 2));
+      await firstSeen.future.timeout(_syncWait);
       final countAtCancel = events.length;
       // The first synthesized event is the START — proving synthesis was live.
       expect(events.first, isA<ToolCallStartEvent>());
@@ -382,7 +413,7 @@ void main() {
           });
           addTearDown(sub.cancel);
 
-          await firstSeen.future.timeout(const Duration(seconds: 2));
+          await firstSeen.future.timeout(_syncWait);
           final countAtCancel = events.length;
 
           clock.start();
@@ -413,7 +444,7 @@ void main() {
           });
           addTearDown(sub.cancel);
 
-          await firstSeen.future.timeout(const Duration(seconds: 2));
+          await firstSeen.future.timeout(_syncWait);
           clock.start();
           await sub.cancel();
 
@@ -456,7 +487,7 @@ void main() {
             events.add(e);
             if (!firstSeen.isCompleted) firstSeen.complete();
           });
-          await firstSeen.future.timeout(const Duration(seconds: 2));
+          await firstSeen.future.timeout(_syncWait);
           final countAtCancel = events.length;
 
           await sub.cancel();
@@ -493,7 +524,7 @@ void main() {
         addTearDown(evSub.cancel);
 
         final sendFuture = session.send('hi');
-        await firstEvent.future.timeout(const Duration(seconds: 2));
+        await firstEvent.future.timeout(_syncWait);
         session.cancel();
         await sendFuture;
 
@@ -517,7 +548,7 @@ void main() {
         addTearDown(evSub.cancel);
 
         final sendFuture = session.send('hi');
-        await firstEvent.future.timeout(const Duration(seconds: 2));
+        await firstEvent.future.timeout(_syncWait);
         session.cancel();
         await sendFuture;
 

@@ -18,6 +18,7 @@ workspace:
   - packages/koel_widgets/example
   - packages/koel_devtools
   - packages/koel_test
+  - example
 
 dev_dependencies:
   melos: ^7.8.0
@@ -25,8 +26,8 @@ dev_dependencies:
 melos:
   scripts:
     analyze:
-      description: Run `dart analyze .` per package (NFR-13 gate).
-      exec: dart analyze .
+      description: "Run `dart analyze .` per package SEQUENTIALLY (-c 1, NFR-13 gate). The koel_lints analysis_server_plugin compiles to one shared AOT snapshot under ~/.dartServer/.plugin_manager; parallel `melos exec` makes packages race on that cache (plugin.aot 'file too short' / invalid-AOT / analysis-server Bus-error crash, seen on CI). Sequential = the snapshot compiles once, then is reused."
+      run: melos exec --concurrency 1 -- dart analyze .
     test:
       description: Run `dart test` per package (CWD = package root for fixture reads, deferred-work.md :158), excluding the perf benches. Scaffold packages with no test files yet (exit 79) are tolerated; real failures propagate. See tool/test_package.sh.
       exec: bash "$MELOS_ROOT_PATH/tool/test_package.sh"
@@ -62,3 +63,12 @@ melos:
     conformance:
       description: "AG-UI conformance lane (FR-G4) — runs the `conformance`-tagged tests (ConformanceRunner vs each backend adapter, offline MockClient replay) per package; tolerates packages with none yet. koel_agno now (5.3); langgraph 5.6, copilotkit 5.9 extend it. See tool/conformance.sh."
       exec: bash "$MELOS_ROOT_PATH/tool/conformance.sh"
+    verify:versioning:
+      description: "Hybrid-versioning convention gate (Story 9.1, FR-H2 / R-2..R-3) — the ten v1.0.0 release pubspecs carry lock-step foundation versions, ranged (^X.Y.Z) intra-repo deps, and koel_lints dev-only; koel_devtools + koel_widgets/example excluded. bash+awk, zero new dep. See tool/verify_versioning.sh."
+      run: bash "$MELOS_ROOT_PATH/tool/verify_versioning.sh"
+    api-diff:
+      description: "Public-API breaking-change gate (Story 9.3, NFR-14 / AR-12 / D7) — runs dart_apitool per package, diffing the current public surface against the committed packages/<pkg>/.api-baseline/<pkg>.json. Default verifies (breaking blocks, additive warns); pass `-- --update` to refresh the baselines. Shells out to the GLOBAL dart-apitool 0.23.1 (never a workspace dep). See tool/verify_api_surface.dart."
+      run: dart run "$MELOS_ROOT_PATH/tool/verify_api_surface.dart"
+    perf:
+      description: "Regression-relative perf SLO gate (Story 9.4, NFR-1..NFR-5) — runs the five test/perf/*_bench.dart harnesses (sse_parse/reducer/chat_session_memory/cold_start/streaming_jank) per package under KOEL_PERF_GATE; any metric past its band (>10%, N-3 wider — see BENCHMARKS.md) fails the job. Pass `-- --update` to recapture the committed baselines on the reference device (reviewed-PR flow). Pure dart:io orchestrator, never a workspace dep. See tool/perf/run_benchmarks.dart."
+      run: dart run "$MELOS_ROOT_PATH/tool/perf/run_benchmarks.dart"

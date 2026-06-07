@@ -9,14 +9,20 @@ import 'package:flutter/cupertino.dart';
 /// `CupertinoTheme` text style (the bubble's `bodyText` carries no `fontFamily`,
 /// so it inherits), so this widget only applies the iOS surface to a pre-built
 /// [child].
+///
+/// The surface is capped at [maxWidth] inside its [Align]: a no-op on a phone
+/// (screen narrower than the cap ⇒ the bubble fills width), a reading-width cap
+/// on a wide desktop/web window so the role alignment stays meaningful (AI-7.1).
 class CupertinoBubble extends StatelessWidget {
-  /// Wraps [child] in an iOS bubble filled with [fill], padded by [padding], and
-  /// aligned to the trailing edge when [alignEnd] (the user side).
+  /// Wraps [child] in an iOS bubble filled with [fill], padded by [padding],
+  /// aligned to the trailing edge when [alignEnd] (the user side), and capped at
+  /// [maxWidth].
   const CupertinoBubble({
     required this.child,
     required this.fill,
     required this.padding,
     required this.alignEnd,
+    required this.maxWidth,
     super.key,
   });
 
@@ -32,15 +38,21 @@ class CupertinoBubble extends StatelessWidget {
   /// Trailing alignment for user turns; leading for everything else.
   final bool alignEnd;
 
+  /// Reading-width cap for the surface (logical px); a no-op below it.
+  final double maxWidth;
+
   @override
   Widget build(BuildContext context) => Align(
     alignment: alignEnd ? Alignment.centerRight : Alignment.centerLeft,
-    child: DecoratedBox(
-      decoration: BoxDecoration(
-        color: fill,
-        borderRadius: BorderRadius.circular(18),
+    child: ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: maxWidth),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: fill,
+          borderRadius: BorderRadius.circular(18),
+        ),
+        child: Padding(padding: padding, child: child),
       ),
-      child: Padding(padding: padding, child: child),
     ),
   );
 }

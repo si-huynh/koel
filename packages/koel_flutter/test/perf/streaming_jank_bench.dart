@@ -38,13 +38,22 @@ import 'perf_baseline.dart';
 /// work exceeded the 16 ms (= 16000 µs) budget — the human-readable NFR-5 line.
 /// **Record-or-gate (never flakes) — see [recordOrGate]:** baseline absent **or**
 /// `KOEL_PERF_UPDATE` → write the committed v1.0.0 baseline; `KOEL_PERF_GATE`
-/// (Epic 9 reference-device path) → **fail when p99 regresses > 10%** (NFR-5);
-/// default local `flutter test` → log the delta, **pass unconditionally**.
+/// (Epic 9 reference-device path) → **fail when p99 regresses past the gate
+/// band** (see [_gateTolerance] below) (NFR-5); default local `flutter test` →
+/// log the delta, **pass unconditionally**.
 const _frame = Duration(milliseconds: 16);
 const _frameBudgetMicros = 16000;
 const _warmupEvents = 50;
 const _measuredEvents = 500;
 const _baselinePath = 'test/perf/baselines/streaming_jank_bench.json';
+
+/// Gate band. The PRD's 10% default is far too tight for an absolute-µs metric on
+/// GitHub-hosted runners, whose CPU generation varies job-to-job — a slow instance
+/// ran the sibling compute metrics ~54–86% over with no code change (Story 9.4
+/// Task 5), i.e. ~2× slower hardware. 100% clears that shared-runner variance
+/// while still biting a real per-event UI-thread regression. Documented in
+/// BENCHMARKS.md; a hard block, never a silent downgrade.
+const _gateTolerance = 2.0;
 
 void main() {
   testWidgets(
@@ -124,6 +133,7 @@ void main() {
         value: percentile(perEventMicros, 99),
         sampleSize: _measuredEvents,
         label: 'streaming_jank',
+        tolerance: _gateTolerance,
       );
     },
     timeout: const Timeout(Duration(minutes: 3)),

@@ -2,6 +2,15 @@
 
 `dart pub add koel` produces the working quickstart path. Sample app at the repo root demonstrates end-to-end. All 6 CI workflows green. PRD reconciliation tasks committed. Trademark + `ag_ui` license gates resolved. v1.0.0 published lock-step on `koel_core` + `koel_http` + `koel_lints`; other packages versioned independently against `^1.0.0` ranges. Baseline perf artifacts published as release assets.
 
+> **Resequence (SCP-2026-06-06-B, Epic-7 retro):** Epic 9 now runs **before** the
+> DevTools epic — v1.0.0 ships the **ten** packages that exist at release; `koel_devtools`
+> is deferred **post-1.0** (target 1.1) and renumbered **Epic 10**. The reorder is
+> architecturally clean: the v1.0.0 lock-step is only on `koel_core` + `koel_http` +
+> `koel_lints`, the `koel` meta-barrel re-exports just `core`/`http`/`flutter` (no
+> devtools), and dependents float on `^1.0.0` ranges — so `koel_devtools` joins later as
+> a `1.x`-ranged dependent without breaking lock-step. Every devtools reference in the
+> stories below has been struck to the ten-package release set.
+
 ## Story 9.1: `koel` meta-package re-exports + hybrid versioning ranges
 
 As a Flutter developer,
@@ -24,7 +33,7 @@ So that the quickstart path is one package add per FR-H3 + FR-H2.
 **When** I check `koel_core` + `koel_http` + `koel_lints` pubspec versions before publish,
 **Then** all three carry identical `1.0.0` versions per FR-H2 + PRD §12 R-2.
 
-**Given** the backend bridges + Flutter + widgets + devtools + test packages,
+**Given** the backend bridges + Flutter + widgets + test packages,
 **When** I check their pubspec dependency on `koel_core`,
 **Then** each declares a `^1.0.0` range (NOT a tight `1.0.0` pin) per FR-H2 + PRD §12 R-3,
 **And** an internal CI step asserts the convention before each publish.
@@ -51,7 +60,8 @@ So that pub.dev visitors see a real working entrypoint per FR-H3 + AR-22 + PRD �
 **Given** the sample app demoed by a human,
 **When** the demoer follows the README,
 **Then** the chat surface renders + the mock conversation streams visibly,
-**And** zero business-domain content appears (per AR-22 + PRD §13 D-5).
+**And** zero business-domain content appears (per AR-22 + PRD §13 D-5),
+**And** `MessageBubble` renders polished across all six platforms — long prose is width-capped (no edge-to-edge stretch; the role `Align` stays meaningful) and a long unbreakable code token does not clip (per **Epic-7 retro AI-7.1**: the `ConstrainedBox(maxWidth)` + long-code horizontal handling deferred from Story 7.2 lands here, where the sample app is its first real consumer and goldens make it testable).
 
 ## Story 9.3: `dart_apitool` wiring + per-package baseline + CI gate
 
@@ -124,7 +134,7 @@ So that conformance + publish-readiness are continuously enforced per FR-I1 + PR
 
 **Given** `.github/workflows/publish-dry-run.yml`,
 **When** the workflow runs on every PR + on every push to main,
-**Then** it executes `dart pub publish --dry-run` per package across all eleven packages,
+**Then** it executes `dart pub publish --dry-run` per package across all ten packages (`koel_devtools` deferred post-1.0 per SCP-2026-06-06-B),
 **And** any error (missing required pubspec fields, deprecated lints, file inclusion mistakes) blocks merge.
 
 **Given** all six workflows (`ci.yml`, `conformance.yml`, `perf-bench.yml`, `api-diff.yml`, `codegen-drift.yml`, `publish-dry-run.yml`),
@@ -142,12 +152,12 @@ So that documentation contract is met per FR-H6 + AR-21 + PRD §13.
 
 **Given** OQ-Docs-Framework resolved (Docusaurus vs Nextra vs alternative — decision committed),
 **When** I inspect `docs/`,
-**Then** the directory structure matches PRD §13 D-3: `getting-started.md`, `concepts/<topic>.md` (one per major idea — events, interceptors, reducer, sessions, devtools), `recipes/<scenario>.md` (10+ scenarios), `api-reference/` (`dart doc` output stub or auto-link), `migration-guide.md`, `adapter-cookbook.md`,
+**Then** the directory structure matches PRD §13 D-3: `getting-started.md`, `concepts/<topic>.md` (one per major idea — events, interceptors, reducer, sessions; `devtools` concept page lands with Epic 10 post-1.0), `recipes/<scenario>.md` (10+ scenarios), `api-reference/` (`dart doc` output stub or auto-link), `migration-guide.md`, `adapter-cookbook.md`,
 **And** the framework decision rationale is documented in `docs/ADR-001-docs-framework.md`.
 
 **Given** every package's `README.md`,
 **When** I inspect each,
-**Then** all eleven packages meet PRD §13 D-1: one-paragraph "what is this", 10-line quickstart, link to docs site, link to CHANGELOG, MIT license note, at most 3 badges (pub.dev version + license + CI status),
+**Then** all ten packages meet PRD §13 D-1: one-paragraph "what is this", 10-line quickstart, link to docs site, link to CHANGELOG, MIT license note, at most 3 badges (pub.dev version + license + CI status),
 **And** all README content is reviewed for the architecture's anti-pattern rules (no `print`, no marketing paragraphs in README, doc the contract).
 
 **Given** every public symbol across all packages,
@@ -207,7 +217,7 @@ So that the brand + credit-line gates are met per FR-I3 + OQ-Koel-Trademark + OQ
 ## Story 9.9: v1.0.0 lock-step publish + ranged dependent publishes + `CONFORMANCE.md` finalize
 
 As a release manager,
-I want v1.0.0 published lock-step on `koel_core` + `koel_http` + `koel_lints` followed by independent `^1.0.0`-ranged publishes for the seven dependent packages, with `CONFORMANCE.md` recording the pinned AG-UI commit SHA + mirrored CHANGELOGs on the foundations,
+I want v1.0.0 published lock-step on `koel_core` + `koel_http` + `koel_lints` followed by independent `^1.0.0`-ranged publishes for the six dependent packages, with `CONFORMANCE.md` recording the pinned AG-UI commit SHA + mirrored CHANGELOGs on the foundations,
 So that v1.0.0 ships per PRD §12 + FR-H2.
 
 **Acceptance Criteria:**
@@ -220,7 +230,7 @@ So that v1.0.0 ships per PRD §12 + FR-H2.
 **When** I execute `melos publish` orchestrated per PRD §12,
 **Then** `koel_lints` publishes first (so subsequent packages can depend on it as a package, not path),
 **And** `koel_core` + `koel_http` publish second + third in lock-step with identical `1.0.0` versions per PRD §12 R-2,
-**And** the seven dependent packages publish next: `koel_test`, `koel_agno`, `koel_langgraph`, `koel_runtime`, `koel_flutter`, `koel_widgets`, `koel_devtools`, then `koel` meta-package last,
+**And** the six dependent packages publish next: `koel_test`, `koel_agno`, `koel_langgraph`, `koel_runtime`, `koel_flutter`, `koel_widgets`, then `koel` meta-package last (`koel_devtools` joins as a `^1.0.0`-ranged dependent in its post-1.0 Epic 10 release),
 **And** every dependent declares `koel_core: ^1.0.0` (NOT a tight pin) per PRD §12 R-3.
 
 **Given** the CHANGELOGs on `koel_core` + `koel_http` + `koel_lints`,
