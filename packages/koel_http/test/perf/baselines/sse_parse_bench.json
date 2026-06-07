@@ -1,5 +1,5 @@
 {
-  "p99_micros_per_event": 4.384,
+  "p99_micros_per_event": 4.731,
   "sample_size": 300,
   "recorded_dart": "3.12.0"
 }
