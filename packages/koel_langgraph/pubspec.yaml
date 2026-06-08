@@ -1,7 +1,6 @@
 name: koel_langgraph
 description: AG-UI adapter for LangGraph backends.
 version: 1.0.0
-publish_to: none
 repository: https://github.com/si-huynh/koel
 homepage: https://github.com/si-huynh/koel#readme
 

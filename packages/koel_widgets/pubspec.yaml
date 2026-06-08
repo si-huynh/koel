@@ -1,7 +1,6 @@
 name: koel_widgets
 description: Material 3 + Cupertino chat UI primitives (theme, bubble, input, follow-up list).
 version: 1.0.0
-publish_to: none
 repository: https://github.com/si-huynh/koel
 homepage: https://github.com/si-huynh/koel#readme
 
