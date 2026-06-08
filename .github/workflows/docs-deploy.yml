@@ -1,0 +1,61 @@
+# docs-deploy.yml — builds the Docusaurus docs site (ADR-001) and deploys it to
+# GitHub Pages at https://si-huynh.github.io/koel/.
+#
+# The site is a JS toolchain isolated under docs/ (NOT a pub-workspace member), so
+# it is built here rather than in the `docs` lane of ci.yml (which runs `dart doc`
+# only — see ci.yml). The build step doubles as the docs-site link-integrity gate:
+# docusaurus.config.ts sets `onBrokenLinks: 'throw'`, so any broken internal link
+# across the 22 pages fails this workflow (closes the deferred CI link-integrity
+# lane, deferred-work.md). Story 9.9 deferred the deploy as an owner action; this
+# wires it as a repeatable lane on every docs/ change.
+name: docs-deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - '.github/workflows/docs-deploy.yml'
+  workflow_dispatch:
+
+# Least-privilege token for the Pages deployment.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One in-flight Pages deployment at a time; don't cancel a running deploy.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+      - name: Install deps (clean, from lockfile)
+        run: npm ci
+        working-directory: docs
+      - name: Build site (onBrokenLinks:throw = link-integrity gate)
+        run: npm run build
+        working-directory: docs
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
