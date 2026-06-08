@@ -38,10 +38,6 @@ Credit to the community [`ag_ui`](https://pub.dev/packages/ag_ui) 0.1.0 package
 as the genre's first attempt at an AG-UI client for Dart. koel is a clean-slate
 rewrite with no migration obligation.
 
-> **Tracking:** this credit is pending `OQ-AGUI-License` verification
-> (license-compatibility check of `ag_ui` 0.1.0), which gates the first
-> *published* README crediting it. Cleared in Epic 9 (FR-I3).
-
 ## License
 
 MIT © 2026 Si Huynh. See [LICENSE](LICENSE).
