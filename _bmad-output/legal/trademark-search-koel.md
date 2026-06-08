@@ -16,7 +16,18 @@ Indian brand **KOEL** = Kirloskar Oil Engines), so the registries carry many
 marks in **unrelated** classes (engines, apparel, food, care products). Those are
 **not** conflicts. This search targets Class 9 / Class 42.
 
-## Status: ⚠️ OPEN — owner/counsel action required before v1.0.0 publish
+## Status: ✅ RESOLVED (owner risk-acceptance, 2026-06-08) — does not block v1.0.0
+
+**Owner decision (P1, 2026-06-08):** koel is free, non-commercial open-source
+software (no goods sold in commerce), so a formal registered-mark clearance
+process is disproportionate to the actual risk. The owner has **accepted the
+residual trademark risk** for the v1.0.0 publish. This is explicitly **not** a
+clean-clearance claim — it is a documented, eyes-open risk acceptance. The one
+material signal (the same-name [`koel/koel`](https://koel.dev) music-streaming
+server) is a *different product domain* and *unregistered*, accepted as a known
+overlap. The attempted-search audit trail is preserved below for provenance; the
+"optional future hardening" steps remain available if koel ever takes a
+commercial posture.
 
 The dev-agent automated search **could not complete an authoritative
 registered-mark query** of Class 9/42 (the official portals are not
@@ -66,21 +77,24 @@ or design-mark equivalents, or counsel's risk assessment. Web search ≠ registe
 query. A confident "no Class 9/42 conflict" requires the authoritative-portal
 searches, which only the owner (or counsel) can complete interactively.
 
-## Recommended owner action before v1.0.0 publish (P1)
+## Optional future hardening (superseded by the owner risk-acceptance above)
+
+The owner accepted the residual risk rather than completing these; they remain
+available if koel later takes a commercial posture (paid hosting, a company, a
+logo mark) that raises the stakes:
 
 1. Run the three portal searches manually (USPTO `tmsearch.uspto.gov`, EUIPO
    `eSearch plus`, India IP public search), filtered to **Class 9 + Class 42**,
-   and append the screenshots / serial numbers here as the authoritative record.
-2. Weigh the **Koel music-app** name overlap (different domain, no registration
-   found) for v1.0.0 brand risk — likely acceptable (distinct goods, no
-   registration surfaced), but
-   it is the owner's call to record.
-3. On a clean authoritative result, flip **OQ-Koel-Trademark → RESOLVED** in
-   PRD §15 (this story flips only `OQ-AGUI-License`, which cleared cleanly).
+   and append the screenshots / serial numbers here as an authoritative record.
+2. Re-weigh the **Koel music-app** name overlap (different domain, no
+   registration found) — already judged acceptable for v1.0.0 (distinct goods,
+   no registration surfaced).
+3. If a clean authoritative result is later obtained, upgrade the basis of the
+   PRD §15 resolution from *risk-acceptance* to *verified-clean*.
 
 ## Cross-references
 
-- PRD §15 `OQ-Koel-Trademark` — remains **OPEN** (this record); blocks v1.0.0.
+- PRD §15 `OQ-Koel-Trademark` — **RESOLVED** (owner risk-acceptance, this record); does not block v1.0.0.
 - F-I3 (trademark & license hygiene); F-H4 (brand & naming — "koel").
 - `../planning-artifacts/brand-reservation.md` — F-I3 release blockers + owner-task provenance caveat.
 - `_bmad-output/legal/ag_ui-license-verification.md` — the companion gate (CLEARED).
