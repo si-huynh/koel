@@ -197,10 +197,14 @@ Adjust the package links to their pub.dev URLs once live
 ## 6. Docs site
 
 The docs site (`https://si-huynh.github.io/koel/`, Docusaurus — see
-[`docs/ADR-001-docs-framework.md`](docs/ADR-001-docs-framework.md)) is built with
-`npm --prefix docs ci && npm --prefix docs run build` and deployed to GitHub
-Pages. Deployment/hosting is an owner action paired with this release (ADR-001
-§"Story 9.9 owns the deploy"); the release-notes link above points at it.
+[`docs/ADR-001-docs-framework.md`](docs/ADR-001-docs-framework.md)) deploys
+**automatically** via [`.github/workflows/docs-deploy.yml`](.github/workflows/docs-deploy.yml):
+on every push to `main` touching `docs/**` it runs `npm --prefix docs ci && npm
+--prefix docs run build` and publishes `docs/build` to GitHub Pages (Pages source
+= GitHub Actions). The build enforces `onBrokenLinks: 'throw'`, so it is also the
+docs-site link-integrity gate. To redeploy on demand: `gh workflow run
+docs-deploy.yml`. No manual step is required at release time — the site went live
+2026-06-08.
 
 ---
 
