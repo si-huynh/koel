@@ -132,6 +132,15 @@ class ChatSession {
   Future<void> persist() =>
       _client._sessionStorage?.save(_threadId, _state) ?? Future<void>.value();
 
+  /// Shallow-merges [patch] into the agent [ChatState.state] map mid-session
+  /// and re-emits, so the NEXT [send] carries it in `RunAgentInput.state`
+  /// without recreating the session (transcript/messages preserved). Mirrors
+  /// CopilotKit `agent.setState({ ...agent.state, ...patch })`. Guarded against a
+  /// closed controller via [_emit].
+  void updateState(Map<String, dynamic> patch) {
+    _emit(_state.copyWith(state: {..._state.state, ...patch}));
+  }
+
   /// Cancels the in-flight run, closes both broadcast controllers, and
   /// unregisters from the owning client. Idempotent.
   void dispose() {

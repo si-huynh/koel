@@ -267,6 +267,45 @@ void main() {
       await expectLater(session.persist(), completes);
     });
 
+    test('updateState shallow-merges the patch, preserving other keys', () {
+      final client = KoelClient(agent: _SweepAgent());
+      addTearDown(client.dispose);
+
+      final session = client.newSession(
+        threadId: 'updatestate',
+        initial: const ChatState(
+          state: {
+            'language': 'vi',
+            'mode': 'beginner',
+            'insight': {'ticker': 'FPT'},
+          },
+        ),
+      );
+
+      session.updateState({'mode': 'professional'});
+
+      // The patched key is replaced...
+      expect(session.state.state['mode'], 'professional');
+      // ...and the untouched keys survive (merge, not replace).
+      expect(session.state.state['language'], 'vi');
+      expect(session.state.state['insight'], {'ticker': 'FPT'});
+    });
+
+    test('updateState re-emits the merged state on the stream', () async {
+      final client = KoelClient(agent: _SweepAgent());
+      addTearDown(client.dispose);
+
+      final session = client.newSession(
+        threadId: 'updatestate-emit',
+        initial: const ChatState(state: {'mode': 'beginner'}),
+      );
+
+      final next = session.stream.first;
+      session.updateState({'mode': 'professional'});
+      final emitted = await next;
+      expect(emitted.state['mode'], 'professional');
+    });
+
     test('dispose closes both controllers', () async {
       final client = KoelClient(agent: _SweepAgent());
       addTearDown(client.dispose);
