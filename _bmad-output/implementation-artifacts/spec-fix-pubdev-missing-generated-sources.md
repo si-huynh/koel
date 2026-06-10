@@ -2,7 +2,7 @@
 title: 'Fix broken pub.dev releases — ship generated Dart files in archives'
 type: 'bugfix'
 created: '2026-06-10'
-status: 'in-progress'
+status: 'done'
 context: ['{project-root}/RELEASING.md']
 ---
 
@@ -38,15 +38,15 @@ context: ['{project-root}/RELEASING.md']
 ## Tasks & Acceptance
 
 **Execution:**
-- [ ] `.gitignore` -- remove lines 8–9 -- root cause
-- [ ] all codegen pkgs -- `dart run build_runner build --delete-conflicting-outputs`, `git add` outputs -- regenerate fresh, track
-- [ ] verify -- every `part` directive in `packages/*/lib` resolves to a tracked file -- no orphan parts
-- [ ] 4 pubspecs + 4 CHANGELOGs -- bump + entries -- supersede broken versions
-- [ ] `tool/publish_dry_run.sh` -- generated-file-list assertion -- the gate that was missing
-- [ ] `.github/workflows/codegen-drift.yml` -- drift check vs committed files -- prevent regression
-- [ ] `RELEASING.md` -- gate note + history entry -- runbook stays truth
-- [ ] run full gate suite, commit `release(v1.1.1)`, tag, publish 4 packages, `gh release create`
-- [ ] scratch consumer outside repo: hosted-only `koel_core ^1.1.1` + `koel_http ^1.1.1` + `koel_agno ^1.0.0` → `dart analyze` 0 errors; spot-check `ChatState.phase`, `CustomEvent.name`
+- [x] `.gitignore` -- remove lines 8–9 -- root cause
+- [x] all codegen pkgs -- `dart run build_runner build --delete-conflicting-outputs`, `git add` outputs -- regenerate fresh, track
+- [x] verify -- every `part` directive in `packages/*/lib` resolves to a tracked file -- no orphan parts
+- [x] 4 pubspecs + 4 CHANGELOGs -- bump + entries -- supersede broken versions
+- [x] `tool/publish_dry_run.sh` -- generated-file-list assertion -- the gate that was missing
+- [x] `.github/workflows/codegen-drift.yml` -- drift check vs committed files -- prevent regression
+- [x] `RELEASING.md` -- gate note + history entry -- runbook stays truth
+- [x] run full gate suite, commit `release(v1.1.1)`, tag, publish 4 packages, `gh release create`
+- [x] scratch consumer outside repo: hosted-only `koel_core ^1.1.1` + `koel_http ^1.1.1` + `koel_agno ^1.0.0` → `dart analyze` 0 errors; spot-check `ChatState.phase`, `CustomEvent.name`
 
 **Acceptance Criteria:**
 - Given the release commit, when `git ls-files 'packages/*/lib/**' | grep -E '\.(freezed|g)\.dart$'` runs, then it lists all 17 generated files (== build_runner output).
