@@ -14,6 +14,7 @@ import 'package:koel_core/src/session/in_memory_session_storage.dart';
 import 'package:koel_core/src/state/chat_state.dart';
 import 'package:koel_core/src/state/chat_state_reducer.dart';
 import 'package:koel_core/src/state/composed_reducer.dart';
+import 'package:koel_core/src/state/tool_call.dart';
 import 'package:test/test.dart';
 
 // MockAgent (Story 3.1) does not exist yet — yield the canonical sweep from a
@@ -43,6 +44,26 @@ class _SweepAgent implements AbstractAgent {
       encryptedValue: bytes,
       encryptedValueBase64: base64Encode(bytes),
     );
+    yield RunFinishedEvent(threadId: input.threadId, runId: input.runId);
+  }
+}
+
+// Records every RunAgentInput it is run with (proves what goes out on the
+// wire) and streams one short assistant answer per run.
+class _RecordingInputAgent implements AbstractAgent {
+  _RecordingInputAgent(this.inputs);
+
+  final List<RunAgentInput> inputs;
+  int _answerSeq = 0;
+
+  @override
+  Stream<AgUiEvent> run(RunAgentInput input) async* {
+    inputs.add(input);
+    final id = 'a${_answerSeq++}';
+    yield RunStartedEvent(threadId: input.threadId, runId: input.runId);
+    yield TextMessageStartEvent(messageId: id, role: 'assistant');
+    yield TextMessageContentEvent(messageId: id, delta: 'answer $id');
+    yield TextMessageEndEvent(messageId: id);
     yield RunFinishedEvent(threadId: input.threadId, runId: input.runId);
   }
 }
@@ -318,6 +339,165 @@ void main() {
       // Idempotent.
       expect(session.dispose, returnsNormally);
     });
+  });
+
+  group('ChatSession — regenerate (CopilotKit reloadMessages parity)', () {
+    test('truncates to the last user turn and re-runs WITHOUT appending a new '
+        'user message — the old answer is replaced, not duplicated', () async {
+      final inputs = <RunAgentInput>[];
+      final client = KoelClient(agent: _RecordingInputAgent(inputs));
+      addTearDown(client.dispose);
+
+      final session = client.newSession(threadId: 'regen');
+      await session.send('hello');
+      final userMsg = session.state.messages.firstWhere(
+        (m) => m.role == MessageRole.user,
+      );
+      // One question, one committed answer.
+      expect(session.state.messages, hasLength(2));
+
+      await session.regenerate();
+
+      // Still exactly one user turn (same message, same id — CopilotKit
+      // keeps ids so server-side history merges dedupe) and exactly one
+      // assistant answer — the regenerated one, not a second pair.
+      final users = session.state.messages
+          .where((m) => m.role == MessageRole.user)
+          .toList();
+      final assistants = session.state.messages
+          .where((m) => m.role == MessageRole.assistant)
+          .toList();
+      expect(users, hasLength(1));
+      expect(users.single.id, userMsg.id);
+      expect(users.single.content, 'hello');
+      expect(assistants, hasLength(1));
+      expect(session.state.phase, RunPhase.idle);
+
+      // The regenerate run went out over the TRUNCATED history: it ends at
+      // the user message, with no assistant turn after it and no new user
+      // message appended.
+      expect(inputs, hasLength(2));
+      final regenInput = inputs.last;
+      expect(regenInput.messages.last.id, userMsg.id);
+      expect(
+        regenInput.messages.where((m) => m.role == MessageRole.user),
+        hasLength(1),
+      );
+      expect(
+        regenInput.messages.where((m) => m.role == MessageRole.assistant),
+        isEmpty,
+      );
+      // A fresh run id (not a replay of the send's run).
+      expect(regenInput.runId, isNot(inputs.first.runId));
+    });
+
+    test('only the turns AFTER the last user message are dropped', () async {
+      final inputs = <RunAgentInput>[];
+      final client = KoelClient(agent: _RecordingInputAgent(inputs));
+      addTearDown(client.dispose);
+
+      final session = client.newSession(threadId: 'regen-multi');
+      await session.send('first');
+      await session.send('second');
+      expect(session.state.messages, hasLength(4)); // u,a,u,a
+
+      await session.regenerate();
+
+      // The first turn pair is untouched; only the second answer regenerated.
+      final contents = session.state.messages.map((m) => m.content).toList();
+      expect(contents[0], 'first');
+      expect(contents[2], 'second');
+      expect(session.state.messages, hasLength(4));
+      expect(inputs.last.messages.map((m) => m.content), [
+        'first',
+        contents[1],
+        'second',
+      ]);
+    });
+
+    test('clears leftover pendingMessage and pendingToolCalls from a '
+        'cancelled run', () async {
+      final client = KoelClient(agent: _SlowAgent());
+      addTearDown(client.dispose);
+
+      final session = client.newSession(
+        threadId: 'regen-pending',
+        initial: ChatState(
+          messages: [
+            Message(
+              id: 'u1',
+              role: MessageRole.user,
+              content: 'hi',
+              timestamp: DateTime(2026),
+            ),
+          ],
+          pendingMessage: Message(
+            id: 'a-half',
+            role: MessageRole.assistant,
+            content: 'half an ans',
+            timestamp: DateTime(2026),
+          ),
+          pendingToolCalls: const [ToolCall(id: 'c-half', name: 'search')],
+          phase: RunPhase.cancelled,
+        ),
+      );
+
+      final future = session.regenerate();
+      // The truncation emit replaced the transcript — the stale half-answer
+      // and half-open tool call are gone before the new run streams
+      // (setMessages semantics).
+      expect(session.state.pendingMessage, isNull);
+      expect(session.state.pendingToolCalls, isEmpty);
+      expect(session.state.phase, RunPhase.running);
+      await future;
+    });
+
+    test('is a no-op when the transcript has no user message', () async {
+      final client = KoelClient(agent: _SweepAgent());
+      addTearDown(client.dispose);
+
+      final session = client.newSession(threadId: 'regen-empty');
+      final states = <ChatState>[];
+      final sub = session.stream.listen(states.add);
+
+      await session.regenerate();
+      await pumpEventQueue();
+
+      // No run, no emit — nothing to regenerate from.
+      expect(states, isEmpty);
+      expect(session.state.messages, isEmpty);
+      expect(session.state.phase, RunPhase.idle);
+      await sub.cancel();
+    });
+
+    test(
+      'cancel during a regenerate run completes the gating future',
+      () async {
+        final client = KoelClient(agent: _SlowAgent());
+        addTearDown(client.dispose);
+
+        final session = client.newSession(
+          threadId: 'regen-cancel',
+          initial: ChatState(
+            messages: [
+              Message(
+                id: 'u1',
+                role: MessageRole.user,
+                content: 'hi',
+                timestamp: DateTime(2026),
+              ),
+            ],
+          ),
+        );
+
+        final future = session.regenerate();
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+        session.cancel();
+
+        expect(session.state.phase, RunPhase.cancelled);
+        await future.timeout(const Duration(seconds: 1));
+      },
+    );
   });
 
   group('ChatSession — reducer-throw resilience (deferred #3)', () {

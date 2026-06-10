@@ -54,7 +54,6 @@ class ChatSession {
   /// then runs the client pipeline with the reducer folded as a side
   /// accumulation pushed to [_emit].
   Future<void> send(String content, {List<ToolDefinition>? tools}) {
-    final completer = _completer = Completer<void>();
     final runIndex = _runSeq++;
 
     final userMsg = Message(
@@ -69,6 +68,61 @@ class ChatSession {
         phase: RunPhase.running,
       ),
     );
+
+    return _run(runIndex, tools: tools);
+  }
+
+  /// Regenerates the answer to the **last user turn**: truncates the committed
+  /// transcript back to (and including) that user message — dropping the
+  /// assistant turn(s) after it — and re-runs the agent **without appending a
+  /// new user message**. Mirrors CopilotKit `reloadMessages` (`useCopilotChat`
+  /// reload: `agent.setMessages(historyCutoff)` + `runAgent`), so the old
+  /// answer is *replaced*, not joined by a duplicate question/answer pair.
+  ///
+  /// The truncated history goes out on the wire with the original user
+  /// message **id** preserved (CopilotKit parity — agents that merge
+  /// server-side history dedupe by id). Leftover [ChatState.pendingMessage] and
+  /// [ChatState.pendingToolCalls] from a cancelled/errored run are cleared by
+  /// the truncation emit, matching `setMessages`'s replace-the-transcript
+  /// semantics (CopilotKit carries in-flight tool calls *inside* its messages
+  /// array, so its cutoff drops them implicitly; koel's live in a separate
+  /// field and need the explicit clear).
+  ///
+  /// No-op (completes immediately, no state emit) when the transcript has no
+  /// user message to regenerate from. Like [send], it does not guard against an
+  /// in-flight run — callers gate on their own streaming state.
+  Future<void> regenerate({List<ToolDefinition>? tools}) {
+    final messages = _state.messages;
+    var lastUserIndex = -1;
+    for (var i = messages.length - 1; i >= 0; i--) {
+      if (messages[i].role == MessageRole.user) {
+        lastUserIndex = i;
+        break;
+      }
+    }
+    if (lastUserIndex == -1) return Future<void>.value();
+
+    final runIndex = _runSeq++;
+    _emit(
+      _state.copyWith(
+        messages: messages.sublist(0, lastUserIndex + 1),
+        pendingMessage: null,
+        pendingToolCalls: const [],
+        phase: RunPhase.running,
+      ),
+    );
+
+    return _run(runIndex, tools: tools);
+  }
+
+  /// Runs the agent over the **current** [_state] (the caller has already
+  /// emitted the optimistic transcript for this run): builds the wire
+  /// [RunAgentInput] (echoing reasoning blobs, FR-A9), runs the client pipeline
+  /// with the reducer folded as a side accumulation pushed to [_emit], and
+  /// returns a future that completes when the run finishes. Shared by [send]
+  /// and [regenerate].
+  Future<void> _run(int runIndex, {List<ToolDefinition>? tools}) {
+    final completer = _completer = Completer<void>();
 
     final input = RunAgentInput(
       threadId: _threadId,
@@ -114,7 +168,7 @@ class ChatSession {
   /// Cancels the in-flight run and flips [state] to [RunPhase.cancelled]
   /// **immediately** — there is no cancel *event*; the session synthesizes the
   /// phase regardless of any transport outcome (there is none for an in-memory
-  /// agent). The gating [send] future completes.
+  /// agent). The gating [send]/[regenerate] future completes.
   void cancel() {
     _sub?.cancel();
     _emit(_state.copyWith(phase: RunPhase.cancelled));
@@ -158,8 +212,8 @@ class ChatSession {
     if (!_stateCtrl.isClosed) _stateCtrl.add(s);
   }
 
-  /// Completes the in-flight [send] future once; guards a double-complete on
-  /// cancel-after-done.
+  /// Completes the in-flight [send]/[regenerate] future once; guards a
+  /// double-complete on cancel-after-done.
   void _complete() {
     final c = _completer;
     if (c != null && !c.isCompleted) c.complete();
