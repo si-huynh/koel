@@ -1,6 +1,6 @@
 name: koel_test
 description: Test fixtures, MockAgent, and ConformanceRunner for koel adapters.
-version: 1.0.0
+version: 1.0.1
 repository: https://github.com/si-huynh/koel
 homepage: https://github.com/si-huynh/koel#readme
 

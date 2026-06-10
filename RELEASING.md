@@ -58,6 +58,12 @@ melos run publish-dry        # strict 0-warning + koel_lints 2-item allowlist (r
 
 - **SC-5 (no vestigial code):** confirm no `TODO` / commented-out blocks /
   unused exports in `package:koel_*`.
+- **Generated sources ship in the archive:** `publish-dry` asserts every
+  `part '*.freezed.dart' / '*.g.dart'` referenced from `lib/` appears in the
+  dry-run file list (`tool/publish_dry_run.sh::assert_generated_in_list`).
+  Generated files are **committed** — `dart pub publish` honors `.gitignore`,
+  and ignoring them shipped uncompilable archives (the v1.1.1 post-mortem).
+  Never re-add `*.g.dart` / `*.freezed.dart` to `.gitignore`.
 - **`pubspec.lock` 0-drift** + the workspace analyzer/codegen pins held (see
   AI-5.9: analyzer / freezed / analysis_server_plugin).
 - **Six-workflow matrix green on the release commit** (all are real-bodied):
@@ -204,6 +210,12 @@ pub.dev renders each released package's README, CHANGELOG, and new version.
 
 ## Release history
 
+- **v1.1.1** (2026-06-10) — packaging hotfix: foundation trio + `koel_test`
+  1.0.1. Republish with generated sources (`*.freezed.dart` / `*.g.dart`)
+  included — `.gitignore` had excluded them from the pub archives, making
+  koel_core/koel_http 1.1.0 and koel_test 1.0.0 uncompilable for hosted
+  consumers. Generated files are now committed; `publish-dry` and
+  `codegen-drift.yml` gate the regression. No API changes.
 - **v1.1.0** (2026-06-10) — foundation trio; adds `ChatSession.regenerate()` +
   `ChatSession.updateState()` to koel_core.
 - **v1.0.0** (2026-06-08) — first stable release, all ten packages lock-step;

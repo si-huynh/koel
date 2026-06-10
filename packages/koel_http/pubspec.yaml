@@ -1,6 +1,6 @@
 name: koel_http
 description: HTTP/SSE transport for AG-UI agents — HttpAgent, SseParser, interceptors.
-version: 1.1.0
+version: 1.1.1
 repository: https://github.com/si-huynh/koel
 homepage: https://github.com/si-huynh/koel#readme
 

@@ -1,3 +1,9 @@
+## 1.1.1
+
+Foundation lock-step release with `koel_core` / `koel_http` 1.1.1 (packaging
+fix: generated sources now ship in the archives). No functional changes in
+this package; the 1.1.0 archive itself was unaffected (no codegen).
+
 ## 1.1.0
 
 Foundation lock-step release with `koel_core` 1.1.0 (which adds

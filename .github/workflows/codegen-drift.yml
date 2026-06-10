@@ -25,14 +25,29 @@ jobs:
       - run: dart pub global activate melos 7.8.0
       - run: melos bootstrap
       - run: melos run build
-      # Generated outputs are gitignored, so a plain `git diff` can NEVER fail
-      # (it only inspects tracked files) — the gate was a silent no-op (retro D1).
+      # Generated outputs are COMMITTED since v1.1.1 (.gitignore no longer
+      # excludes *.g.dart/*.freezed.dart — ignoring them shipped uncompilable
+      # pub.dev archives, since `dart pub publish` honors .gitignore). A dirty
+      # tree after the build therefore means a codegen input changed without
+      # re-running build_runner: the committed files are stale → fail. The
+      # porcelain check also catches NEW generated files that were never added
+      # (plain `git diff` is blind to untracked paths).
+      - name: Verify committed generated files match build_runner output
+        run: |
+          set -euo pipefail
+          drift=$(git status --porcelain -- '*.g.dart' '*.freezed.dart' '*.mocks.dart')
+          if [ -n "$drift" ]; then
+            echo "Committed generated files drift from build_runner output — re-run codegen and commit:" >&2
+            printf '%s\n' "$drift" >&2
+            git diff -- '*.g.dart' '*.freezed.dart' '*.mocks.dart' >&2
+            exit 1
+          fi
       # Determinism check: stage build #1's output into the index (`git add
-      # --force`, overriding gitignore), force a genuine re-generation, then
+      # --force`; harmless now the files are tracked), force a genuine re-generation, then
       # `git diff` working-tree-vs-index. Empty iff codegen is deterministic;
       # non-empty means non-deterministic/unstable codegen → fail. (NOT
-      # `git diff --cached`, which compares index-vs-HEAD — these files are never
-      # in HEAD, so --cached would report every file as added and fail always.)
+      # `git diff --cached`, which compares index-vs-HEAD — that would be vacuous
+      # here: the drift step above already guarantees index == HEAD.)
       #
       # build_runner is incremental: without deleting the outputs AND its build
       # cache, build #2 sees unchanged inputs and writes 0 outputs, leaving the

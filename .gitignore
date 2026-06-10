@@ -5,8 +5,11 @@ build/
 coverage/
 # Story 4.10: koel_http's merged headless-Chrome coverage pass (tool/coverage.sh with_chrome)
 coverage_chrome/
-*.g.dart
-*.freezed.dart
+# Generated Dart (*.g.dart / *.freezed.dart) is COMMITTED, not ignored:
+# `dart pub publish` honors .gitignore, and ignoring them shipped uncompilable
+# archives (koel_core/koel_http 1.1.0, koel_test 1.0.0 — fixed in v1.1.1).
+# Git state must equal published state. *.mocks.dart stays ignored: test-only,
+# never shipped to consumers' compilation, and none exist today.
 *.mocks.dart
 
 # Melos

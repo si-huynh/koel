@@ -1,3 +1,10 @@
+## 1.1.1
+
+- FIX (packaging): republish with the generated source
+  (`trace_entry.freezed.dart`) included in the archive — `.gitignore`
+  excluded it from the 1.1.0 upload, leaving the package uncompilable for
+  hosted consumers. No API changes.
+
 ## 1.1.0
 
 Foundation lock-step release with `koel_core` 1.1.0 (which adds

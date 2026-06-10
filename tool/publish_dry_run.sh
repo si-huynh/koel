@@ -9,7 +9,10 @@
 # Strict by default (D3): `dart pub publish --dry-run` treats warnings as fatal
 # (exit 65; `--ignore-warnings` → 0), so ANY publishability warning fails the
 # gate — publish-readiness is not allowed to rot silently. Nine of the ten run
-# strict; they must be 0-warning.
+# strict; they must be 0-warning. Every package additionally asserts that each
+# generated part file (*.freezed.dart / *.g.dart) referenced from lib/ appears
+# in the dry-run file list — see assert_generated_in_list (v1.1.1 packaging
+# post-mortem).
 #
 # koel_lints is the ONE documented exception (D4): it carries exactly two
 # warnings that are MANDATED, not fixable. It runs with --ignore-warnings (real
@@ -47,6 +50,26 @@ koel_agno koel_langgraph koel_runtime koel_flutter koel_widgets"
 lints_allow_1="should match the name of the package"
 lints_allow_2="should allow more than one version"
 
+# Every generated part target referenced from lib/ must appear in the dry-run
+# file list. This is the gate that was MISSING when koel_core/koel_http 1.1.0
+# and koel_test 1.0.0 shipped: `dart pub publish` honors .gitignore, which then
+# excluded *.g.dart/*.freezed.dart, so the archives carried part directives to
+# files that were not in the archive — uncompilable for every hosted consumer.
+# Generated files are committed since v1.1.1; this assertion makes the failure
+# mode structural, not procedural. Matches on basename: pub's dry-run prints the
+# file list as a tree, one basename per line.
+assert_generated_in_list() {
+  local dir="$1" out="$2" missing=0 target base
+  while IFS= read -r target; do
+    base=$(basename "$target")
+    if ! printf '%s\n' "$out" | grep -qF "$base"; then
+      echo "publish-dry: FAIL — $dir: lib/ declares \`part '$target';\` but $base is absent from the dry-run file list (gitignored? deleted? stale codegen?)" >&2
+      missing=1
+    fi
+  done < <(grep -rhoE "^part '[^']+\.(freezed|g)\.dart';" "$dir/lib" 2>/dev/null | sed -E "s/^part '(.+)';/\1/" | sort -u)
+  return "$missing"
+}
+
 fail=0
 
 for pkg in $release_pkgs; do
@@ -75,6 +98,8 @@ for pkg in $release_pkgs; do
       { [ -n "$warn_count" ] && [ "$warn_count" -gt 2 ]; } && \
         echo "  (pub reports $warn_count warnings — the D4 allowlist permits at most 2)" >&2
       fail=1
+    elif ! assert_generated_in_list "$dir" "$out"; then
+      fail=1
     else
       echo "publish-dry: PASS — koel_lints (2 allowlisted warnings: asp lib/main.dart entrypoint + analyzer-12 pin)"
     fi
@@ -82,12 +107,14 @@ for pkg in $release_pkgs; do
   fi
 
   # The other nine run STRICT: any warning → exit 65 → FAIL.
-  if out=$(cd "$dir" && dart pub publish --dry-run 2>&1); then
-    echo "publish-dry: PASS — $pkg (0 warnings)"
-  else
+  if ! out=$(cd "$dir" && dart pub publish --dry-run 2>&1); then
     echo "publish-dry: FAIL — $pkg (dart pub publish --dry-run reported issues):" >&2
     printf '%s\n' "$out" >&2
     fail=1
+  elif ! assert_generated_in_list "$dir" "$out"; then
+    fail=1
+  else
+    echo "publish-dry: PASS — $pkg (0 warnings, generated part files in archive)"
   fi
 done
 
@@ -95,4 +122,4 @@ if [ "$fail" -ne 0 ]; then
   echo "publish-dry: one or more packages failed the dry-run gate (see above)." >&2
   exit 1
 fi
-echo "publish-dry: OK — all 10 release packages pass dart pub publish --dry-run (9 strict 0-warning + koel_lints 2-item D4 allowlist)."
+echo "publish-dry: OK — all 10 release packages pass dart pub publish --dry-run (9 strict 0-warning + koel_lints 2-item D4 allowlist; generated part files present in every archive)."

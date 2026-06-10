@@ -1,3 +1,14 @@
+## 1.1.1
+
+- FIX (packaging): republish with the generated sources (`*.freezed.dart`,
+  `*.g.dart`) included in the archive. `.gitignore` excluded them from the
+  1.1.0 upload (`dart pub publish` honors `.gitignore` when no `.pubignore`
+  exists), so every `part` directive pointed at a missing file and the
+  package was uncompilable for hosted consumers. Generated files are now
+  committed to git and gated by `publish-dry` + the codegen-drift CI lane.
+  No API changes — `ChatSession.regenerate()` / `ChatSession.updateState()`
+  ship unchanged from 1.1.0.
+
 ## 1.1.0
 
 - NEW: `ChatSession.regenerate()` — regenerates the answer to the last user
