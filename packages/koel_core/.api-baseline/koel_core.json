@@ -2,7 +2,7 @@
     "version": 3,
     "packageApi": {
         "packageName": "koel_core",
-        "packageVersion": "1.0.0",
+        "packageVersion": "1.1.0",
         "packagePath": "",
         "interfaceDeclarations": [
             {
@@ -5735,6 +5735,28 @@
                         "relativePath": "lib/src/client/koel_client.dart"
                     },
                     {
+                        "returnTypeName": "Future<void>",
+                        "name": "regenerate",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": false,
+                                "isNamed": true,
+                                "name": "tools",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "List<ToolDefinition>?",
+                                "relativePath": "lib/src/client/koel_client.dart"
+                            }
+                        ],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/client/koel_client.dart"
+                    },
+                    {
                         "returnTypeName": "void",
                         "name": "cancel",
                         "isDeprecated": false,
@@ -5764,6 +5786,28 @@
                         "isDeprecated": false,
                         "isExperimental": false,
                         "parameters": [],
+                        "typeParameterNames": [],
+                        "type": "method",
+                        "isStatic": false,
+                        "entryPoints": [],
+                        "relativePath": "lib/src/client/koel_client.dart"
+                    },
+                    {
+                        "returnTypeName": "void",
+                        "name": "updateState",
+                        "isDeprecated": false,
+                        "isExperimental": false,
+                        "parameters": [
+                            {
+                                "isRequired": true,
+                                "isNamed": false,
+                                "name": "patch",
+                                "isDeprecated": false,
+                                "isExperimental": false,
+                                "typeName": "Map<String, dynamic>",
+                                "relativePath": "lib/src/client/koel_client.dart"
+                            }
+                        ],
                         "typeParameterNames": [],
                         "type": "method",
                         "isStatic": false,

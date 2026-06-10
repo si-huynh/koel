@@ -1,3 +1,9 @@
+## 1.1.0
+
+Foundation lock-step release with `koel_core` 1.1.0 (which adds
+`ChatSession.regenerate()` and `ChatSession.updateState()`). No functional
+changes in this package.
+
 ## 1.0.0
 
 First stable release. The koel foundation (`koel_core` + `koel_http` +

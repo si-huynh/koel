@@ -1,3 +1,21 @@
+## 1.1.0
+
+- NEW: `ChatSession.regenerate()` — regenerates the answer to the last user
+  turn with CopilotKit `reloadMessages` parity: truncates the committed
+  transcript back to (and including) the last user message (original id
+  preserved for server-side dedupe-by-id history merges), clears in-flight
+  transients (`pendingMessage`, `pendingToolCalls` — `setMessages`
+  replace-the-transcript semantics), and re-runs the agent **without**
+  appending a new user message, so the old answer is replaced, not duplicated.
+  No-op when the transcript has no user turn. Like `send()`, it does not guard
+  against an in-flight run — callers gate on their own streaming state.
+- NEW: `ChatSession.updateState(Map<String, dynamic> patch)` — shallow-merges
+  a patch into the shared agent `ChatState.state` mid-session and re-emits, so
+  the next run carries it in `RunAgentInput.state` without recreating the
+  session. Mirrors CopilotKit `agent.setState({ ...agent.state, ...patch })`.
+- INTERNAL: the run machinery shared by `send()` and `regenerate()` is
+  extracted into a private `_run()`; `send()` behavior is unchanged.
+
 ## 1.0.0
 
 First stable release. The koel foundation (`koel_core` + `koel_http` +
