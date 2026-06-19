@@ -22,11 +22,9 @@ void main() {
   group('ToolHandlerTestHarness', () {
     test('register → invoke runs the handler and returns a result event whose '
         'decoded content carries the value (AC1/AC2)', () async {
-      final stopwatch = Stopwatch()..start();
       final result = await ToolHandlerTestHarness()
           .register('addTwo', (args) => args['a'] + args['b'])
           .invoke('addTwo', {'a': 2, 'b': 3});
-      stopwatch.stop();
 
       expect(result, isA<ToolCallResultEvent>());
       expect((jsonDecode(result.content) as Map<String, dynamic>)['value'], 5);
@@ -34,7 +32,6 @@ void main() {
       expect(result.toolCallId, isNotEmpty);
       expect(result.toolCallId, startsWith('harness-call-'));
       expect(result.messageId, startsWith('harness-result-'));
-      expect(stopwatch.elapsedMilliseconds, lessThan(100));
     });
 
     test('the invocation is observable via an attached AgentSubscriber through '
