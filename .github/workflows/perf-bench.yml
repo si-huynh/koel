@@ -73,7 +73,7 @@ jobs:
       # Recapture the five baselines on the reference device, then upload them.
       # The dev downloads this artifact and commits the JSONs in a reviewed PR.
       - run: melos run perf -- --update
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: perf-baselines-reference-device
           path: packages/**/test/perf/baselines/*.json
